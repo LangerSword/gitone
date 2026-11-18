@@ -38,11 +38,11 @@ export const STAT_COPY: Record<StatKey, { what: string; scouted: string }> = {
   },
 };
 
-// The GOAT invariant: Torvalds is the ceiling. No other card may out-rate
-// him, and the founder bonus is a ceiling below the GOAT, not above it.
+// The GOAT invariant: Torvalds is the ceiling at 98. Every other card is
+// capped at 95, which is also the founder's fixed rating.
 export const GOAT_LOGIN = "torvalds";
-export const GOAT_RTG = 94;
-export const RIVAL_RTG_CAP = GOAT_RTG - 1;
+export const GOAT_RTG = 98;
+export const RIVAL_RTG_CAP = 95;
 
 export const K = {
   // magnitude → the gravity-well center the four stats sit around
@@ -90,7 +90,7 @@ export const FOUNDERS: Record<string, FounderMeta> = {
 };
 
 export const FOUNDER_RTG: Record<string, number> = {
-  langersword: 93,
+  langersword: 95,
 };
 
 // Raw-signal caps for the report's metric normalizations (0–99 at the cap).

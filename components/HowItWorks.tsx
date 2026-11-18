@@ -23,7 +23,7 @@ const STEPS = [
   {
     kicker: "THE 90s ARE EARNED",
     title: "ONE BIG YEAR WON'T CROWN YOU.",
-    body: "Raw ratings cap at 88. To live in the 90s you need seasons on the grid and influence that lasted: lifetime mileage, stars earned, reviews judged. A legendary card is a track record, not a sprint. The ceiling is real: Torvalds holds 94, every other card is capped one point below.",
+    body: "Raw ratings cap at 88. To live in the 90s you need seasons on the grid and influence that lasted: lifetime mileage, stars earned, reviews judged. A legendary card is a track record, not a sprint. The ceiling is real: Torvalds holds 98, every other card is capped at 95.",
   },
   {
     kicker: "LIVERY IS YOURS",
