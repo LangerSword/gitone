@@ -8,7 +8,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "torvalds",
     name: "Linus Torvalds",
-    avatarUrl: "https://avatars.githubusercontent.com/u/1024025?s=960&v=4",
+    avatarUrl: "/drivers/torvalds.webp",
     country: "us",
     stats: { exp: 89, rac: 67, awa: 76, pac: 96 },
     rtg: 98,
@@ -20,7 +20,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "pewdiepie-archdaemon",
     name: "PewDiePie",
-    avatarUrl: "https://avatars.githubusercontent.com/u/229018391?s=960&u=0f3337c9b1a009413123495fab8f16b924d394d1&v=4",
+    avatarUrl: "/drivers/pewdiepie-archdaemon.webp",
     country: null,
     stats: { exp: 74, rac: 87, awa: 61, pac: 96 },
     rtg: 85,
@@ -32,7 +32,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "sindresorhus",
     name: "Sindre Sorhus",
-    avatarUrl: "https://avatars.githubusercontent.com/u/170270?s=960&u=34acd557a042ac478d273a4621570cadb6b0bd89&v=4",
+    avatarUrl: "/drivers/sindresorhus.webp",
     country: null,
     stats: { exp: 94, rac: 88, awa: 60, pac: 85 },
     rtg: 94,
@@ -44,7 +44,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "gaearon",
     name: "dan",
-    avatarUrl: "https://avatars.githubusercontent.com/u/810438?s=960&u=9a342ce34340637775698b6391d1c77f1a911f5b&v=4",
+    avatarUrl: "/drivers/gaearon.webp",
     country: null,
     stats: { exp: 99, rac: 86, awa: 63, pac: 79 },
     rtg: 93,
@@ -56,7 +56,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "yyx990803",
     name: "Evan You",
-    avatarUrl: "https://avatars.githubusercontent.com/u/499550?s=960&u=dd9a9ba40daf29be7c310f7075e74251609b03f3&v=4",
+    avatarUrl: "/drivers/yyx990803.webp",
     country: "sg",
     stats: { exp: 98, rac: 71, awa: 71, pac: 88 },
     rtg: 93,
@@ -68,7 +68,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "antfu",
     name: "Anthony Fu",
-    avatarUrl: "https://avatars.githubusercontent.com/u/11247099?s=960&u=5c092d3773a443e480a294f2b67aa39395982f46&v=4",
+    avatarUrl: "/drivers/antfu.webp",
     country: "jp",
     stats: { exp: 90, rac: 93, awa: 60, pac: 83 },
     rtg: 93,
@@ -80,7 +80,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "ThePrimeagen",
     name: "ThePrimeagen",
-    avatarUrl: "https://avatars.githubusercontent.com/u/4458174?s=960&u=f59d4f5b38134faff67b8a231591f1288ba51a8e&v=4",
+    avatarUrl: "/drivers/theprimeagen.webp",
     country: "us",
     stats: { exp: 87, rac: 75, awa: 66, pac: 99 },
     rtg: 95,
@@ -92,7 +92,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "t3dotgg",
     name: "Theo Browne",
-    avatarUrl: "https://avatars.githubusercontent.com/u/6751787?s=960&u=e0c12e160dc03a1b0164b73de66b917e239cb6b4&v=4",
+    avatarUrl: "/drivers/t3dotgg.webp",
     country: "us",
     stats: { exp: 93, rac: 85, awa: 61, pac: 87 },
     rtg: 94,
@@ -104,7 +104,7 @@ export const SAMPLE_CARDS: CardPreview[] = [
   {
     login: "kentcdodds",
     name: "Kent C. Dodds",
-    avatarUrl: "https://avatars.githubusercontent.com/u/1500684?s=960&u=2da020a41a4146447b4d101d566fbbdb4ad1c1c4&v=4",
+    avatarUrl: "/drivers/kentcdodds.webp",
     country: "us",
     stats: { exp: 90, rac: 91, awa: 61, pac: 86 },
     rtg: 94,

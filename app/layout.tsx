@@ -56,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="preconnect" href="https://flagcdn.com" />
         <link rel="dns-prefetch" href="https://api.github.com" />
+        <link rel="preload" as="image" href="/drivers/torvalds.webp" fetchPriority="high" />
       </head>
       <body>{children}</body>
     </html>
