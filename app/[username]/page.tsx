@@ -275,7 +275,7 @@ export default async function DriverPage({
           {/* ── right rail: one tabbed readout, no long scroll ─────────── */}
           <aside className="order-3">
             <Reveal delay={60}>
-              <ReportTabs card={card} accent={accent} />
+              <ReportTabs card={flagged} accent={accent} />
             </Reveal>
           </aside>
         </div>
