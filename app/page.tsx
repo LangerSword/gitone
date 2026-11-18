@@ -1,40 +1,62 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Flag } from "lucide-react";
 import { ScoutForm } from "@/components/ScoutForm";
 import { StartGrid } from "@/components/StartGrid";
-import { HeroCard } from "@/components/HeroCard";
+import { FanCards } from "@/components/FanCards";
 import { HowItWorks } from "@/components/HowItWorks";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-// A hand-drawn brush stroke, not a CSS border — the one organic accent on
-// the page, under the line that matters.
-function BrushUnderline() {
+// A lit-square grid, gitfut's signature bottom texture in F1 red/yellow.
+// Fixed decoration: it never adds scroll height.
+function TimingGrid() {
+  const lit: [number, string][] = [
+    [7, "var(--f1-red)"], [23, "var(--f1-yellow)"], [38, "var(--f1-red)"], [54, "var(--purple)"],
+    [69, "var(--f1-red)"], [85, "var(--f1-yellow)"], [102, "var(--f1-red)"], [118, "var(--purple)"],
+    [133, "var(--f1-red)"], [149, "var(--f1-yellow)"], [166, "var(--f1-red)"], [181, "var(--purple)"],
+  ];
   return (
-    <svg
-      viewBox="0 0 240 14"
-      aria-hidden="true"
-      style={{ position: "absolute", left: 0, bottom: "-0.12em", width: "100%", height: "0.22em" }}
-      preserveAspectRatio="none"
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        inset: "auto 0 0 0",
+        height: 220,
+        opacity: 0.22,
+        backgroundImage:
+          "linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px)",
+        backgroundSize: "36px 36px",
+        maskImage: "linear-gradient(to bottom, transparent, #000 70%)",
+        WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 70%)",
+        pointerEvents: "none",
+      }}
     >
-      <path
-        d="M3 9.2C43 4.9 98 2.8 150 4.1c24 .6 47 2.2 87 5.4"
-        stroke="var(--f1-red)"
-        strokeWidth="4.5"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.85"
-      />
-    </svg>
+      {lit.map(([i, color]) => (
+        <span
+          key={i}
+          style={{
+            position: "absolute",
+            left: `${(i % 24) * 4.16}%`,
+            top: `${Math.floor(i / 24) * 25}%`,
+            width: 18,
+            height: 18,
+            background: color,
+            filter: "blur(1px)",
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
 export default function Home() {
   return (
-    <main className="min-h-[100dvh] flex flex-col">
-      <header className="border-b flex-none" style={{ borderColor: "var(--line)" }}>
+    <main className="relative min-h-[100dvh] flex flex-col overflow-hidden">
+      <TimingGrid />
+      <header className="relative z-10 border-b flex-none" style={{ borderColor: "var(--line)" }}>
         <nav className="mx-auto max-w-7xl px-5 sm:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <span className="inline-block w-5 h-5 rounded-[3px]" style={{ background: "var(--f1-red)" }} aria-hidden="true" />
@@ -46,42 +68,57 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* one viewport on desktop: no scroll sections on the landing page */}
-      <section className="mx-auto w-full max-w-7xl px-5 sm:px-8 flex-1 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)] gap-10 lg:gap-14 items-center py-10">
+      <section className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 flex-1 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)] gap-8 items-center py-8">
         <div>
-          <p className="eyebrow eyebrow-red">GITHUB IN, DRIVER CARD OUT</p>
-          <h1
-            className="mt-4 font-black leading-[0.95]"
-            style={{ fontSize: "clamp(46px, 6.6vw, 80px)", letterSpacing: "-0.015em" }}
+          {/* a geometric mark, not an illustration */}
+          <div
+            className="mb-5 inline-flex h-10 w-10 items-center justify-center rounded-xl"
+            style={{ background: "rgba(225,6,0,0.12)", border: "1px solid rgba(225,6,0,0.35)" }}
+            aria-hidden="true"
           >
-            your github,
-            <br />
-            <span className="relative inline-block">
-              rated like f1.
-              <BrushUnderline />
-            </span>
+            <Flag size={18} style={{ color: "var(--f1-red)" }} strokeWidth={1.8} />
+          </div>
+
+          <span
+            className="mono inline-block rounded-full px-3 py-1.5 text-[10px] font-bold tracking-[0.16em]"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--line)", color: "var(--dim)" }}
+          >
+            GITHUB × F1 26
+          </span>
+
+          <h1
+            className="mt-4 font-black uppercase leading-[0.9]"
+            style={{ fontSize: "clamp(52px, 7vw, 88px)", letterSpacing: "-0.03em" }}
+          >
+            get rated<span style={{ color: "var(--f1-red)" }}>.</span>
           </h1>
-          <p className="mt-5 max-w-xl text-[16px] leading-relaxed" style={{ color: "var(--dim)" }}>
-            Any GitHub profile, scored like the F1 games score their grid. Four ratings from real
-            commits, PRs and reviews. One card you can embed anywhere.
+          <p className="mt-4 max-w-lg text-[16px] leading-relaxed" style={{ color: "var(--dim)" }}>
+            Your GitHub stats, turned into an F1 26 driver card rated out of 99. Scored live from
+            real commits, PRs and reviews.
           </p>
-          <div className="mt-7 max-w-xl">
+
+          <div className="mt-6 max-w-lg">
             <ScoutForm />
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="mono text-[11px]" style={{ color: "var(--faint)" }}>
+              try <span style={{ color: "var(--dim)" }}>torvalds</span> ·{" "}
+              <span style={{ color: "var(--dim)" }}>pewdiepie</span> · or your own
+            </span>
             <HowItWorks />
           </div>
         </div>
-        <div className="hidden lg:block">
-          {/* the founder's card belongs on the Product Hunt page, not here.
-              The GOAT of the grid gets the hero slot instead. */}
-          <HeroCard login="torvalds" />
+        <div className="hidden lg:flex items-center justify-center">
+          {/* no founder card here: the GOAT and the legends own the fan */}
+          <FanCards />
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-5 sm:px-8 flex-none pb-5">
+      <section className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 flex-none pb-4">
         <StartGrid />
       </section>
 
-      <footer className="flex-none border-t" style={{ borderColor: "var(--line)" }}>
+      <footer className="relative z-10 flex-none border-t" style={{ borderColor: "var(--line)" }}>
         <div className="mx-auto max-w-7xl px-5 sm:px-8 py-3 flex items-center justify-between">
           <span className="mono text-[10px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
             NOT AFFILIATED WITH EA SPORTS, FORMULA 1, OR GITHUB

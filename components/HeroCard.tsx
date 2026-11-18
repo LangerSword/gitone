@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Card } from "@/lib/racing/types";
-import { DriverCard } from "./DriverCard";
+import { DriverCard26 as DriverCard } from "./DriverCard26";
 import { TiltCard } from "./TiltCard";
 
 // The hero's featured car — the founder's card, scouted live. Falls back to

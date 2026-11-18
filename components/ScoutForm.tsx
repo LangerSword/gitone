@@ -58,14 +58,14 @@ export function ScoutForm({ autoFocus = false }: { autoFocus?: boolean }) {
             spellCheck={false}
             autoCapitalize="none"
             autoComplete="off"
-            className="scout-input w-full rounded-md pl-9 pr-4 py-3.5 text-[15px]"
+            className="scout-input w-full rounded-full pl-9 pr-4 py-3.5 text-[15px]"
             aria-label="GitHub login"
           />
         </div>
         <button
           type="submit"
           disabled={lit !== 0 || !login.trim()}
-          className="mono rounded-md px-6 py-3.5 text-[14px] font-bold tracking-[0.18em] transition-opacity disabled:opacity-40"
+          className="mono rounded-full px-6 py-3.5 text-[14px] font-bold tracking-[0.18em] transition-opacity disabled:opacity-40"
           style={{ background: "var(--f1-red)", color: "#fff" }}
         >
           {lit === 0 ? "SCOUT" : "LIGHTS OUT"}

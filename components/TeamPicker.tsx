@@ -1,0 +1,108 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Palette } from "lucide-react";
+import { TEAMS } from "@/lib/teams";
+
+// Team livery picker for the driver card. Sits beside the card as a sibling of
+// the tilt; choosing a team persists per-login and drives ?team=<code>, which
+// the report and the embeddable .png both honour.
+const KEY = (login: string) => `gitone:team:${login.toLowerCase()}`;
+
+export function TeamPicker({ login, current }: { login: string; current: string | null }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (current) return;
+    try {
+      const stored = localStorage.getItem(KEY(login));
+      if (stored && TEAMS.some((t) => t.code === stored)) router.replace(`/${login}?team=${stored}`);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+
+  const choose = (code: string) => {
+    setOpen(false);
+    const params = new URLSearchParams(window.location.search);
+    if (code) {
+      params.set("team", code);
+      try {
+        localStorage.setItem(KEY(login), code);
+      } catch {}
+    } else {
+      params.delete("team");
+      try {
+        localStorage.removeItem(KEY(login));
+      } catch {}
+    }
+    const qs = params.toString();
+    router.replace(`/${login}${qs ? `?${qs}` : ""}`);
+  };
+
+  return (
+    <div ref={root} className="absolute z-20" style={{ right: 8, bottom: 8 }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-label="Choose team livery"
+        title="Choose team livery"
+        className="mono flex items-center gap-2 rounded-full px-3 py-2 text-[10px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
+        style={{
+          background: "rgba(21,21,30,0.85)",
+          border: "1px solid var(--line-bright)",
+          color: "var(--dim)",
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        <Palette size={13} /> LIVERY
+      </button>
+      {open && (
+        <div
+          className="glass absolute bottom-11 right-0 w-[290px] rounded-2xl p-3"
+          style={{ maxHeight: 340, overflowY: "auto" }}
+        >
+          <div className="mono mb-2 px-1 text-[10px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+            CHOOSE YOUR CONSTRUCTOR
+          </div>
+          <button
+            type="button"
+            onClick={() => choose("")}
+            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
+            style={{ color: "var(--dim)" }}
+          >
+            <span className="h-4 w-4 rounded" style={{ background: "linear-gradient(135deg,#71717d,#24242f)" }} />
+            Default (language livery)
+          </button>
+          {TEAMS.map((t) => (
+            <button
+              key={t.code}
+              type="button"
+              onClick={() => choose(t.code)}
+              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
+              style={{ color: current === t.code ? "var(--ink)" : "var(--dim)" }}
+            >
+              <span className="h-4 w-4 rounded" style={{ background: t.color, boxShadow: `0 0 10px ${t.color}55` }} />
+              <span className="flex-1 truncate">{t.name}</span>
+              <span className="mono text-[9px]" style={{ color: "var(--faint)" }}>
+                {t.code}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

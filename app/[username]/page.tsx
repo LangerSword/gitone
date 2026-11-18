@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { DriverCard } from "@/components/DriverCard";
+import { DriverCard26 as DriverCard } from "@/components/DriverCard26";
 import { TiltCard } from "@/components/TiltCard";
 import { Confetti } from "@/components/Confetti";
 import { ReportHeader, Section, AttributeRow, Tip } from "@/components/dossier";
@@ -10,9 +10,11 @@ import { CardActions } from "@/components/CardActions";
 import { Reveal } from "@/components/Reveal";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
+import { pickTeam } from "@/lib/teams";
 import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
 import { CountryPicker } from "@/components/CountryPicker";
+import { TeamPicker } from "@/components/TeamPicker";
 import { formatCount } from "@/lib/format";
 import type { Card } from "@/lib/racing/types";
 
@@ -80,7 +82,23 @@ export default async function DriverPage({
   // wins over the GitHub-derived country.
   const override = typeof sp.country === "string" ? sp.country : null;
   const displayFlag = pickFlag(override, card.country);
-  const flagged: Card = { ...card, country: displayFlag };
+  const teamOverride = typeof sp.team === "string" ? sp.team : null;
+  const team = pickTeam(teamOverride);
+  const flagged: Card = {
+    ...card,
+    country: displayFlag,
+    ...(team
+      ? {
+          constructor: {
+            language: null,
+            name: team.name,
+            code: team.code,
+            color: team.color,
+            ink: team.ink,
+          },
+        }
+      : {}),
+  };
 
   return (
     <main className="min-h-screen">
@@ -181,10 +199,10 @@ export default async function DriverPage({
 
           {/* ── center: the dossier. header, then the card as the light ── */}
           <div className="order-1 lg:order-2">
-            <div className="mb-8">
+            <div className="mb-5">
               <ReportHeader card={card} accent={accent} />
             </div>
-            <div className="relative" style={{ maxWidth: 620, margin: "0 auto" }}>
+            <div className="relative" style={{ width: 290, maxWidth: "100%", margin: "0 auto" }}>
               {champagne && <Confetti colors={confettiPalette(card, theme)} />}
               <TiltCard>
                 <Reveal>
@@ -194,6 +212,7 @@ export default async function DriverPage({
               {/* the flag's editor rides over the card's own flag slot — a
                   sibling of the tilt, so it stays level while the card leans */}
               <CountryPicker login={card.login} value={displayFlag} />
+              <TeamPicker login={card.login} current={team?.code ?? null} />
             </div>
             <Reveal delay={120} className="mt-7">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>

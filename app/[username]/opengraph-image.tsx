@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { loadCard } from "@/lib/scout";
-import { cardTree, cardH, loadCardAssets } from "@/lib/og/renderCard";
+import { cardTree, cardH } from "@/lib/og/renderCard26";
+import { loadCardAssets } from "@/lib/og/renderCard";
 import { loadCardFonts } from "@/lib/og/card";
 
 export const runtime = "nodejs";
@@ -37,9 +38,9 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
   const card = res.card;
   const fonts = await loadCardFonts();
   const assets = await loadCardAssets(card);
-  // card aspect 640:390 — fit inside 1200×630 with framing
-  const cardW = 960;
-  const H = cardH(cardW); // 585
+  // portrait card (2:3) framed for a 1200x630 unfurl
+  const cardW = 360;
+  const H = cardH(cardW); // ≈ 545 with frame
   const top = Math.round((630 - H) / 2);
 
   return new ImageResponse(

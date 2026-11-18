@@ -1,6 +1,7 @@
 import { scoutCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
-import { renderCardImage, renderFallbackImage } from "@/lib/og/renderCard";
+import { pickTeam } from "@/lib/teams";
+import { renderCardImage, renderFallbackImage } from "@/lib/og/renderCard26";
 
 export const runtime = "nodejs";
 
@@ -12,9 +13,25 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   const { username } = await params;
   // Let embeds pin a flag — a valid override wins, else the GitHub-derived one.
   const override = new URL(req.url).searchParams.get("country");
+  const teamCode = new URL(req.url).searchParams.get("team");
   try {
     const card = await scoutCard(username);
-    return await renderCardImage({ ...card, country: pickFlag(override, card.country) });
+    const team = pickTeam(teamCode);
+    return await renderCardImage({
+      ...card,
+      country: pickFlag(override, card.country),
+      ...(team
+        ? {
+            constructor: {
+              language: null,
+              name: team.name,
+              code: team.code,
+              color: team.color,
+              ink: team.ink,
+            },
+          }
+        : {}),
+    });
   } catch {
     return await renderFallbackImage(username);
   }
