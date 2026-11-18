@@ -122,7 +122,7 @@ export function ScoutForm({
               <button
                 type="button"
                 onClick={() => start(name)}
-                className="mono underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+                className="mono inline-flex min-h-11 items-center underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
                 style={{ color: "var(--dim)" }}
               >
                 {name}

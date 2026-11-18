@@ -22,12 +22,12 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const shareText = `${name ?? login} scored ${rtg ?? "a card"} on gitone — GitHub, rated like a driver.`;
 
-  const primary = "mono flex h-9 items-center justify-center px-3.5 text-[9.5px] font-bold tracking-[0.14em] transition-colors";
-  const ghost = "mono flex h-9 items-center justify-center border px-3.5 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]";
+  const primary = "mono flex h-10 items-center justify-center px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors";
+  const ghost = "mono flex h-10 items-center justify-center border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]";
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5">
         <button
           type="button"
           onClick={() => {

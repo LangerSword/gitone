@@ -66,7 +66,7 @@ export function HowItWorks({
         onClick={() => setOpen(true)}
         className={
           className ??
-          "mono font-bold tracking-[0.1em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+          "mono inline-flex min-h-11 items-center font-bold tracking-[0.1em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
         }
         style={{ color: "var(--dim)" }}
       >

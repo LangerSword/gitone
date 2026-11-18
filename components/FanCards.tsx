@@ -41,7 +41,7 @@ export function FanCards() {
               } as React.CSSProperties
             }
           >
-            <MiniCard card={c.card} label={c.label} width={c.width} priority={i === 2} />
+            <MiniCard card={c.card} label={c.label} width={c.width} priority />
           </div>
         </div>
       ))}
@@ -52,13 +52,13 @@ export function FanCards() {
         style={{ background: "rgba(7,8,10,0.72)", border: "1px solid rgba(246,241,232,0.14)", color: "var(--ink)", backdropFilter: "blur(8px)" }}
       >
         <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: "var(--f1-red)", boxShadow: "0 0 10px var(--f1-red)" }} />
-        RTG 94 · LIVE
+        RTG {FAN_CARDS[3].card.rtg} · LIVE
       </span>
       <span
         className="mono absolute bottom-[12%] left-[3%] rounded-full px-3 py-1.5 text-[9px] font-bold tracking-[0.14em]"
         style={{ background: "rgba(110,243,197,0.1)", border: "1px solid rgba(110,243,197,0.3)", color: "var(--mint)" }}
       >
-        PAC 96 · FASTEST
+        PAC {FAN_CARDS[3].card.stats.pac} · FASTEST
       </span>
     </div>
   );

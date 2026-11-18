@@ -15,7 +15,7 @@ export function DriverTicker() {
           <Link
             key={`${card.login}-${i}`}
             href={`/${card.login}`}
-            className="group flex flex-none items-center gap-2.5 px-5 py-3"
+            className="group flex flex-none items-center gap-2.5 px-5 py-3.5"
             aria-hidden={i >= SAMPLE_CARDS.length}
             tabIndex={i >= SAMPLE_CARDS.length ? -1 : 0}
           >

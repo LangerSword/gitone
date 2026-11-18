@@ -42,7 +42,7 @@ export function SiteHeader({
     <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)" }}>
       <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
         <div className="flex items-center gap-5">
-          <Link href="/" className="flex items-center gap-3" aria-label="gitone home">
+          <Link href="/" className="flex min-h-11 items-center gap-3" aria-label="gitone home">
             <Mark />
             <span className="mono text-[15px] font-extrabold tracking-[0.26em]" style={{ color: "var(--ink)" }}>
               GITONE
@@ -69,7 +69,7 @@ export function SiteHeader({
             href="https://github.com/LangerSword/gitone"
             target="_blank"
             rel="noopener noreferrer"
-            className="mono inline-flex h-8 items-center gap-2 border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]"
+            className="mono inline-flex h-11 items-center gap-2 border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]"
             style={{ borderColor: "var(--line-bright)", color: "var(--dim)", background: "rgba(255,255,255,0.03)" }}
           >
             <StarMark />
