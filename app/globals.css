@@ -350,6 +350,32 @@ input:focus-visible,
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(-600px, 0, 0); }
 }
+/* the live sector strip: S1/S2/S3 light purple in turn, like a timing screen */
+@keyframes sector-box {
+  0%, 30% { border-color: rgba(179, 107, 255, 0.7); background: rgba(179, 107, 255, 0.12); }
+  31%, 100% { border-color: var(--line); background: transparent; }
+}
+@keyframes sector-time {
+  0%, 30% { color: #b36bff; }
+  31%, 100% { color: var(--dim); }
+}
+.sector-box { animation: sector-box 6s ease-in-out infinite; animation-delay: var(--sd, 0s); }
+.sector-box .sector-time { animation: sector-time 6s ease-in-out infinite; animation-delay: var(--sd, 0s); }
+@media (prefers-reduced-motion: reduce) {
+  .sector-box, .sector-box .sector-time { animation: none; }
+  .sector-box:first-child { border-color: rgba(179, 107, 255, 0.7); background: rgba(179, 107, 255, 0.12); }
+  .sector-box:first-child .sector-time { color: #b36bff; }
+}
+/* the GitHub contribution heatmap: lit cells pulse in a wave racing left to
+   right (per-cell --cd delay), the "gitty" signature scored in timing colours */
+@keyframes contrib-wave {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.contrib-cell { animation: contrib-wave 2.8s ease-in-out infinite; animation-delay: var(--cd, 0s); }
+@media (prefers-reduced-motion: reduce) {
+  .contrib-cell { animation: none; opacity: 0.85; }
+}
 .ticker-track {
   animation: ticker-run 38s linear infinite;
   will-change: transform;
@@ -598,10 +624,10 @@ input:focus-visible,
    so the whole scout page still fits one viewport. Tall screens keep the
    full-size mascot and headline. */
 @media (max-height: 820px) and (min-width: 1024px) {
-  .hero-mascot img { width: 92px !important; height: 92px !important; }
-  .hero-title { font-size: clamp(54px, 7.5vw, 100px) !important; }
-  .hero-sub { margin-top: 12px !important; }
-  .hero-form { margin-top: 16px !important; }
+  .hero-mascot img { width: 78px !important; height: 78px !important; }
+  .hero-title { font-size: clamp(50px, 7vw, 90px) !important; }
+  .hero-sub { margin-top: 10px !important; }
+  .hero-form { margin-top: 12px !important; }
 }
 
 } /* end @layer components */

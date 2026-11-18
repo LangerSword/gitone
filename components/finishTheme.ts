@@ -34,8 +34,6 @@ const PURPLE_FOIL =
   "linear-gradient(135deg,#ecd3ff 0%,#8b3fd4 20%,#d9a8ff 38%,#6a2aa8 55%,#c98cff 72%,#7c33c2 90%,#e5c2ff 100%)";
 const IRIDESCENT_FOIL =
   "linear-gradient(135deg,#f7e8b5 0%,#e6b4e0 16%,#f3d67b 33%,#9fd8c9 50%,#f5d67b 66%,#d8a8f0 84%,#ffe9a3 100%)";
-const RED_FOIL =
-  "linear-gradient(135deg,#ffb3ad 0%,#c11a12 22%,#ff8a80 40%,#8f0c06 58%,#f5493f 76%,#b3140c 94%,#ff9d95 100%)";
 const CARBON_FOIL =
   "linear-gradient(135deg,#3a3d45 0%,#14151a 22%,#2c2f36 42%,#0e0f13 62%,#33363d 82%,#17181d 100%)";
 
@@ -77,10 +75,10 @@ export const CARD_THEME: Record<Finish, CardTheme> = {
     confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],
   },
   founder: {
-    foil: RED_FOIL, foilEdge: "rgba(255,205,200,0.75)",
-    accent: "#e10600", ink: "#ffd6d3", glow: "rgba(225,6,0,0.55)",
-    bar: "#ff5a52", hot: "#b455ff",
-    confetti: ["#e10600", "#ff5a52", "#ffffff", "#ffd6d3"],
+    foil: IRIDESCENT_FOIL, foilEdge: "rgba(255,250,230,0.85)",
+    accent: "#f5d67b", ink: "#fff3cf", glow: "rgba(245,214,123,0.6)",
+    bar: "#f5d67b", hot: "#b455ff",
+    confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],
   },
 };
 
@@ -136,7 +134,9 @@ export function artLayers(livery: string, finish?: string): string[] {
     ];
   if (finish === "founder")
     return [
-      "radial-gradient(75% 60% at 30% 78%, rgba(225,6,0,0.24), transparent 62%)",
+      "radial-gradient(24% 30% at 45% 40%, rgba(245,214,123,0.22), transparent 70%)",
+      `radial-gradient(58% 75% at 18% 12%, ${rgba(livery, 0.34)}, transparent 60%)`,
+      "repeating-linear-gradient(72deg, rgba(245,214,123,0.05) 0 3px, transparent 3px 14px)",
       ...base.slice(1),
     ];
   return base;

@@ -3,7 +3,18 @@ export type Stats = Record<StatKey, number>;
 export type Profile = Record<StatKey, number>;
 
 // The trophy cabinet keys (see lib/awards for the rules).
-export type AwardKey = "wdc" | "grand_slam" | "fastest_lap" | "ironman" | "wcc26" | "wdc26";
+export type AwardKey =
+  | "wdc"
+  | "grand_slam"
+  | "fastest_lap"
+  | "ironman"
+  | "wcc26"
+  | "wdc26"
+  | "pole"
+  | "hat_trick"
+  | "podium"
+  | "century"
+  | "founders_edition";
 
 // One earned trophy. WDC titles carry the season; held awards
 // (grand slam / fastest lap / ironman) are current-form and carry no year.
@@ -97,6 +108,12 @@ export interface FounderMeta {
   accent: string; // hex; drives the badge, glow and OG accent
   label: string;
   tagline: string;
+  /** Rare-edition serial shown on the card, e.g. "1 OF 1". */
+  edition?: string;
+  /** The legend this founder's edition is cut after. */
+  legend?: string;
+  /** The legend's record line, shown as a tribute on the report. */
+  legendRecord?: string;
 }
 
 export interface Card {

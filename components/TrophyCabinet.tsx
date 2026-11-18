@@ -14,6 +14,11 @@ const TINT: Record<AwardKey, string> = {
   ironman: "#d99a5b",
   wcc26: "#5fd39a",
   wdc26: "#7fb2e5",
+  pole: "#b36bff",
+  hat_trick: "#e7c463",
+  podium: "#d99a5b",
+  century: "#5fd39a",
+  founders_edition: "#f5d67b",
 };
 
 function Shine({ delay = 0 }: { delay?: number }) {

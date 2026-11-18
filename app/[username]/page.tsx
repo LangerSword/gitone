@@ -232,6 +232,21 @@ export default async function DriverPage({
               <ReportHeader card={flagged} accent={accent} />
             </div>
 
+            {card.founder?.edition && (
+              <div
+                className="mx-auto mb-3 flex max-w-[340px] items-center justify-center gap-2.5 rounded-[12px] border px-3 py-2"
+                style={{ borderColor: "rgba(245,214,123,0.4)", background: "linear-gradient(180deg, rgba(245,214,123,0.12), rgba(245,214,123,0.04))" }}
+              >
+                <span className="mono text-[12px] font-extrabold tracking-[0.16em]" style={{ color: "#f5d67b" }}>
+                  {card.founder.edition}
+                </span>
+                <span aria-hidden className="h-3 w-px" style={{ background: "rgba(245,214,123,0.4)" }} />
+                <span className="mono text-[10px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
+                  FOUNDERS EDITION · {card.founder.legend?.toUpperCase()}
+                </span>
+              </div>
+            )}
+
             <div className="relative mx-auto" style={{ width: "clamp(292px, 22vw, 312px)", maxWidth: "100%" }}>
               <div
                 aria-hidden

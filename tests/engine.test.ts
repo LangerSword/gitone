@@ -101,13 +101,14 @@ describe("buildCard", () => {
     expect(cold.finish).not.toBe("in_form");
   });
 
-  it("gives the founder their bespoke tier and forced rating", () => {
+  it("gives the founder their bespoke one-of-one edition and forced rating", () => {
     const f = buildCard({ ...base, login: "LangerSword" });
     expect(f.finish).toBe("founder");
-    expect(f.founder?.label).toBe("FOUNDER");
+    expect(f.founder?.label).toBe("1 OF 1");
+    expect(f.founder?.edition).toBe("1 OF 1");
     expect(f.rtg).toBeGreaterThan(89);
     // champion gate can't hijack the founder look
-    expect(f.archetype).toBe("Founder");
+    expect(f.archetype).toBe("The Hamilton Legacy");
   });
 
   it("puts torvalds in the champion tier via the allowlist", () => {

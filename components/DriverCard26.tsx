@@ -1,6 +1,6 @@
 import type { CardPreview, StatKey } from "@/lib/racing/types";
 import { STATS, STAT_LABELS } from "@/lib/racing/constants";
-import { resolveCardTheme, rgba } from "./finishTheme";
+import { resolveCardTheme, rgba, artLayers } from "./finishTheme";
 import { flagUrl } from "@/lib/flagUrl";
 
 /* The F1 26 rating card, rebuilt from the season-pack reference: an
@@ -70,21 +70,14 @@ export function DriverCard26({
             background: "linear-gradient(160deg, #1c2027 0%, #0b0c0f 56%, #111318 100%)",
           }}
         >
-          {/* carbon + the team's diagonal speed band */}
+          {/* the finish-specific art stack: livery bokeh, speed streaks and the
+              tier flourish (founder gold, champion flecks, in_form purple) */}
           <div
             aria-hidden
             style={{
               position: "absolute",
               inset: 0,
-              backgroundImage: `linear-gradient(118deg, transparent 18%, ${rgba(livery, 0.34)} 18%, ${rgba(livery, 0.5)} 25%, transparent 25%, transparent 58%, ${rgba(livery, 0.16)} 58%, transparent 74%), repeating-linear-gradient(116deg, rgba(255,255,255,0.024) 0 1px, transparent 1px 9px)`,
-            }}
-          />
-          <div
-            aria-hidden
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `radial-gradient(72% 52% at 50% 0%, ${rgba(livery, 0.3)}, transparent 66%), radial-gradient(50% 42% at 50% 58%, rgba(0,0,0,0.08), transparent 70%)`,
+              backgroundImage: artLayers(livery, card.finish).join(", "),
             }}
           />
 
@@ -93,10 +86,10 @@ export function DriverCard26({
             style={{
               position: "absolute",
               inset: "0 0 auto 0",
-              height: "60%",
+              height: "58%",
               overflow: "hidden",
-              maskImage: "linear-gradient(to bottom, #000 58%, transparent 100%)",
-              WebkitMaskImage: "linear-gradient(to bottom, #000 58%, transparent 100%)",
+              maskImage: "linear-gradient(to bottom, #000 46%, transparent 96%)",
+              WebkitMaskImage: "linear-gradient(to bottom, #000 46%, transparent 96%)",
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -126,6 +119,24 @@ export function DriverCard26({
               }}
             />
           </div>
+
+          {/* the tier's foil sheen rides OVER the portrait so the special art
+              is never buried under the full-bleed photo */}
+          {(card.finish === "founder" || card.finish === "champion" || card.finish === "in_form") && (
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundImage: theme.foil,
+                mixBlendMode: "screen",
+                opacity: card.finish === "founder" ? 0.34 : 0.2,
+                maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.4) 45%, transparent 72%)",
+                WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.4) 45%, transparent 72%)",
+                pointerEvents: "none",
+              }}
+            />
+          )}
 
           {/* rating, top-left — the number the whole card answers to */}
           <div style={{ position: "absolute", left: "5.5%", top: "3.6%" }}>

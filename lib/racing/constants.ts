@@ -76,16 +76,19 @@ export const FINISH_LABELS: Record<Finish, string> = {
   winner: "WINNER",
   in_form: "IN FORM",
   champion: "CHAMPION",
-  founder: "FOUNDER",
+  founder: "1 OF 1",
 };
 
 // The people who built gitone. Matched case-insensitively in buildCard; each
-// gets a forced overall (>89) and the bespoke founder treatment.
+// gets a forced overall (>89) and a bespoke one-of-one founder's edition.
 export const FOUNDERS: Record<string, FounderMeta> = {
   langersword: {
-    accent: "#e10600", // F1's own red
-    label: "FOUNDER",
-    tagline: "Founder of gitone, they built the very scout reading this card",
+    accent: "#f5d67b", // championship gold — a one-of-one edition
+    label: "1 OF 1",
+    tagline: "Founder of gitone — they built the very scout reading this card",
+    edition: "1 OF 1",
+    legend: "The Hamilton Legacy",
+    legendRecord: "7× World Champion · 106 Wins · 105 Poles · 209 Podiums",
   },
 };
 

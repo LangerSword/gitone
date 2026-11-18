@@ -68,6 +68,41 @@ export const AWARD_META: Record<AwardKey, AwardMeta> = {
     description:
       "Kimi Antonelli took the 2026 World Drivers' Championship. Choosing Italy for the flag carries that title onto the card.",
   },
+  pole: {
+    title: "Pole Position",
+    shelfLabel: "POLE POSITION",
+    metricLabel: "Qualifying Master",
+    description:
+      "Saturday belongs to them. A pace rating of 90 or better — the card that lines up on pole when the grid forms.",
+  },
+  hat_trick: {
+    title: "Hat-Trick",
+    shelfLabel: "HAT-TRICK",
+    metricLabel: "Pole · Win · Fastest Lap",
+    description:
+      "Pole, the win and the fastest lap in one weekend. Pace 88+, racecraft 85+ and an overall of 90+: the perfect trifecta.",
+  },
+  podium: {
+    title: "Podium Regular",
+    shelfLabel: "PODIUM REGULAR",
+    metricLabel: "Always in the Mix",
+    description:
+      "Three or more seasons on the grid and an overall of 85+: the driver who is always spraying the champagne.",
+  },
+  century: {
+    title: "Century Club",
+    shelfLabel: "CENTURY CLUB",
+    metricLabel: "20k Career Contributions",
+    description:
+      "A career measured in distance: 20,000 or more lifetime contributions banked across the seasons.",
+  },
+  founders_edition: {
+    title: "Founder's Edition · 1 of 1",
+    shelfLabel: "1 OF 1",
+    metricLabel: "The Hamilton Legacy",
+    description:
+      "A one-of-one founder's edition cut after Lewis Hamilton — 7 titles, 106 wins, 105 poles, 209 podiums. The only card of its kind on the grid.",
+  },
 };
 
 // ---- The shared season score -----------------------------------------------
@@ -198,14 +233,57 @@ function ironman(card: Card, signalsSeasons: number): AwardInstance[] {
   ];
 }
 
+// ---- Pole / Hat-Trick / Podium / Century (held awards) ----------------------
+
+function polePosition(card: Card): AwardInstance[] {
+  if (card.rtg < AWARD_RTG_FLOOR || card.stats.pac < 90) return [];
+  return [{ key: "pole" as const, reason: `PAC ${card.stats.pac}: lines up on pole when the grid forms.` }];
+}
+
+function hatTrick(card: Card): AwardInstance[] {
+  const s = card.stats;
+  if (card.rtg < 90 || s.pac < 88 || s.rac < 85) return [];
+  return [{ key: "hat_trick" as const, reason: `Pole, win, fastest lap: PAC ${s.pac}, RAC ${s.rac}, RTG ${card.rtg}. The perfect weekend.` }];
+}
+
+function podiumRegular(card: Card, activeSeasons: number): AwardInstance[] {
+  if (card.rtg < 85 || activeSeasons < 3) return [];
+  return [{ key: "podium" as const, reason: `${activeSeasons} seasons and RTG ${card.rtg}: always in the podium mix.` }];
+}
+
+const CENTURY_MILEAGE = 20000;
+function centuryClub(card: Card): AwardInstance[] {
+  const mileage = card.report.metrics.find((m) => m.label === "career mileage")?.value ?? 0;
+  if (mileage < CENTURY_MILEAGE) return [];
+  return [{ key: "century" as const, reason: `${mileage.toLocaleString()} lifetime contributions — a century of race distance.` }];
+}
+
+// The one-of-one founder's edition: a Hamilton-legacy tribute, minted only for
+// the people who built gitone. No floor, no data gate — it is the edition itself.
+function foundersEdition(card: Card): AwardInstance[] {
+  if (card.finish !== "founder") return [];
+  return [
+    {
+      key: "founders_edition" as const,
+      reason:
+        "A one-of-one founder's edition cut after Lewis Hamilton: 7 titles, 106 wins, 105 poles, 209 podiums. The only card of its kind on the grid.",
+    },
+  ];
+}
+
 // ---- Cabinet ---------------------------------------------------------------
 
 export function computeAwards(card: Card, activeSeasons: number): AwardInstance[] {
   return [
+    ...foundersEdition(card),
     ...worldTitles(card),
     ...grandSlam(card),
+    ...hatTrick(card),
+    ...polePosition(card),
     ...fastestLap(card),
+    ...podiumRegular(card, activeSeasons),
     ...ironman(card, activeSeasons),
+    ...centuryClub(card),
   ];
 }
 
@@ -215,7 +293,7 @@ export interface AwardGroup {
   instances: AwardInstance[];
 }
 
-const SHELF_ORDER: readonly AwardKey[] = ["wcc26", "wdc26", "wdc", "grand_slam", "fastest_lap", "ironman"];
+const SHELF_ORDER: readonly AwardKey[] = ["founders_edition", "wcc26", "wdc26", "wdc", "grand_slam", "hat_trick", "pole", "fastest_lap", "podium", "ironman", "century"];
 
 // Real-world 2026 silverware that follows the reader's choices, not the
 // profile's data: the Mercedes livery carries the constructors' title, the

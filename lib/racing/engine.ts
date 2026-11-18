@@ -141,7 +141,11 @@ function driverNumber(login: string, rtg: number): number {
 
 function archetypeFromShape(st: Stats, s: Signals, finish: Finish): Archetype {
   if (finish === "founder")
-    return { name: "Founder", blurb: "built gitone: the scout reading this card is theirs" };
+    return {
+      name: "The Hamilton Legacy",
+      blurb:
+        "Seven titles, 106 wins, 105 poles, 209 podiums — the benchmark this grid is measured against. A one-of-one founder's edition.",
+    };
   const top = [...STATS].sort((a, b) => st[b] - st[a]);
   const spread = Math.max(...vals(st)) - Math.min(...vals(st));
   if (finish === "champion" && spread < 8)
