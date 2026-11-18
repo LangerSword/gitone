@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Palette } from "lucide-react";
 import { TEAMS } from "@/lib/teams";
+import { clearPref, localPrefKey, writePref } from "@/lib/prefs";
 
 // Team livery picker for the driver card. Sits beside the card as a sibling of
 // the tilt; choosing a team persists per-login and drives ?team=<code>, which
 // the report and the embeddable .png both honour.
-const KEY = (login: string) => `gitone:team:${login.toLowerCase()}`;
+const KEY = (login: string) => localPrefKey("team", login);
 
 export function TeamPicker({ login, current }: { login: string; current: string | null }) {
   const router = useRouter();
@@ -19,7 +20,11 @@ export function TeamPicker({ login, current }: { login: string; current: string 
     if (current) return;
     try {
       const stored = localStorage.getItem(KEY(login));
-      if (stored && TEAMS.some((t) => t.code === stored)) router.replace(`/${login}?team=${stored}`);
+      if (stored && TEAMS.some((t) => t.code === stored)) {
+        const params = new URLSearchParams(window.location.search);
+        params.set("team", stored);
+        router.replace(`/${login}?${params.toString()}`);
+      }
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -41,11 +46,13 @@ export function TeamPicker({ login, current }: { login: string; current: string 
       try {
         localStorage.setItem(KEY(login), code);
       } catch {}
+      writePref("team", login, code);
     } else {
       params.delete("team");
       try {
         localStorage.removeItem(KEY(login));
       } catch {}
+      clearPref("team", login);
     }
     const qs = params.toString();
     router.replace(`/${login}${qs ? `?${qs}` : ""}`);

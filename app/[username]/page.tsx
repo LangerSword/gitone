@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { DriverCard26 as DriverCard } from "@/components/DriverCard26";
 import { TiltCard } from "@/components/TiltCard";
@@ -18,6 +19,8 @@ import { pickTeam } from "@/lib/teams";
 import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
 import { formatCount } from "@/lib/format";
+import { mergeAwards, overrideAwards } from "@/lib/awards";
+import { prefCookie } from "@/lib/prefs";
 import type { Card } from "@/lib/racing/types";
 
 export async function generateMetadata({
@@ -79,12 +82,18 @@ export default async function DriverPage({
 
   const { card } = res;
   const theme = resolveCardTheme(card);
-  const accent = card.constructor.color;
   const champagne = POPS.includes(card.finish as (typeof POPS)[number]);
-  const override = typeof sp.country === "string" ? sp.country : null;
+  // The query string wins for shared links; otherwise the per-login cookie
+  // is the persisted choice, so a returning reader sees their livery and flag
+  // on the very first paint (no redirect flash, no account).
+  const jar = await cookies();
+  const prefCountry = jar.get(prefCookie("country", card.login))?.value ?? null;
+  const prefTeam = jar.get(prefCookie("team", card.login))?.value ?? null;
+  const override = typeof sp.country === "string" ? sp.country : prefCountry;
   const displayFlag = pickFlag(override, card.country);
-  const teamOverride = typeof sp.team === "string" ? sp.team : null;
+  const teamOverride = typeof sp.team === "string" ? sp.team : prefTeam;
   const team = pickTeam(teamOverride);
+  const accent = team ? team.color : card.constructor.color;
   const flagged: Card = {
     ...card,
     country: displayFlag,
@@ -100,6 +109,7 @@ export default async function DriverPage({
         }
       : {}),
   };
+  const cabinet = mergeAwards(card.awards ?? [], overrideAwards(team?.code ?? null, displayFlag));
   const raced = (card.years ?? []).filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0);
   const maxYear = Math.max(1, ...raced.map((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted));
   const bestYear = raced.reduce(
@@ -112,7 +122,7 @@ export default async function DriverPage({
       <SiteHeader back />
 
       <div className="stage">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-7">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-4">
           {/* ── left rail: race craft, traits, silverware, seasons ─────── */}
           <aside className="order-2 space-y-6 lg:order-1">
             <Reveal>
@@ -139,7 +149,7 @@ export default async function DriverPage({
 
             <Reveal delay={50}>
               <Section title="DRIVER TRAITS" accent={accent}>
-                <TraitChips card={card} accent={accent} />
+                <TraitChips card={flagged} accent={accent} />
               </Section>
             </Reveal>
 
@@ -147,9 +157,9 @@ export default async function DriverPage({
               <Section
                 title="TROPHY CABINET"
                 accent={accent}
-                aside={<span className="mono text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>{card.awards?.length ?? 0} HELD</span>}
+                aside={<span className="mono text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>{cabinet.length} HELD</span>}
               >
-                <TrophyCabinet awards={card.awards ?? []} />
+                <TrophyCabinet awards={cabinet} />
               </Section>
             </Reveal>
 
@@ -209,17 +219,30 @@ export default async function DriverPage({
 
           {/* ── centre: the report, then the card as the light ─────────── */}
           <div className="order-1 lg:order-2">
-            <div className="mb-4">
-              <ReportHeader card={card} accent={accent} />
+            <div className="mb-3">
+              <ReportHeader card={flagged} accent={accent} />
             </div>
 
-            <div className="relative mx-auto" style={{ width: 292, maxWidth: "100%" }}>
+            <div className="relative mx-auto" style={{ width: "clamp(292px, 22vw, 312px)", maxWidth: "100%" }}>
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: "7% 2%",
+                  borderRadius: 30,
+                  background: `radial-gradient(closest-side, ${accent}30, transparent 72%)`,
+                  filter: "blur(30px)",
+                  zIndex: 0,
+                }}
+              />
               {champagne && <Confetti colors={confettiPalette(card, theme)} />}
-              <TiltCard>
-                <Reveal>
-                  <DriverCard card={flagged} eager />
-                </Reveal>
-              </TiltCard>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <TiltCard>
+                  <Reveal>
+                    <DriverCard card={flagged} eager />
+                  </Reveal>
+                </TiltCard>
+              </div>
               <CountryPicker login={card.login} value={displayFlag} />
             </div>
 
@@ -231,7 +254,7 @@ export default async function DriverPage({
               />
             </div>
 
-            <Reveal delay={100} className="mt-6">
+            <Reveal delay={100} className="mt-4">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>
                 <CardActions login={card.login} name={card.name} rtg={card.rtg} />
                 <p className="mono mt-4 text-center text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>

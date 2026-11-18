@@ -1,7 +1,7 @@
 import { constructorFor } from "./livery";
 import { topLanguageLogo } from "../github/languages";
 import { countryForLogin } from "../geo";
-import { METRIC_CAPS, RTG_WEIGHTS, STATS, K, FINISH_LABELS, FOUNDERS, FOUNDER_RTG } from "./constants";
+import { METRIC_CAPS, RTG_WEIGHTS, STATS, K, FINISH_LABELS, FOUNDERS, FOUNDER_RTG, GOAT_LOGIN, GOAT_RTG, RIVAL_RTG_CAP } from "./constants";
 import type {
   Archetype,
   Card,
@@ -205,8 +205,12 @@ export function buildCard(s: Signals): Card {
 
   // Founders get a forced rating (>89) and the bespoke founder tier, driven
   // straight through so the champion gate can't hijack the look.
-  const founder = FOUNDERS[s.login.toLowerCase()];
-  const rtg = founder ? FOUNDER_RTG[s.login.toLowerCase()] : clamp(baseRTG + Math.round(K.legacy.bonusMax * L), 1, 99);
+  const login = s.login.toLowerCase();
+  const founder = FOUNDERS[login];
+  let rtg = founder ? FOUNDER_RTG[login] : clamp(baseRTG + Math.round(K.legacy.bonusMax * L), 1, 99);
+  // Torvalds is the measuring stick: force his headline number and keep every
+  // other card at least one point below it.
+  rtg = login === GOAT_LOGIN ? GOAT_RTG : Math.min(rtg, RIVAL_RTG_CAP);
   const finish: Finish = founder ? "founder" : pickFinish(rtg, L, s.recent_spike, s.login);
   const archetype = archetypeFromShape(stats, s, finish);
   const constructor = constructorFor(s.topLanguage);

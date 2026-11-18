@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Crown, Medal, Trophy, X, Zap } from "lucide-react";
+import { Crown, Flag, Medal, Trophy, X, Zap } from "lucide-react";
 import { AWARD_META, groupAwards } from "@/lib/awards";
 import type { AwardInstance, AwardKey } from "@/lib/racing/types";
 import { Tip } from "./dossier";
@@ -11,6 +11,8 @@ const ICONS: Record<AwardKey, typeof Trophy> = {
   grand_slam: Crown,
   fastest_lap: Zap,
   ironman: Medal,
+  wcc26: Trophy,
+  wdc26: Flag,
 };
 
 const TINT: Record<AwardKey, string> = {
@@ -18,6 +20,8 @@ const TINT: Record<AwardKey, string> = {
   grand_slam: "#b455ff",
   fastest_lap: "#b455ff",
   ironman: "#f0a52c",
+  wcc26: "#6ef3c5",
+  wdc26: "#7fb7ff",
 };
 
 // Trophy details dialog: every instance the card holds — a 2× World Champion
@@ -123,7 +127,7 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
         </p>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2.5">
-          {groups.map((g) => {
+          {groups.map((g, i) => {
             const Icon = ICONS[g.key];
             const tint = TINT[g.key];
             const held = g.key !== "wdc";
@@ -132,11 +136,14 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
                 <button
                   type="button"
                   onClick={() => setOpenKey(g.key)}
-                  className="flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-transform hover:scale-[1.04]"
-                  style={{
-                    background: `${tint}12`,
-                    boxShadow: `inset 0 0 0 1px ${tint}40, 0 6px 22px -8px ${tint}66`,
-                  }}
+                  className="award-chip relative flex items-center gap-2.5 overflow-hidden rounded-lg px-3.5 py-2.5 transition-transform hover:scale-[1.04]"
+                  style={
+                    {
+                      background: `${tint}12`,
+                      boxShadow: `inset 0 0 0 1px ${tint}40, 0 6px 22px -8px ${tint}66`,
+                      "--shine-delay": `${i * 0.45}s`,
+                    } as React.CSSProperties
+                  }
                   aria-label={`${AWARD_META[g.key].title} details`}
                 >
                   <Icon size={17} strokeWidth={1.8} style={{ color: tint }} />

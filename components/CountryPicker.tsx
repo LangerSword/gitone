@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Plus, Search, X } from "lucide-react";
 import { COUNTRIES, normalizeCountry } from "@/lib/countries";
 import { flagUrl } from "@/lib/flagUrl";
+import { clearPref, localPrefKey, writePref } from "@/lib/prefs";
 
 // The report-page flag editor. Renders a transparent hotspot exactly over
 // the card's flag slot — clicking it opens a searchable country popover.
@@ -14,7 +15,7 @@ import { flagUrl } from "@/lib/flagUrl";
 // the embeddable .png honours) and stores the pick per-login, so returning
 // visitors keep their flag.
 const SLOT = { right: "4.2%", top: "12.4%", width: "8.2%", height: "6.2%" } as const;
-const STORAGE_KEY = (login: string) => `gitone:flag:${login.toLowerCase()}`;
+const STORAGE_KEY = (login: string) => localPrefKey("country", login);
 
 interface Props {
   login: string;
@@ -32,12 +33,16 @@ export function CountryPicker({ login, value }: Props) {
   const listRef = useRef<HTMLUListElement>(null);
 
   // Carry a previously stored pick forward when the URL has no override yet.
+  // The server reads the cookie first, so this is only the localStorage
+  // fallback for visitors who chose before cookies were written.
   useEffect(() => {
     if (value) return;
     try {
       const stored = localStorage.getItem(STORAGE_KEY(login));
-      if (stored && normalizeCountry(stored) && stored !== value) {
-        router.replace(`/${login}?country=${stored}`);
+      if (stored && normalizeCountry(stored)) {
+        const params = new URLSearchParams(window.location.search);
+        params.set("country", stored);
+        router.replace(`/${login}?${params.toString()}`);
       }
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,17 +77,23 @@ export function CountryPicker({ login, value }: Props) {
 
   const choose = (code: string) => {
     setOpen(false);
+    const params = new URLSearchParams(window.location.search);
     if (!code) {
       try {
         localStorage.removeItem(STORAGE_KEY(login));
       } catch {}
-      router.replace(`/${login}`);
+      clearPref("country", login);
+      params.delete("country");
+      const qs = params.toString();
+      router.replace(`/${login}${qs ? `?${qs}` : ""}`);
       return;
     }
     try {
       localStorage.setItem(STORAGE_KEY(login), code);
     } catch {}
-    router.replace(`/${login}?country=${code}`);
+    writePref("country", login, code);
+    params.set("country", code);
+    router.replace(`/${login}?${params.toString()}`);
   };
 
   const onTriggerKeyDown = (e: React.KeyboardEvent) => {

@@ -3,7 +3,7 @@ export type Stats = Record<StatKey, number>;
 export type Profile = Record<StatKey, number>;
 
 // The trophy cabinet keys (see lib/awards for the rules).
-export type AwardKey = "wdc" | "grand_slam" | "fastest_lap" | "ironman";
+export type AwardKey = "wdc" | "grand_slam" | "fastest_lap" | "ironman" | "wcc26" | "wdc26";
 
 // One earned trophy. WDC titles carry the season; held awards
 // (grand slam / fastest lap / ironman) are current-form and carry no year.

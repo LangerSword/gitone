@@ -54,6 +54,20 @@ export const AWARD_META: Record<AwardKey, AwardMeta> = {
     description:
       "For careers measured in decades, not sprints: twelve or more seasons on the grid, and still racing.",
   },
+  wcc26: {
+    title: "2026 Constructors' Championship",
+    shelfLabel: "CONSTRUCTORS '26",
+    metricLabel: "Mercedes-AMG Petronas",
+    description:
+      "Mercedes-AMG Petronas took the 2026 World Constructors' Championship. Choosing the Mercedes livery carries that silverware onto the card.",
+  },
+  wdc26: {
+    title: "2026 Drivers' Championship",
+    shelfLabel: "DRIVERS '26",
+    metricLabel: "Kimi Antonelli · Italy",
+    description:
+      "Kimi Antonelli took the 2026 World Drivers' Championship. Choosing Italy for the flag carries that title onto the card.",
+  },
 };
 
 // ---- The shared season score -----------------------------------------------
@@ -201,7 +215,37 @@ export interface AwardGroup {
   instances: AwardInstance[];
 }
 
-const SHELF_ORDER: readonly AwardKey[] = ["wdc", "grand_slam", "fastest_lap", "ironman"];
+const SHELF_ORDER: readonly AwardKey[] = ["wcc26", "wdc26", "wdc", "grand_slam", "fastest_lap", "ironman"];
+
+// Real-world 2026 silverware that follows the reader's choices, not the
+// profile's data: the Mercedes livery carries the constructors' title, the
+// Italian flag carries the drivers' title. These are stored with the card and
+// survive the report, the PNG query and a returning visit.
+export function overrideAwards(teamCode: string | null | undefined, country: string | null | undefined): AwardInstance[] {
+  const out: AwardInstance[] = [];
+  if (teamCode?.trim().toUpperCase() === "MER") {
+    out.push({
+      key: "wcc26",
+      year: 2026,
+      reason: "Mercedes-AMG Petronas won the 2026 World Constructors' Championship. The livery carries the title.",
+    });
+  }
+  if (country?.trim().toLowerCase() === "it") {
+    out.push({
+      key: "wdc26",
+      year: 2026,
+      reason: "Kimi Antonelli won the 2026 World Drivers' Championship. The Italian flag carries the title.",
+    });
+  }
+  return out;
+}
+
+// Append override silverware without duplicating an award the profile already
+// holds (same key and year).
+export function mergeAwards(base: AwardInstance[] = [], extra: AwardInstance[] = []): AwardInstance[] {
+  const seen = new Set(base.map((a) => `${a.key}:${a.year ?? "held"}`));
+  return [...base, ...extra.filter((a) => !seen.has(`${a.key}:${a.year ?? "held"}`))];
+}
 
 export function groupAwards(awards: AwardInstance[] = []): AwardGroup[] {
   return SHELF_ORDER.flatMap((key) => {

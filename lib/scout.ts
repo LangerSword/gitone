@@ -19,7 +19,7 @@ import type { Card } from "./racing/types";
 // speed, never behaviour. Only successful builds are stored; scout errors
 // (notfound / ratelimit / …) propagate unchanged and are never cached.
 
-const CACHE_VERSION = "v2"; // v2: cards carry the trophy cabinet
+const CACHE_VERSION = "v3"; // v3: GOAT ceiling + 2026 override silverware
 const CARD_TTL_SECONDS = 120 * 60;
 
 const normalizeLogin = (username: string) => username.trim().replace(/^@/, "").toLowerCase();
