@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { X } from "lucide-react";
 import { STAT_COPY } from "@/lib/racing/constants";
 import { FINISH_LABELS } from "@/lib/racing/constants";
 import type { StatKey, Finish } from "@/lib/racing/types";
@@ -66,9 +67,8 @@ export function HowItWorks({
         onClick={() => setOpen(true)}
         className={
           className ??
-          "mono inline-flex min-h-11 items-center font-bold tracking-[0.1em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+          "link-quiet inline-flex min-h-11 items-center"
         }
-        style={{ color: "var(--dim)" }}
       >
         {label}
       </button>
@@ -94,10 +94,9 @@ export function HowItWorks({
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close"
-              className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center text-[18px] transition-colors hover:bg-white/10"
-              style={{ color: "var(--dim)", border: "1px solid var(--line)" }}
+              className="btn btn-ghost absolute right-3 top-3 z-10 h-9 w-9 rounded-[10px] p-0"
             >
-              ×
+              <X size={17} aria-hidden />
             </button>
 
             <div className="p-6 sm:p-9">
@@ -153,7 +152,7 @@ export function HowItWorks({
                 {TIERS.map((t) => (
                   <span
                     key={t}
-                    className="mono px-1.5 py-1 text-[10px] font-bold tracking-[0.12em]"
+                    className="mono rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.12em]"
                     style={{ background: "rgba(255,255,255,0.05)", color: t === "champion" ? "var(--f1-yellow)" : "var(--faint)" }}
                   >
                     {FINISH_LABELS[t]}

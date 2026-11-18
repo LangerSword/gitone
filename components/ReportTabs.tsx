@@ -76,7 +76,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(t)}
-              className="mono relative flex-1 py-2 text-[11.5px] font-bold tracking-[0.1em] transition-colors"
+              className="mono relative flex-1 cursor-pointer py-2 text-[11.5px] font-bold tracking-[0.1em] transition-colors hover:text-[var(--dim)]"
               style={{ color: active ? "var(--ink)" : "var(--faint)" }}
             >
               {t}

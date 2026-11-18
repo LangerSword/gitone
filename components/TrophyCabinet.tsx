@@ -68,10 +68,9 @@ function AwardDialog({
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 transition-colors hover:bg-white/10"
-          style={{ color: "var(--dim)" }}
+          className="btn btn-ghost absolute right-4 top-4 h-8 w-8 rounded-[10px] p-0"
         >
-          <X size={15} />
+          <X size={15} aria-hidden />
         </button>
         <div
           className="flex flex-none items-center justify-center rounded-xl sm:sticky sm:top-0"
@@ -84,7 +83,7 @@ function AwardDialog({
             {meta.title}
           </h3>
           <span
-            className="mono mx-auto inline-block rounded px-2 py-0.5 text-[11px] font-bold tracking-[0.16em] sm:mx-0"
+            className="mono mx-auto inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-[0.16em] sm:mx-0"
             style={{ background: `${TINT[awardKey]}1a`, color: TINT[awardKey] }}
           >
             {meta.metricLabel.toUpperCase()}
@@ -136,7 +135,7 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
                 <button
                   type="button"
                   onClick={() => setOpenKey(g.key)}
-                  className="award-chip relative flex items-center gap-2.5 overflow-hidden rounded-lg px-3.5 py-2.5 transition-transform hover:scale-[1.04]"
+                  className="award-chip relative flex items-center gap-2.5 overflow-hidden rounded-full px-3.5 py-2.5 transition-transform duration-200 hover:scale-[1.04] active:scale-[.98]"
                   style={
                     {
                       background: `${tint}12`,

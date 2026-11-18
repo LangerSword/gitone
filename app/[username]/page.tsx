@@ -258,12 +258,12 @@ export default async function DriverPage({
               <TeamPicker login={card.login} current={team?.code ?? null} />
               <HowItWorks
                 label="HOW IT WORKS ↗"
-                className="mono text-[10.5px] font-bold tracking-[0.12em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+                className="link-quiet inline-flex min-h-11 items-center"
               />
             </div>
 
             <Reveal delay={100} className="mt-4">
-              <div style={{ maxWidth: 620, margin: "0 auto" }}>
+              <div style={{ maxWidth: 340, margin: "0 auto" }}>
                 <CardActions login={card.login} name={card.name} rtg={card.rtg} />
                 <p className="mono mt-4 text-center text-[10.5px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                   SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H

@@ -66,31 +66,24 @@ export function TeamPicker({ login, current }: { login: string; current: string 
         aria-expanded={open}
         aria-label="Choose team livery"
         title="Choose team livery"
-        className="mono flex h-9 items-center gap-2 border px-3 text-[10.5px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
-        style={{
-          background: "rgba(21,21,30,0.85)",
-          borderColor: "var(--line-bright)",
-          color: "var(--dim)",
-          backdropFilter: "blur(8px)",
-        }}
+        className="btn btn-ghost btn-pill btn-sm gap-2"
       >
-        <Palette size={13} /> LIVERY
+        <Palette size={14} aria-hidden /> Livery
       </button>
       {open && (
         <div
-          className="glass absolute bottom-full right-0 mb-2 w-[290px] p-3"
+          className="menu-pop absolute bottom-full right-0 mb-2 w-[290px] p-1.5"
           style={{ maxHeight: 340, overflowY: "auto" }}
         >
-          <div className="mono mb-2 px-1 text-[11px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <div className="mono mb-1 px-2 pt-1 text-[11px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
             CHOOSE YOUR CONSTRUCTOR
           </div>
           <button
             type="button"
             onClick={() => choose("")}
-            className="flex w-full items-center gap-2 px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
-            style={{ color: "var(--dim)" }}
+            className="menu-item"
           >
-            <span className="h-4 w-4 rounded" style={{ background: "linear-gradient(135deg,#71717d,#24242f)" }} />
+            <span className="h-4 w-4 flex-none rounded" style={{ background: "linear-gradient(135deg,#71717d,#24242f)" }} />
             Default (language livery)
           </button>
           {TEAMS.map((t) => (
@@ -98,10 +91,10 @@ export function TeamPicker({ login, current }: { login: string; current: string 
               key={t.code}
               type="button"
               onClick={() => choose(t.code)}
-              className="flex w-full items-center gap-2 px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
-              style={{ color: current === t.code ? "var(--ink)" : "var(--dim)" }}
+              className="menu-item"
+              style={{ color: current === t.code ? "var(--ink)" : undefined }}
             >
-              <span className="h-4 w-4 rounded" style={{ background: t.color, boxShadow: `0 0 10px ${t.color}55` }} />
+              <span className="h-4 w-4 flex-none rounded" style={{ background: t.color, boxShadow: `0 0 10px ${t.color}55` }} />
               <span className="flex-1 truncate">{t.name}</span>
               <span className="mono text-[10.5px]" style={{ color: "var(--faint)" }}>
                 {t.code}

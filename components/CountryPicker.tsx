@@ -158,7 +158,7 @@ export function CountryPicker({ login, value }: Props) {
       {open && (
         <div
           role="presentation"
-          className="glass pointer-events-auto absolute z-30 flex w-[280px] max-w-[80vw] flex-col overflow-hidden rounded-2xl"
+          className="menu-pop pointer-events-auto absolute z-30 flex w-[280px] max-w-[80vw] flex-col overflow-hidden"
           style={{ right: 0, top: `calc(${SLOT.top} + ${SLOT.height} + 2%)`, maxHeight: 360 }}
         >
           <div className="relative shrink-0 border-b p-[10px]" style={{ borderColor: "var(--line)" }}>
@@ -183,7 +183,7 @@ export function CountryPicker({ login, value }: Props) {
               aria-controls="cp-options"
               aria-autocomplete="list"
               aria-label="Search country"
-              className="scout-input h-10 w-full rounded-[9px] pl-[30px] pr-3 text-[14px]"
+              className="field field-sm w-full pl-[30px]"
             />
           </div>
           <ul

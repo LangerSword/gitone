@@ -262,7 +262,6 @@ input:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid var(--f1-red);
   outline-offset: 2px;
-  border-radius: 2px;
 }
 
 /* ── surfaces ──────────────────────────────────────────────────────────── */
@@ -370,3 +369,195 @@ input:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .award-chip::after { animation: none; }
 }
+
+/* ── the control system ──────────────────────────────────────────────────
+   One grammar for every button, field and menu, borrowed from the way a
+   broadcast package handles its on-screen graphics: a defined radius, a
+   material fill, a tinted glow, and a physical press. Controls are set in
+   the display face, never the telemetry mono, so a thing you click never
+   reads as a thing you measure.
+   Radius rule: controls 14px, pills 999px, menus 14px, menu rows 9px. */
+
+:root {
+  --copper-hi: #e8a06a;
+  --copper-deep: #b06a35;
+  --ink-on-copper: #1a120b;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --r-control: 14px;
+  --r-pill: 999px;
+  --r-row: 9px;
+  --glow-copper: 0 0 0 1px rgba(214, 133, 74, 0.5), 0 8px 22px -8px rgba(214, 133, 74, 0.45);
+  --glow-copper-hi: 0 0 0 1px rgba(232, 160, 106, 0.65), 0 12px 30px -8px rgba(214, 133, 74, 0.55);
+}
+
+@layer components {
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  border-radius: var(--r-control);
+  cursor: pointer;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease),
+    background 0.2s var(--ease), border-color 0.2s var(--ease), color 0.2s var(--ease);
+}
+.btn:disabled { cursor: not-allowed; opacity: 0.55; }
+.btn:not(:disabled):hover { transform: translateY(-1px); }
+.btn:not(:disabled):active { transform: translateY(0) scale(0.985); transition-duration: 0.075s; }
+.btn:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.75); outline-offset: 2px; }
+
+/* primary: copper foil, dark ink, a glow that brightens on hover, and a
+   single shine sweep so the surface reads as material, not a flat slab. */
+.btn-primary {
+  height: 50px;
+  padding: 0 26px;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink-on-copper);
+  background: linear-gradient(180deg, var(--copper-hi), var(--f1-red) 55%, var(--copper-deep));
+  box-shadow: var(--glow-copper), inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(26, 18, 11, 0.28);
+}
+.btn-primary:not(:disabled):hover {
+  box-shadow: var(--glow-copper-hi), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(26, 18, 11, 0.28);
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transition: transform 0.7s var(--ease);
+  pointer-events: none;
+}
+.btn-primary:not(:disabled):hover::after { transform: translateX(100%); }
+.btn-lg { height: 56px; padding: 0 30px; font-size: 20px; }
+
+/* secondary: a hairline ghost that warms to copper on hover. */
+.btn-ghost {
+  height: 46px;
+  padding: 0 18px;
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+  background: rgba(240, 232, 216, 0.03);
+  border: 1px solid var(--line-bright);
+}
+.btn-ghost:not(:disabled):hover {
+  color: var(--ink);
+  border-color: rgba(214, 133, 74, 0.55);
+  background: rgba(214, 133, 74, 0.08);
+  box-shadow: 0 10px 26px -12px rgba(214, 133, 74, 0.5);
+}
+
+/* tertiary: a fixed square for a single glyph. */
+.btn-icon {
+  height: 46px;
+  width: 46px;
+  padding: 0;
+  flex: none;
+  color: var(--dim);
+  background: rgba(240, 232, 216, 0.03);
+  border: 1px solid var(--line-bright);
+}
+.btn-icon:not(:disabled):hover {
+  color: var(--ink);
+  border-color: rgba(214, 133, 74, 0.55);
+  background: rgba(214, 133, 74, 0.08);
+}
+.btn-icon:not(:disabled):active { transform: scale(0.96); }
+
+.btn-pill { border-radius: var(--r-pill); }
+.btn-sm { height: 38px; padding: 0 14px; font-size: 12px; }
+
+/* the field shares the control radius and blooms copper on focus. */
+.field {
+  font-family: var(--font-mono);
+  height: 56px;
+  width: 100%;
+  border-radius: var(--r-control);
+  border: 1.5px solid var(--line-bright);
+  background: rgba(240, 232, 216, 0.05);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 0 18px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(240, 232, 216, 0.05);
+  transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.18s var(--ease);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(214, 133, 74, 0.8);
+  background: rgba(240, 232, 216, 0.08);
+  box-shadow: 0 0 0 4px rgba(214, 133, 74, 0.16), 0 0 42px rgba(214, 133, 74, 0.24);
+}
+.field::placeholder { color: var(--faint); }
+.field:disabled { opacity: 0.6; }
+.field-sm { height: 40px; font-size: 14px; border-radius: var(--r-row); border-width: 1px; padding: 0 12px; }
+.field-sm:focus { box-shadow: 0 0 0 3px rgba(214, 133, 74, 0.14); }
+
+/* a quiet text action: underline, warm on hover, never a box. */
+.link-quiet {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--dim);
+  text-decoration: underline;
+  text-decoration-color: rgba(240, 232, 216, 0.2);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.18s var(--ease), text-decoration-color 0.18s var(--ease);
+}
+.link-quiet:hover { color: var(--copper-hi); text-decoration-color: rgba(214, 133, 74, 0.5); }
+.link-quiet:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.75); outline-offset: 3px; border-radius: 3px; }
+
+/* menus and popovers: one surface, one row grammar. */
+.menu-pop {
+  border-radius: var(--r-control);
+  border: 1px solid var(--line-bright);
+  background: linear-gradient(180deg, rgba(28, 51, 43, 0.97), rgba(14, 28, 23, 0.98));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 46px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(240, 232, 216, 0.06);
+  animation: pop-in 0.16s var(--ease) both;
+}
+.menu-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border-radius: var(--r-row);
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--dim);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.menu-item:hover { background: rgba(240, 232, 216, 0.06); color: var(--ink); }
+.menu-item:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.7); outline-offset: -2px; }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .btn-primary::after, .menu-pop, .field { transition: none; animation: none; }
+  .btn:not(:disabled):hover, .btn:not(:disabled):active, .btn-icon:not(:disabled):active { transform: none; }
+  .btn-primary:not(:disabled):hover::after { transform: translateX(-100%); }
+}
+
+} /* end @layer components */

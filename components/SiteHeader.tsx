@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function StarMark() {
   return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden className="transition-transform duration-200 group-hover:scale-110">
       <path d="M8 .9l2.2 4.5 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L.8 6.1l5-.7L8 .9z" />
     </svg>
   );
@@ -49,11 +49,7 @@ export function SiteHeader({
             </span>
           </Link>
           {back && (
-            <Link
-              href={backHref}
-              className="mono hidden text-[12px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)] sm:inline"
-              style={{ color: "var(--faint)" }}
-            >
+            <Link href={backHref} className="link-quiet hidden sm:inline-flex sm:min-h-11 sm:items-center">
               {backLabel}
             </Link>
           )}
@@ -69,12 +65,14 @@ export function SiteHeader({
             href="https://github.com/LangerSword/gitone"
             target="_blank"
             rel="noopener noreferrer"
-            className="mono inline-flex h-11 items-center gap-2 border px-3 text-[11.5px] font-bold tracking-[0.12em] transition-colors hover:border-white/30 hover:text-[var(--ink)]"
-            style={{ borderColor: "rgba(214,133,74,0.38)", color: "var(--ink)", background: "rgba(214,133,74,0.08)" }}
+            aria-label="Star gitone on GitHub"
+            className="btn btn-ghost btn-pill group h-[42px] gap-2 pl-4 pr-2 text-[13px]"
           >
             <StarMark />
-            {stars != null ? stars.toLocaleString("en-US") : "STAR"}
-            <span className="hidden sm:inline">ON GITHUB</span>
+            <span className="hidden sm:inline">Star</span>
+            <span className="mono rounded-full px-2 py-1 text-[12px] font-bold leading-none tabular-nums transition-colors group-hover:bg-white/10" style={{ background: "rgba(240,232,216,.07)", color: "var(--ink)" }}>
+              {stars != null ? stars.toLocaleString("en-US") : "★"}
+            </span>
           </a>
         </div>
       </nav>
