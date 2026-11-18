@@ -9,7 +9,7 @@ function copy(text: string) {
 
 // Share actions + the head-to-head launcher. Square controls, one red
 // primary, everything else a hairline ghost — no pill soup.
-export function CardActions({ login }: { login: string }) {
+export function CardActions({ login, name, rtg }: { login: string; name?: string; rtg?: number }) {
   const router = useRouter();
   const [opp, setOpp] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
@@ -20,6 +20,7 @@ export function CardActions({ login }: { login: string }) {
   };
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const shareText = `${name ?? login} scored ${rtg ?? "a card"} on gitone — GitHub, rated like a driver.`;
 
   const primary = "mono flex h-9 items-center justify-center px-3.5 text-[9.5px] font-bold tracking-[0.14em] transition-colors";
   const ghost = "mono flex h-9 items-center justify-center border px-3.5 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]";
@@ -65,6 +66,21 @@ export function CardActions({ login }: { login: string }) {
           style={{ borderColor: "var(--line-bright)", color: "var(--dim)" }}
         >
           {copied === "json" ? "COPIED" : "JSON API"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const url = window.location.href;
+            window.open(
+              `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
+              "_blank",
+              "noopener,noreferrer",
+            );
+          }}
+          className={ghost}
+          style={{ borderColor: "var(--line-bright)", color: "var(--dim)" }}
+        >
+          SHARE ON X
         </button>
       </div>
 

@@ -233,7 +233,7 @@ export default async function DriverPage({
 
             <Reveal delay={100} className="mt-6">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>
-                <CardActions login={card.login} />
+                <CardActions login={card.login} name={card.name} rtg={card.rtg} />
                 <p className="mono mt-4 text-center text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                   SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H
                 </p>
