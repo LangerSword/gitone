@@ -120,7 +120,7 @@ export function artLayers(livery: string, finish?: string): string[] {
     `radial-gradient(30% 40% at 62% 18%, rgba(255,255,255,0.05), transparent 60%)`,
     "repeating-linear-gradient(115deg, rgba(255,255,255,0.028) 0 2px, transparent 2px 11px)",
     "repeating-linear-gradient(65deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 7px)",
-    "linear-gradient(180deg, transparent 55%, rgba(5,5,8,0.55) 100%)",
+    "linear-gradient(180deg, transparent 55%, rgba(10,10,18,0.62) 100%)",
   ];
   if (finish === "champion")
     return [

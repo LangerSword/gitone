@@ -4,13 +4,12 @@ import { notFound } from "next/navigation";
 import { DriverCard } from "@/components/DriverCard";
 import { TiltCard } from "@/components/TiltCard";
 import { Confetti } from "@/components/Confetti";
-import { StatRadar } from "@/components/StatRadar";
+import { ReportHeader, Section, AttributeRow, Tip } from "@/components/dossier";
+import { ReportTabs } from "@/components/ReportTabs";
 import { CardActions } from "@/components/CardActions";
 import { Reveal } from "@/components/Reveal";
-import { ReportHeader, Section, AttributeRow, MetricBar, Tip } from "@/components/dossier";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
-import { STATS, STAT_LABELS, STAT_NAMES, STAT_COPY } from "@/lib/racing/constants";
 import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
 import { CountryPicker } from "@/components/CountryPicker";
@@ -54,43 +53,6 @@ function ScoutError({ username, message }: { username: string; message: string }
         BACK TO THE GRID
       </Link>
     </main>
-  );
-}
-
-// Laps per week, oldest first — the contribution calendar as lap times,
-// with the fastest lap flagged in the timing purple.
-function LapChart({ card }: { card: Card }) {
-  const weeks = card.recent_calendar ?? [];
-  const max = Math.max(1, ...weeks);
-  const maxIdx = weeks.indexOf(max);
-  const livery = card.constructor.color;
-  return (
-    <div>
-      <div className="flex items-end gap-[3px] h-24" role="img" aria-label="Laps per week over the last season">
-        {weeks.map((v, i) => {
-          const h = v === 0 ? 8 : Math.max(14, (v / max) * 100);
-          const isFL = v > 0 && i === maxIdx;
-          return (
-            <span
-              key={i}
-              className="flex-1 rounded-[1px]"
-              style={{
-                height: `${h}%`,
-                background: isFL ? "var(--purple)" : v === 0 ? "rgba(255,255,255,0.06)" : livery,
-                opacity: v === 0 || isFL ? 1 : 0.42 + (0.58 * v) / max,
-                boxShadow: isFL ? "0 0 10px var(--purple)" : "none",
-              }}
-            />
-          );
-        })}
-      </div>
-      <div className="mono mt-3 flex justify-between text-[10px]" style={{ color: "var(--faint)" }}>
-        <span>52 WEEKS AGO</span>
-        <span style={{ color: "var(--purple)" }}>FL {max}</span>
-        <span>{formatCount(weeks.reduce((s, v) => s + v, 0))} LAPS</span>
-        <span>NOW</span>
-      </div>
-    </div>
   );
 }
 
@@ -243,77 +205,10 @@ export default async function DriverPage({
             </Reveal>
           </div>
 
-          {/* ── right rail: the numbers, as a live readout ─────────────── */}
-          <aside className="order-3 mt-10 lg:mt-0 space-y-[14px]">
-            <Reveal>
-              <Section title="TELEMETRY RADAR" accent={accent}>
-                <div className="mt-2 flex justify-center">
-                  <StatRadar card={card} size={230} />
-                </div>
-              </Section>
-            </Reveal>
-
+          {/* ── right rail: one tabbed readout, no long scroll ─────────── */}
+          <aside className="order-3 mt-10 lg:mt-0">
             <Reveal delay={60}>
-              <Section title="DRIVER RATINGS" accent={accent}>
-                <div className="flex flex-col gap-[13px] pt-1">
-                  {STATS.map((k, i) => (
-                    <MetricBar
-                      key={k}
-                      label={`${STAT_LABELS[k]} · ${STAT_NAMES[k]}`}
-                      value={card.stats[k]}
-                      score={card.stats[k]}
-                      accent={accent}
-                      tip={STAT_COPY[k].what}
-                      index={i}
-                    />
-                  ))}
-                </div>
-              </Section>
-            </Reveal>
-
-            {card.recent_calendar && card.recent_calendar.length > 0 && (
-              <Reveal delay={110}>
-                <Section title="LAPS PER WEEK" accent={accent}>
-                  <div className="pt-2">
-                    <LapChart card={card} />
-                  </div>
-                </Section>
-              </Reveal>
-            )}
-
-            <Reveal delay={160}>
-              <Section title={`CAR SPEC · ${card.constructor.name.toUpperCase()}`} accent={accent}>
-                <div className="flex flex-col gap-[13px] pt-1">
-                  {(["cor", "top", "aero", "rel"] as const).map((k, i) => (
-                    <MetricBar
-                      key={k}
-                      label={k.toUpperCase()}
-                      value={card.car[k]}
-                      score={card.car[k]}
-                      accent={card.constructor.color}
-                      index={i}
-                    />
-                  ))}
-                </div>
-              </Section>
-            </Reveal>
-
-            <Reveal delay={210}>
-              <Section title="SCOUTING METRICS" accent={accent}>
-                <div className="flex flex-col gap-[13px] pt-1">
-                  {card.report.metrics.map((m, i) => (
-                    <MetricBar
-                      key={m.label}
-                      label={m.label}
-                      value={m.value}
-                      score={m.score}
-                      accent={accent}
-                      unit={m.unit}
-                      index={i}
-                    />
-                  ))}
-                </div>
-              </Section>
+              <ReportTabs card={card} accent={accent} />
             </Reveal>
           </aside>
         </div>

@@ -50,7 +50,8 @@ export function HeroCard({ login }: { login: string }) {
         <DriverCard card={card} />
       </TiltCard>
       <p className="mono mt-4 text-center text-[10.5px] tracking-[0.18em]" style={{ color: "var(--faint)" }}>
-        @{card.login} · RTG {card.rtg} · SCOUTED LIVE
+        @{card.login} · RTG {card.rtg} ·{" "}
+        {card.login.toLowerCase() === "torvalds" ? "THE GOAT OF THE GRID" : "SCOUTED LIVE"}
       </p>
     </div>
   );

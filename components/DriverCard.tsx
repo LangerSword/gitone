@@ -23,13 +23,38 @@ export function DriverCard({ card }: { card: Card }) {
       style={{
         width: "100%",
         containerType: "inline-size",
-        borderRadius: "1.6cqw",
-        padding: "1.5cqw",
-        // the frame — the finish's foil
-        background: theme.foil,
-        boxShadow: `0 1.4cqw 3.6cqw -1cqw ${theme.glow}, 0 0.2cqw 0.6cqw rgba(0,0,0,0.6)`,
+        // the card is NOT a rectangle: a livery-cut chamfer at the top-right
+        // and a smaller cut at the bottom-left, like a real driver card
+        clipPath:
+          "polygon(0 0, calc(100% - 5.5cqw) 0, 100% 5.5cqw, 100% 100%, 4.5cqw 100%, 0 calc(100% - 4.5cqw))",
+        filter: `drop-shadow(0 1.4cqw 3.4cqw ${theme.glow})`,
       }}
     >
+      <div
+        style={{
+          position: "relative",
+          borderRadius: "1.6cqw",
+          padding: "1.5cqw",
+          // the frame — the finish's foil (Topps Chrome materials: base,
+          // checker flag, gold, and the iridescent superfractor)
+          background: theme.foil,
+        }}
+      >
+        {/* checker-flag chrome, only on the rare finishes */}
+        {(card.finish === "podium" || card.finish === "winner" || card.finish === "champion") && (
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage:
+                "conic-gradient(rgba(255,255,255,0.14) 0 25%, transparent 0 50%, rgba(255,255,255,0.14) 0 75%, transparent 0)",
+              backgroundSize: "2cqw 2cqw",
+              opacity: 0.35,
+              pointerEvents: "none",
+            }}
+          />
+        )}
       <div
         className="gitone-card"
         style={{
@@ -38,7 +63,7 @@ export function DriverCard({ card }: { card: Card }) {
           width: "100%",
           overflow: "hidden",
           borderRadius: "0.8cqw",
-          background: "#0a0a0d",
+          background: "#15151e",
         }}
       >
         {/* art: livery bokeh, streaks, grain, vignette */}
@@ -165,8 +190,8 @@ export function DriverCard({ card }: { card: Card }) {
         <div
           style={{
             position: "absolute",
-            right: "1.8%",
-            top: "3%",
+            right: "8%",
+            top: "4.5%",
             padding: "0.5cqw 1.3cqw 0.4cqw",
             borderRadius: "0.5cqw",
             background: theme.foil,
@@ -332,7 +357,7 @@ export function DriverCard({ card }: { card: Card }) {
           style={{
             position: "absolute",
             left: "40.5%",
-            right: "2.4%",
+            right: "3.5%",
             bottom: "5%",
             display: "flex",
             alignItems: "center",
@@ -360,6 +385,7 @@ export function DriverCard({ card }: { card: Card }) {
             GITONE
           </span>
         </div>
+      </div>
       </div>
     </div>
   );

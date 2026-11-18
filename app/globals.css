@@ -5,16 +5,19 @@
    Type: Titillium Web (display + body), JetBrains Mono (timing numerals). */
 
 :root {
-  --bg-0: #08080a;
-  --bg-1: #0e0e11;
-  --panel: #131318;
-  --panel-2: #1a1b21;
-  --line: #232429;
-  --line-bright: #2f3038;
-  --ink: #edeef2;
-  --dim: #9a9ca6;
-  --faint: #6a6c76;
+  /* field + ink: measured from formula1.com (Nov 2026) — midnight navy,
+     not black; F1 red stays; F1 yellow joins as the podium/timing accent */
+  --bg-0: #15151e;
+  --bg-1: #191922;
+  --panel: #1e1e28;
+  --panel-2: #24242f;
+  --line: #2d2d39;
+  --line-bright: #3a3a48;
+  --ink: #f3f3f4;
+  --dim: #aaaab3;
+  --faint: #71717d;
   --f1-red: #e10600;
+  --f1-yellow: #ffd100;
   --purple: #b455ff;
   --green: #2cc66b;
   --yellow: #ffd140;
@@ -28,8 +31,9 @@ html {
 
 body {
   background:
-    radial-gradient(70% 42% at 50% -6%, rgba(225, 6, 0, 0.055), transparent 70%),
-    radial-gradient(55% 40% at 88% 110%, rgba(180, 85, 255, 0.045), transparent 70%),
+    radial-gradient(70% 42% at 50% -6%, rgba(225, 6, 0, 0.07), transparent 70%),
+    radial-gradient(55% 40% at 88% 110%, rgba(255, 209, 0, 0.04), transparent 70%),
+    radial-gradient(60% 45% at 8% 108%, rgba(180, 85, 255, 0.05), transparent 72%),
     var(--bg-0);
   color: var(--ink);
   font-family: var(--font-display);
@@ -202,8 +206,9 @@ input:focus-visible,
 .stage {
   position: relative;
   background:
-    radial-gradient(90% 60% at 50% -4%, rgba(225, 6, 0, 0.07), transparent 65%),
-    radial-gradient(70% 55% at 85% 105%, rgba(180, 85, 255, 0.05), transparent 70%);
+    radial-gradient(90% 60% at 50% -4%, rgba(225, 6, 0, 0.08), transparent 65%),
+    radial-gradient(70% 55% at 85% 105%, rgba(255, 209, 0, 0.045), transparent 70%),
+    radial-gradient(60% 50% at 10% 100%, rgba(180, 85, 255, 0.05), transparent 72%);
 }
 
 .glass {

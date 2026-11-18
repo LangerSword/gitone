@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Crown, Medal, Trophy, X, Zap } from "lucide-react";
 import { AWARD_META, groupAwards } from "@/lib/awards";
 import type { AwardInstance, AwardKey } from "@/lib/racing/types";
+import { Tip } from "./dossier";
 
 const ICONS: Record<AwardKey, typeof Trophy> = {
   wdc: Trophy,
@@ -127,23 +128,24 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
             const tint = TINT[g.key];
             const held = g.key !== "wdc";
             return (
-              <button
-                key={g.key}
-                type="button"
-                onClick={() => setOpenKey(g.key)}
-                className="flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-transform hover:scale-[1.04]"
-                style={{
-                  background: `${tint}12`,
-                  boxShadow: `inset 0 0 0 1px ${tint}40, 0 6px 22px -8px ${tint}66`,
-                }}
-                aria-label={`${AWARD_META[g.key].title} details`}
-              >
-                <Icon size={17} strokeWidth={1.8} style={{ color: tint }} />
-                <span className="mono text-[11.5px] font-bold tracking-[0.12em]" style={{ color: tint }}>
-                  {AWARD_META[g.key].shelfLabel}
-                  {held ? "" : ` ×${g.instances.length}`}
-                </span>
-              </button>
+              <Tip key={g.key} text={AWARD_META[g.key].description} align="left">
+                <button
+                  type="button"
+                  onClick={() => setOpenKey(g.key)}
+                  className="flex items-center gap-2.5 rounded-lg px-3.5 py-2.5 transition-transform hover:scale-[1.04]"
+                  style={{
+                    background: `${tint}12`,
+                    boxShadow: `inset 0 0 0 1px ${tint}40, 0 6px 22px -8px ${tint}66`,
+                  }}
+                  aria-label={`${AWARD_META[g.key].title} details`}
+                >
+                  <Icon size={17} strokeWidth={1.8} style={{ color: tint }} />
+                  <span className="mono text-[11.5px] font-bold tracking-[0.12em]" style={{ color: tint }}>
+                    {AWARD_META[g.key].shelfLabel}
+                    {held ? "" : ` ×${g.instances.length}`}
+                  </span>
+                </button>
+              </Tip>
             );
           })}
         </div>

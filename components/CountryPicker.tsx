@@ -169,6 +169,7 @@ export function CountryPicker({ login, value }: Props) {
               spellCheck={false}
               role="combobox"
               aria-expanded
+              aria-controls="cp-options"
               aria-autocomplete="list"
               aria-label="Search country"
               className="scout-input h-10 w-full rounded-[9px] pl-[30px] pr-3 text-[14px]"
@@ -176,6 +177,7 @@ export function CountryPicker({ login, value }: Props) {
           </div>
           <ul
             ref={listRef}
+            id="cp-options"
             role="listbox"
             aria-label="Countries"
             className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1.5"

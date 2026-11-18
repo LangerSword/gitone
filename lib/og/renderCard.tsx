@@ -146,7 +146,7 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
           position: "relative",
           borderRadius: Math.round(0.008 * w),
           overflow: "hidden",
-          backgroundColor: "#0a0a0d",
+          backgroundColor: "#15151e",
           backgroundImage: artLayers(livery, card.finish).join(","),
         }}
       >
@@ -248,8 +248,8 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
         <div
           style={{
             position: "absolute",
-            right: "1.8%",
-            top: "3%",
+            right: "8%",
+            top: "4.5%",
             display: "flex",
             padding: `${cqw(0.5)}px ${cqw(1.3)}px ${cqw(0.4)}px`,
             borderRadius: cqw(0.5),
@@ -306,8 +306,8 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
           style={{
             position: "absolute",
             left: "40.5%",
-            right: "2.4%",
-            bottom: "5%",
+            right: "3.5%",
+            bottom: "6%",
             display: "flex",
             borderTop: `${Math.max(2, cqw(0.24))}px solid ${livery}`,
             paddingTop: cqw(1.2),
@@ -335,15 +335,32 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
 }
 
 // The standalone embeddable card image: gitone/<user>.png. Rendered at 960
-// (1.5x the 640 design width): crisp for READMEs, and the 460px-square
-// GitHub avatar only upscales ~1.27x into the full-height photo crop.
-export async function renderCardImage(card: Card, width = 960): Promise<ImageResponse> {
+// (1.5x the 640 design width), then masked through the same livery-cut
+// chamfer the DOM card uses — Satori has no clip-path, so sharp bakes the
+// alpha via dest-in (gitfut's avatar-feather trick, applied to the card).
+export async function renderCardImage(card: Card, width = 960): Promise<Response> {
   const [fonts, assets] = await Promise.all([loadCardFonts(), loadCardAssets(card)]);
-  return new ImageResponse(cardTree(card, assets, width), {
+  const H = cardH(width);
+  const image = new ImageResponse(cardTree(card, assets, width), {
     width,
-    height: cardH(width),
+    height: H,
     fonts,
-    headers: { "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800" },
+  });
+  const cut = Math.round(0.055 * width);
+  const cutB = Math.round(0.045 * width);
+  const mask = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${H}"><polygon points="0,0 ${width - cut},0 ${width},${cut} ${width},${H} ${cutB},${H} 0,${H - cutB}" fill="#fff"/></svg>`,
+  );
+  const sharp = (await import("sharp")).default;
+  const png = await sharp(Buffer.from(await image.arrayBuffer()))
+    .composite([{ input: mask, blend: "dest-in" }])
+    .png()
+    .toBuffer();
+  return new Response(png, {
+    headers: {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+    },
   });
 }
 

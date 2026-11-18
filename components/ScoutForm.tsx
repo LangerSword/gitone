@@ -78,10 +78,10 @@ export function ScoutForm({ autoFocus = false }: { autoFocus?: boolean }) {
           <span key={i} className={lit >= 1 && lit <= 5 && i < lit ? "on" : ""} />
         ))}
         <span
-          className="mono ml-3 text-[11px] tracking-[0.22em]"
-          style={{ color: lit === 6 ? "var(--green)" : "var(--faint)" }}
+          className="mono ml-3 text-[11px] tracking-[0.22em] whitespace-nowrap"
+          style={{ color: lit === 6 ? "var(--green)" : "var(--dim)" }}
         >
-          {lit === 0 ? "AWAITING LIGHTS" : lit < 5 ? "FORMATION" : lit === 5 ? "HOLD" : "AND AWAY WE GO"}
+          {lit === 0 ? "GRID READY" : lit < 5 ? "FORMATION" : lit === 5 ? "HOLD" : "AND AWAY WE GO"}
         </span>
       </div>
     </div>
