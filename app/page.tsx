@@ -72,10 +72,10 @@ export default async function Home() {
 
       <footer className="relative z-10 flex-none">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-2 px-5 py-3.5 sm:px-8">
-          <span className="mono text-[9px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[9.5px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
             NOT AFFILIATED WITH EA SPORTS, FORMULA 1, OR GITHUB
           </span>
-          <span className="mono text-[9px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[9.5px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
             BUILT BY <span style={{ color: "var(--dim)" }}>LAKSHAYA SHARMA</span>
           </span>
         </div>

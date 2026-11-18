@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // No framework badge floating over the product in dev.
+  devIndicators: false,
   async rewrites() {
     // Pretty embed URL: gitone/<username>.png -> the card image route. The
     // username charset matches GitHub's (alphanumerics + hyphens), and it only

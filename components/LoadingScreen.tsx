@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 // The pit-wall loading screen. Five start lights come on one by one, hold,
 // then go out — the same sequence as the scout button — while the wall
@@ -16,33 +17,25 @@ const RADIO = [
 ];
 
 export function LoadingScreen({ login, overlay = false }: { login?: string; overlay?: boolean }) {
-  const [lit, setLit] = useState(0);
-  const [out, setOut] = useState(false);
+  // The hero already ran the formation sequence; the pit wall holds all five
+  // lights on, so handing off from the form to the route never rewinds to one.
+  const lit = 5;
+  const out = false;
   const [tick, setTick] = useState(0);
-
-  useEffect(() => {
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    if (reduced) {
-      const t = setTimeout(() => {
-        setLit(5);
-        setOut(true);
-      }, 0);
-      return () => clearTimeout(t);
-    }
-    const timers: ReturnType<typeof setTimeout>[] = [];
-    for (let i = 1; i <= 5; i++) timers.push(setTimeout(() => setLit(i), 120 + i * 150));
-    timers.push(setTimeout(() => setOut(true), 120 + 5 * 150 + 420));
-    return () => timers.forEach(clearTimeout);
-  }, []);
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 1700);
-    return () => clearInterval(id);
+    const slowTimer = setTimeout(() => setSlow(true), 9000);
+    return () => {
+      clearInterval(id);
+      clearTimeout(slowTimer);
+    };
   }, []);
 
   return (
     <div
-      className={`${overlay ? "fixed inset-0 z-[90]" : "min-h-[100dvh]"} flex flex-col`}
+      className={`${overlay ? "fixed inset-0 z-[90]" : "h-[100dvh]"} flex flex-col overflow-y-auto`}
       role="status"
       aria-live="polite"
       aria-label={login ? `Scouting ${login}` : "Loading the scout report"}
@@ -119,6 +112,12 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
             </span>
           ))}
         </div>
+
+        {slow && (
+          <Link href="/" className="mono mt-6 text-[9.5px] tracking-[0.16em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]" style={{ color: "var(--faint)" }}>
+            TAKING LONGER THAN EXPECTED — BACK TO THE GRID
+          </Link>
+        )}
       </div>
 
       <div className="mono flex flex-none flex-wrap items-center justify-between gap-2 px-5 py-4 text-[9px] tracking-[0.18em] sm:px-8" style={{ color: "var(--faint)" }}>

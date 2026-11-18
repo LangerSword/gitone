@@ -31,7 +31,10 @@ function LapChart({ card }: { card: Card }) {
           return (
             <span
               key={i}
-              className="flex-1"
+              role="img"
+              aria-label={`${v} laps in week ${i + 1}`}
+              title={`${v} laps · week ${i + 1}`}
+              className="flex-1 transition-opacity hover:opacity-100"
               style={{
                 height: `${h}%`,
                 background: isFL ? "var(--purple)" : v === 0 ? "rgba(255,255,255,0.06)" : livery,

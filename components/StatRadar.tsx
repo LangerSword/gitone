@@ -1,15 +1,21 @@
-import { STATS, STAT_LABELS } from "@/lib/racing/constants";
-import type { Card } from "@/lib/racing/types";
+"use client";
 
-// Four-axis telemetry radar — the gitfut StatRadar's paddock sibling. Pure
-// SVG, server-renderable, driven by the card's four stats with the livery
-// as the trace colour and the purple sector ringing any 90+ axis.
-export function StatRadar({ card, size = 220 }: { card: Card; size?: number }) {
+import { useState } from "react";
+import { STAT_LABELS, STAT_COPY, STAT_NAMES } from "@/lib/racing/constants";
+import type { Card, StatKey } from "@/lib/racing/types";
+
+// Four-axis telemetry radar with a real readout: hover, focus, tap or keyboard
+// an axis and the caption explains what the rating measures. Pure SVG, no
+// chart library, no animation loop.
+const ORDER: StatKey[] = ["pac", "rac", "exp", "awa"];
+
+export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
+  const [active, setActive] = useState<StatKey>("pac");
   const cx = size / 2;
   const cy = size / 2;
-  const R = size / 2 - 38; // room for the axis labels at R + 24
+  const R = size / 2 - 34;
+  const accent = card.constructor.color;
 
-  // four axes: up, right, down, left (PAC up — pace leads)
   const angleFor = (i: number) => (-90 + i * 90) * (Math.PI / 180);
   const point = (i: number, r: number) => {
     const a = angleFor(i);
@@ -17,48 +23,78 @@ export function StatRadar({ card, size = 220 }: { card: Card; size?: number }) {
   };
   const val = (v: number) => (Math.max(v, 1) / 99) * R;
 
-  const order = ["pac", "rac", "exp", "awa"] as const;
-  const poly = order
-    .map((k, i) => point(i, val(card.stats[k])).join(","))
-    .join(" ");
-
-  const grid = [0.33, 0.66, 1].map((f) =>
-    order.map((_, i) => point(i, R * f).join(",")).join(" "),
-  );
+  const poly = ORDER.map((k, i) => point(i, val(card.stats[k])).join(",")).join(" ");
+  const grid = [0.33, 0.66, 1].map((f) => ORDER.map((_, i) => point(i, R * f).join(",")).join(" "));
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label="Driver rating radar">
-      {grid.map((g, i) => (
-        <polygon key={i} points={g} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.13)" strokeWidth={1} />
-      ))}
-      {order.map((_, i) => {
-        const [x, y] = point(i, R);
-        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="rgba(255,255,255,0.13)" strokeWidth={1} />;
-      })}
-      <polygon points={poly} fill={`${card.constructor.color}66`} stroke={card.constructor.color} strokeWidth={3} />
-      {order.map((k, i) => {
-        const [x, y] = point(i, val(card.stats[k]));
-        const hot = card.stats[k] >= 90;
-        return <circle key={k} cx={x} cy={y} r={hot ? 6 : 4.5} fill={hot ? "#b455ff" : card.constructor.color} stroke="#0a0a0d" strokeWidth={1.5} />;
-      })}
-      {order.map((k, i) => {
-        const [x, y] = point(i, R + 24);
-        return (
-          <text
-            key={k}
-            x={x}
-            y={y + 4}
-            textAnchor="middle"
-            fontFamily="var(--font-mono)"
-            fontSize={12}
-            fontWeight={700}
-            letterSpacing={2}
-            fill="rgba(237,238,242,0.8)"
-          >
-            {STAT_LABELS[STATS.find((s) => s === k) as (typeof STATS)[number]]}
-          </text>
-        );
-      })}
-    </svg>
+    <div>
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        role="group"
+        aria-label="Driver rating radar. Choose an axis to read its meaning."
+        style={{ display: "block", margin: "0 auto", overflow: "visible" }}
+      >
+        {grid.map((g, i) => (
+          <polygon key={i} points={g} fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+        ))}
+
+        <polygon points={poly} fill={`${accent}55`} stroke={accent} strokeWidth={2.4} />
+
+        {ORDER.map((k, i) => {
+          const [x, y] = point(i, R);
+          const [vx, vy] = point(i, val(card.stats[k]));
+          const hot = card.stats[k] >= 90;
+          const on = active === k;
+          return (
+            <g
+              key={k}
+              role="button"
+              tabIndex={0}
+              aria-label={`${STAT_LABELS[k]} ${STAT_NAMES[k]}: ${card.stats[k]} out of 99`}
+              aria-pressed={on}
+              onPointerEnter={() => setActive(k)}
+              onFocus={() => setActive(k)}
+              onClick={() => setActive(k)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setActive(k);
+                }
+              }}
+              style={{ cursor: "pointer", outline: "none" }}
+            >
+              <line x1={cx} y1={cy} x2={x} y2={y} stroke={on ? accent : "rgba(255,255,255,0.13)"} strokeWidth={on ? 2 : 1} />
+              <circle cx={vx} cy={vy} r={20} fill="transparent" />
+              <circle cx={vx} cy={vy} r={on ? 7 : hot ? 5 : 4} fill={hot ? "var(--purple)" : accent} stroke="#0a0a0d" strokeWidth={1.5} />
+              {on && <circle cx={vx} cy={vy} r={11} fill="none" stroke={hot ? "var(--purple)" : accent} strokeWidth={1} opacity={0.55} />}
+              <text
+                x={x}
+                y={y + 4}
+                textAnchor="middle"
+                fontFamily="var(--font-mono)"
+                fontSize={11}
+                fontWeight={700}
+                letterSpacing={1.4}
+                fill={on ? "#f6f1e8" : "rgba(246,241,232,0.55)"}
+              >
+                {STAT_LABELS[k]}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <div className="mt-2 text-center" aria-live="polite">
+        <div className="mono text-[10px] font-bold tracking-[0.12em]" style={{ color: card.stats[active] >= 90 ? "var(--purple)" : accent }}>
+          {STAT_LABELS[active]} <span style={{ color: "var(--ink)" }}>{card.stats[active]}</span>{" "}
+          <span style={{ color: "var(--faint)" }}>· {STAT_NAMES[active].toUpperCase()}</span>
+        </div>
+        <p className="mx-auto mt-1 max-w-[250px] text-[10.5px] leading-snug" style={{ color: "var(--faint)" }}>
+          {STAT_COPY[active].what}
+        </p>
+      </div>
+    </div>
   );
 }
