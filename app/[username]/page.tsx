@@ -13,6 +13,7 @@ import { TeamPicker } from "@/components/TeamPicker";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Reveal } from "@/components/Reveal";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { PersistPrefs } from "@/components/PersistPrefs";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
@@ -119,7 +120,7 @@ export default async function DriverPage({
   );
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen" style={{ "--livery": accent } as React.CSSProperties}>
       <SiteHeader back />
       {(typeof sp.team === "string" || typeof sp.country === "string") && (
         <PersistPrefs
@@ -280,6 +281,7 @@ export default async function DriverPage({
           </aside>
         </div>
       </div>
+      <SiteFooter />
     </main>
   );
 }

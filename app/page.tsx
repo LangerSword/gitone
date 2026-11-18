@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { ScoutForm } from "@/components/ScoutForm";
 import { FanCards } from "@/components/FanCards";
-import { DriverTicker } from "@/components/DriverTicker";
+import { RaceLine } from "@/components/RaceLine";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { TrackBackdrop } from "@/components/TrackBackdrop";
 import { MiniCard } from "@/components/MiniCard";
 import Mascot from "@/components/Mascot";
@@ -28,7 +29,7 @@ export default async function Home() {
 
       <section className="relative z-10 mx-auto grid w-full max-w-[1240px] flex-1 items-center gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10 lg:py-2">
         <div className="min-w-0">
-          <div className="rise -ml-1 mb-1.5" style={{ "--i": 0 } as React.CSSProperties}>
+          <div className="hero-mascot rise -ml-1 mb-1.5" style={{ "--i": 0 } as React.CSSProperties}>
             <Mascot size={116} />
           </div>
           <div className="rise flex items-center gap-2.5" style={{ "--i": 0 } as React.CSSProperties}>
@@ -39,7 +40,7 @@ export default async function Home() {
           </div>
 
           <h1
-            className="rise mt-3 text-[clamp(64px,9vw,118px)] uppercase"
+            className="hero-title rise mt-3 text-[clamp(64px,9vw,118px)] uppercase"
             style={{ "--i": 1, color: "var(--ink)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.82 } as React.CSSProperties}
           >
             GET
@@ -49,13 +50,13 @@ export default async function Home() {
           </h1>
 
           <p
-            className="rise mt-5 max-w-[400px] text-[16.5px] leading-[1.5]"
+            className="hero-sub rise mt-5 max-w-[400px] text-[16.5px] leading-[1.5]"
             style={{ "--i": 2, color: "var(--dim)" } as React.CSSProperties}
           >
             Your GitHub, rated out of 99.
           </p>
 
-          <div className="rise mt-6 max-w-[520px]" style={{ "--i": 3 } as React.CSSProperties}>
+          <div className="hero-form rise mt-6 max-w-[520px]" style={{ "--i": 3 } as React.CSSProperties}>
             <ScoutForm scoutCount={scoutCount} />
           </div>
         </div>
@@ -72,19 +73,10 @@ export default async function Home() {
 
       <div aria-hidden className="checker relative z-10 h-[10px] w-full opacity-40" />
       <div className="relative z-10 flex-none">
-        <DriverTicker />
+        <RaceLine />
       </div>
 
-      <footer className="relative z-10 flex-none">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-2 px-5 py-3.5 sm:px-8">
-          <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
-            NOT AFFILIATED WITH EA SPORTS, FORMULA 1, OR GITHUB
-          </span>
-          <a href="https://github.com/LangerSword" target="_blank" rel="noopener noreferrer" className="link-quiet mono text-[11px] tracking-[0.12em]">
-            MADE BY LANGERSWORD
-          </a>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

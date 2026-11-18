@@ -7,6 +7,8 @@ import type { GithubError } from "@/lib/github/client";
 import { formatCount } from "@/lib/format";
 import { cardDisplayName } from "@/lib/text";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+import { BattleActions } from "@/components/BattleActions";
 import { DriverCard26 } from "@/components/DriverCard26";
 import type { Card } from "@/lib/racing/types";
 
@@ -100,9 +102,12 @@ export default async function VsPage({
   const aWins = rows.filter((r) => r.challenger > r.opponent).length;
   const bWins = rows.filter((r) => r.opponent > r.challenger).length;
   const domA = rows.length ? aWins / rows.length : 0.5;
+  const shareText = winnerCard
+    ? `${cardDisplayName(winnerCard.name)} takes the gitone battle ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`
+    : `Dead heat on the gitone grid: ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`;
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen" style={{ "--livery": challenger.constructor.color } as React.CSSProperties}>
       <SiteHeader back backHref={`/${challenger.login}`} backLabel="← BACK TO THE REPORT" />
 
       <div className="stage">
@@ -259,11 +264,16 @@ export default async function VsPage({
             </div>
           </div>
 
-          <p className="mono mt-8 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
+          <div className="mx-auto mt-8 w-full max-w-[440px]">
+            <BattleActions username={challenger.login} opponent={opp.login} text={shareText} />
+          </div>
+
+          <p className="mono mt-6 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
             EXP EXPERIENCE · RAC RACECRAFT · AWA AWARENESS · PAC PACE · BOTH 90+ READS PURPLE · RTG BREAKS A LEVEL SCORELINE
           </p>
         </div>
       </div>
+      <SiteFooter />
     </main>
   );
 }

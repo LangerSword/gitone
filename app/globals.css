@@ -277,7 +277,7 @@ input:focus-visible,
 .stage {
   position: relative;
   background:
-    radial-gradient(64% 48% at 50% -8%, rgba(193, 18, 31, 0.09), transparent 68%);
+    radial-gradient(64% 48% at 50% -8%, color-mix(in srgb, var(--livery, var(--f1-red)) 11%, transparent), transparent 68%);
 }
 
 .glass {
@@ -345,6 +345,10 @@ input:focus-visible,
 @keyframes ticker-run {
   from { transform: translate3d(0, 0, 0); }
   to { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes trace-run {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-600px, 0, 0); }
 }
 .ticker-track {
   animation: ticker-run 38s linear infinite;
@@ -588,6 +592,16 @@ input:focus-visible,
   .btn, .btn-primary::after, .menu-pop, .field { transition: none; animation: none; }
   .btn:not(:disabled):hover, .btn:not(:disabled):active, .btn-icon:not(:disabled):active { transform: none; }
   .btn-primary:not(:disabled):hover::after { transform: translateX(-100%); }
+}
+
+/* Short laptop viewports (100% zoom on 768px-tall screens): tighten the hero
+   so the whole scout page still fits one viewport. Tall screens keep the
+   full-size mascot and headline. */
+@media (max-height: 820px) and (min-width: 1024px) {
+  .hero-mascot img { width: 92px !important; height: 92px !important; }
+  .hero-title { font-size: clamp(54px, 7.5vw, 100px) !important; }
+  .hero-sub { margin-top: 12px !important; }
+  .hero-form { margin-top: 16px !important; }
 }
 
 } /* end @layer components */

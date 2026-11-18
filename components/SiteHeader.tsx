@@ -40,7 +40,7 @@ export function SiteHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)", boxShadow: "inset 0 2px 0 rgba(193, 18, 31,0.55)" }}>
+    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)", boxShadow: "inset 0 2px 0 color-mix(in srgb, var(--livery, var(--f1-red)) 60%, transparent)" }}>
       <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
         <div className="flex items-center gap-5">
           <Link href="/" className="flex min-h-11 items-center gap-3" aria-label="gitone home">

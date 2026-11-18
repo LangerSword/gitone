@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     // /public. afterFiles, so /public files still win over it.
     return [
       { source: "/:username([a-zA-Z0-9-]+).png", destination: "/api/card-image/:username" },
+      { source: "/:username([a-zA-Z0-9-]+)/vs/:opponent([a-zA-Z0-9-]+).png", destination: "/api/battle-image/:username/:opponent" },
     ];
   },
 };
