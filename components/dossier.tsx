@@ -3,12 +3,10 @@
 import { useEffect, useState } from "react";
 import type { Card, Finish } from "@/lib/racing/types";
 
-// The dossier vocabulary — gitfut's editorial language, translated to the
-// paddock: quiet sections (hairline border, barely-there fill, accent dash +
-// tracked label — never a boxy dashboard card), a grade-stamp header, metric
-// rows that draw themselves, hover tips that explain every value.
+// The dossier vocabulary — a scouting report, not a dashboard. Sections are
+// hairline rules with a tracked label, never boxes; values carry a tip that
+// explains the number; the header is a rating stamp plus the driver's name.
 
-// The scout's one-line verdict, the signature of the report.
 export const VERDICTS: Record<Finish, string> = {
   champion: "Generational talent",
   winner: "Front-runner",
@@ -19,13 +17,11 @@ export const VERDICTS: Record<Finish, string> = {
   founder: "The architect",
 };
 
-// A child that fades + lifts into place on mount, staggered by `step`. Honors
-// reduced motion (appears instantly).
 export function Stagger({ step, children, className }: { step: number; children: React.ReactNode; className?: string }) {
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const t = setTimeout(() => setShown(true), reduced ? 0 : 90 + step * 110);
+    const t = setTimeout(() => setShown(true), reduced ? 0 : 60 + step * 80);
     return () => clearTimeout(t);
   }, [step]);
   return (
@@ -33,8 +29,8 @@ export function Stagger({ step, children, className }: { step: number; children:
       className={className}
       style={{
         opacity: shown ? 1 : 0,
-        transform: shown ? "translateY(0) scale(1)" : "translateY(10px) scale(.98)",
-        transition: "opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1)",
+        transform: shown ? "none" : "translateY(10px)",
+        transition: "opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)",
       }}
     >
       {children}
@@ -42,7 +38,6 @@ export function Stagger({ step, children, className }: { step: number; children:
   );
 }
 
-// Lightweight hover popup explaining why a value was given.
 export function Tip({
   text,
   align = "center",
@@ -58,8 +53,8 @@ export function Tip({
       {children}
       <span
         role="tooltip"
-        className={`pointer-events-none absolute bottom-full ${pos} z-30 mb-2 hidden w-max max-w-[220px] whitespace-normal rounded-lg border px-3 py-2 text-left text-[12px] font-normal leading-snug shadow-[0_10px_30px_rgba(0,0,0,.55)] group-hover/tip:block`}
-        style={{ borderColor: "rgba(255,255,255,0.1)", background: "#171a20", color: "var(--dim)" }}
+        className={`pointer-events-none absolute bottom-full ${pos} z-30 mb-2 hidden w-max max-w-[230px] whitespace-normal border px-3 py-2 text-left text-[12px] font-normal leading-snug group-hover/tip:block`}
+        style={{ borderColor: "var(--line-bright)", background: "#14171c", color: "var(--dim)", boxShadow: "0 16px 40px rgba(0,0,0,.55)" }}
       >
         {text}
       </span>
@@ -67,52 +62,49 @@ export function Tip({
   );
 }
 
-// Editorial section: an accent dash + tracked label, then content. Reads as a
-// page of the dossier rather than a dashboard card.
+// A rule, a tracked label, then content. No panel, no radius.
 export function Section({
   title,
   accent,
   className,
   children,
+  aside,
 }: {
   title: string;
   accent: string;
   className?: string;
   children: React.ReactNode;
+  aside?: React.ReactNode;
 }) {
   return (
-    <section
-      className={`rounded-2xl border p-[16px] ${className ?? ""}`}
-      style={{ borderColor: "rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}
-    >
-      <div className="mb-[8px] flex items-center gap-[9px]">
-        <span className="h-[2px] w-[16px] rounded-full" style={{ background: accent }} />
-        <h3 className="mono text-[11px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
-          {title}
-        </h3>
+    <section className={`border-t pt-3.5 ${className ?? ""}`} style={{ borderColor: "var(--line)" }}>
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <span className="h-[2px] w-4" style={{ background: accent }} />
+          <h3 className="mono text-[10px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
+            {title}
+          </h3>
+        </div>
+        {aside}
       </div>
       {children}
     </section>
   );
 }
 
-// Hairline-divided attribute row — the dossier's list voice.
 export function AttributeRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between border-b py-[11px] last:border-0" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-      <span className="text-[13.5px]" style={{ color: "var(--dim)" }}>
+    <div className="flex items-center justify-between border-b py-[10px] last:border-0" style={{ borderColor: "var(--line)" }}>
+      <span className="text-[13px]" style={{ color: "var(--dim)" }}>
         {label}
       </span>
-      <span className="mono text-[14px] font-bold" style={{ color: "var(--ink)" }}>
+      <span className="mono text-[13.5px] font-bold" style={{ color: "var(--ink)" }}>
         {children}
       </span>
     </div>
   );
 }
 
-// A metric row that draws itself: value small + score big in the accent, and
-// a bar sweeping to its score on mount, staggered down the list like a live
-// telemetry readout.
 export function MetricBar({
   label,
   value,
@@ -133,36 +125,33 @@ export function MetricBar({
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
-    const t = setTimeout(() => setMounted(true), reduced ? 0 : 120 + index * 55);
+    const t = setTimeout(() => setMounted(true), reduced ? 0 : 100 + index * 50);
     return () => clearTimeout(t);
   }, [index]);
 
   const head = (
     <>
       <span className="flex items-baseline justify-between gap-3">
-        <span className="text-[13px]" style={{ color: "var(--dim)" }}>
+        <span className="text-[12.5px]" style={{ color: "var(--dim)" }}>
           {label}
         </span>
-        <span className="flex items-baseline gap-[6px]">
-          <span className="mono text-[12px] tabular-nums" style={{ color: "var(--dim)" }}>
+        <span className="flex items-baseline gap-2">
+          <span className="mono text-[11px] tabular-nums" style={{ color: "var(--faint)" }}>
             {value.toLocaleString()}
             {unit ? ` ${unit}` : ""}
           </span>
-          <span
-            className="mono rounded-md px-2 py-0.5 text-[15px] font-bold leading-none tabular-nums"
-            style={{ color: accent, background: `${accent}18`, border: `1px solid ${accent}33` }}
-          >
+          <span className="mono text-[15px] font-extrabold leading-none tabular-nums" style={{ color: score >= 90 ? "var(--purple)" : accent }}>
             {score}
           </span>
         </span>
       </span>
-      <div className="mt-[7px] h-[3px] overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.07)" }}>
+      <div className="mt-[6px] h-[2px] overflow-hidden" style={{ background: "rgba(255,255,255,0.07)" }}>
         <div
-          className="h-full rounded-full"
+          className="h-full"
           style={{
-            width: mounted ? `${Math.max(score, 4)}%` : "0%",
-            background: `linear-gradient(90deg, ${accent}99, ${accent})`,
-            transition: "width 900ms ease-out",
+            width: mounted ? `${Math.max(score, 3)}%` : "0%",
+            background: score >= 90 ? "var(--purple)" : accent,
+            transition: "width 800ms cubic-bezier(.22,.9,.2,1)",
           }}
         />
       </div>
@@ -173,8 +162,8 @@ export function MetricBar({
     <div
       style={{
         opacity: mounted ? 1 : 0,
-        transform: mounted ? "translateY(0)" : "translateY(6px)",
-        transition: "opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)",
+        transform: mounted ? "none" : "translateY(5px)",
+        transition: "opacity .45s ease, transform .45s cubic-bezier(.16,1,.3,1)",
       }}
     >
       {tip ? (
@@ -188,104 +177,96 @@ export function MetricBar({
   );
 }
 
-// Dossier header: a left "grade stamp" (RTG + tier, the verdict-at-a-glance)
-// anchors the row; the name paints through a gradient text mask with a slow
-// shimmer; the verdict line speaks underneath. No centered stack.
+// Driver traits, read off the card's own data. These are the paddock's
+// playstyles: each one is a condition on a real rating, never decoration.
+export function TraitChips({ card, accent }: { card: Card; accent: string }) {
+  const traits: string[] = [];
+  if (card.stats.pac >= 90) traits.push("QUALI MONSTER");
+  if (card.stats.rac >= 85) traits.push("LATE BRAKER");
+  if (card.stats.awa >= 85) traits.push("CLEAN AIR");
+  if (card.report.wetPace >= 4) traits.push("WET WEATHER");
+  if (card.report.tyre >= 4) traits.push("TYRE WHISPERER");
+  if (card.report.drsOpen) traits.push("DRS OPEN");
+  if (card.car.rel >= 85) traits.push("IRONMAN");
+  if (traits.length === 0) traits.push("FINDING THE LIMIT");
+
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {traits.map((t) => (
+        <span
+          key={t}
+          className="mono inline-flex items-center gap-1.5 border px-2 py-1 text-[8.5px] font-bold tracking-[0.14em]"
+          style={{ borderColor: "rgba(255,255,255,0.1)", color: "var(--dim)", background: "rgba(255,255,255,0.025)" }}
+        >
+          <span aria-hidden className="h-[4px] w-[4px] rounded-full" style={{ background: accent }} />
+          {t}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// The report header: a rating stamp in the livery, the name at full weight,
+// then the tags and the verdict. No shimmer, no centred stack.
 export function ReportHeader({ card, accent }: { card: Card; accent: string }) {
   return (
-    <header className="relative mx-auto flex max-w-[620px] items-start gap-[clamp(16px,3vw,28px)]">
+    <header className="relative mx-auto flex max-w-[680px] items-start gap-[clamp(14px,2.6vw,24px)]">
       <Stagger step={0} className="shrink-0">
         <div
-          className="relative flex h-[clamp(78px,13vw,98px)] w-[clamp(78px,13vw,98px)] flex-col items-center justify-center rounded-2xl border"
+          className="relative flex h-[clamp(80px,12vw,100px)] w-[clamp(80px,12vw,100px)] flex-col items-center justify-center"
           style={{
-            borderColor: `${accent}40`,
-            background: `linear-gradient(160deg, ${accent}1a, transparent 70%), #0b0c10`,
-            boxShadow: `0 0 30px ${accent}1f, inset 0 1px 0 ${accent}26`,
+            border: `1px solid ${accent}55`,
+            background: `linear-gradient(150deg, ${accent}22, transparent 68%), #0c0e11`,
+            boxShadow: `0 0 34px ${accent}18, inset 0 1px 0 ${accent}2e`,
+            borderRadius: 18,
           }}
         >
-          <span
-            style={{
-              fontFamily: "var(--font-titillium), sans-serif",
-              fontSize: "clamp(34px,6vw,46px)",
-              fontWeight: 900,
-              lineHeight: 0.82,
-              color: accent,
-              filter: `drop-shadow(0 1px 8px ${accent}55)`,
-            }}
-          >
+          <span className="display" style={{ fontSize: "clamp(36px,6vw,50px)", lineHeight: 0.78, color: "#fff", textShadow: `0 0 18px ${accent}55` }}>
             {card.rtg}
           </span>
-          <span className="mono mt-[4px] text-[10px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
+          <span className="mono mt-1.5 text-[9px] font-bold tracking-[0.2em]" style={{ color: accent }}>
             {card.finishLabel}
           </span>
         </div>
       </Stagger>
 
-      <div className="min-w-0 flex-1 text-left">
-        <Stagger step={1} className="relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -left-[6%] top-1/2 -z-10 h-[160%] w-[70%] -translate-y-1/2 rounded-full blur-[42px]"
-            style={{ background: `radial-gradient(closest-side, ${accent}26, transparent 72%)` }}
-          />
-          <h2
-            className="truncate"
-            style={{
-              fontFamily: "var(--font-titillium), sans-serif",
-              fontWeight: 900,
-              fontSize: "clamp(32px,5.4vw,52px)",
-              lineHeight: 0.92,
-              backgroundImage: `linear-gradient(100deg, #edeef2 0%, #edeef2 38%, ${accent} 50%, #fff 54%, #edeef2 64%, #edeef2 100%)`,
-              backgroundSize: "220% 100%",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-              filter: `drop-shadow(0 2px 14px ${accent}38)`,
-              animation: "gitone-name-shimmer 4.5s ease-in-out 0.6s both",
-            }}
-          >
+      <div className="min-w-0 flex-1">
+        <Stagger step={1}>
+          <div className="mono flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+            <span style={{ color: accent }}>#{String(card.number).padStart(2, "0")}</span>
+            <span aria-hidden>·</span>
+            <span>{card.constructor.name.toUpperCase()}</span>
+            <span aria-hidden>·</span>
+            <a
+              href={`https://github.com/${card.login}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-[var(--ink)]"
+            >
+              @{card.login}
+            </a>
+          </div>
+        </Stagger>
+
+        <Stagger step={2}>
+          <h2 className="display mt-1.5 text-[clamp(30px,4.2vw,44px)] leading-[0.9]" style={{ color: "var(--ink)", textWrap: "balance" }}>
             {card.name}
           </h2>
         </Stagger>
 
-        <Stagger step={2}>
-          <div className="mt-[8px] flex flex-wrap items-center gap-x-[10px] gap-y-[6px]">
-            <span
-              className="mono inline-flex items-center rounded-[6px] border px-[9px] py-[3px] text-[12px] font-bold leading-none tracking-[0.14em]"
-              style={{ color: accent, borderColor: `${accent}55`, background: `${accent}14` }}
-            >
-              #{card.number} · {card.constructor.name.toUpperCase()}
-            </span>
-            <span className="text-[14px] font-medium" style={{ color: "var(--dim)" }}>
+        <Stagger step={3}>
+          <div className="mt-2 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+            <span className="text-[13.5px] font-semibold" style={{ color: accent }}>
               {card.archetype}
             </span>
-            <span className="inline-flex flex-wrap items-center gap-x-[10px] gap-y-[6px]">
-              <a
-                href={`https://github.com/${card.login}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mono text-[13px] underline-offset-2 transition-colors hover:underline"
-                style={{ color: "var(--faint)" }}
-              >
-                @{card.login}
-              </a>
-              {card.topLanguage && (
-                <span className="inline-flex items-center gap-[6px] text-[13px]" style={{ color: "var(--dim)" }}>
-                  <span aria-hidden className="h-[11px] w-px" style={{ background: "rgba(255,255,255,0.15)" }} />
-                  {card.topLanguage}
-                </span>
-              )}
-            </span>
+            <span aria-hidden className="h-[11px] w-px" style={{ background: "var(--line-bright)" }} />
+            <p className="line-clamp-2 max-w-[440px] text-[12.5px] leading-snug" style={{ color: "var(--dim)" }}>
+              <span className="mono mr-1.5 text-[9.5px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+                {VERDICTS[card.finish].toUpperCase()}
+              </span>
+              {card.archetypeBlurb}.
+            </p>
           </div>
-        </Stagger>
-
-        <Stagger step={3}>
-          <p className="mt-[9px] line-clamp-3 text-[13.5px] leading-[1.5]" style={{ color: "var(--dim)" }}>
-            <span className="mono mr-[7px] text-[11px] font-bold tracking-[0.18em]" style={{ color: accent }}>
-              {VERDICTS[card.finish].toUpperCase()}
-            </span>
-            {card.archetypeBlurb}.
-          </p>
         </Stagger>
       </div>
     </header>

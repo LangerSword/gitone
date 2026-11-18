@@ -4,17 +4,19 @@ import { notFound } from "next/navigation";
 import { DriverCard26 as DriverCard } from "@/components/DriverCard26";
 import { TiltCard } from "@/components/TiltCard";
 import { Confetti } from "@/components/Confetti";
-import { ReportHeader, Section, AttributeRow, Tip } from "@/components/dossier";
+import { ReportHeader, Section, AttributeRow, Tip, TraitChips } from "@/components/dossier";
 import { ReportTabs } from "@/components/ReportTabs";
 import { CardActions } from "@/components/CardActions";
+import { CountryPicker } from "@/components/CountryPicker";
+import { TeamPicker } from "@/components/TeamPicker";
+import { HowItWorks } from "@/components/HowItWorks";
 import { Reveal } from "@/components/Reveal";
+import { SiteHeader } from "@/components/SiteHeader";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
 import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
-import { CountryPicker } from "@/components/CountryPicker";
-import { TeamPicker } from "@/components/TeamPicker";
 import { formatCount } from "@/lib/format";
 import type { Card } from "@/lib/racing/types";
 
@@ -39,17 +41,17 @@ function ScoutError({ username, message }: { username: string; message: string }
   return (
     <main className="mx-auto max-w-xl px-5 py-28 text-center">
       <div className="lights justify-center" aria-hidden="true">
-        <span className="on" style={{ background: "radial-gradient(circle at 35% 30%, #ff4a41, #b30400 68%)" }} />
+        <span className="lamp on" />
       </div>
-      <h1 className="mt-6 mono text-[15px] tracking-[0.2em]" style={{ color: "var(--ink)" }}>
+      <h1 className="mono mt-6 text-[13px] font-bold tracking-[0.22em]" style={{ color: "var(--ink)" }}>
         RED FLAG · @{username}
       </h1>
-      <p className="mt-3 text-[14px]" style={{ color: "var(--dim)" }}>
+      <p className="mt-3 text-[14px] leading-relaxed" style={{ color: "var(--dim)" }}>
         {message}
       </p>
       <Link
         href="/"
-        className="mono inline-block mt-8 rounded-md px-5 py-3 text-[12px] font-bold tracking-[0.12em]"
+        className="mono mt-8 inline-block px-5 py-3 text-[10px] font-bold tracking-[0.16em]"
         style={{ background: "var(--f1-red)", color: "#fff" }}
       >
         BACK TO THE GRID
@@ -74,12 +76,11 @@ export default async function DriverPage({
     if (res.error.type === "notfound" || res.error.type === "invalid") notFound();
     return <ScoutError username={username} message={res.error.message} />;
   }
+
   const { card } = res;
   const theme = resolveCardTheme(card);
-  const accent = theme.ink;
+  const accent = card.constructor.color;
   const champagne = POPS.includes(card.finish as (typeof POPS)[number]);
-  // The flag a card shows: a manual pick (picker / shared-link ?country=)
-  // wins over the GitHub-derived country.
   const override = typeof sp.country === "string" ? sp.country : null;
   const displayFlag = pickFlag(override, card.country);
   const teamOverride = typeof sp.team === "string" ? sp.team : null;
@@ -99,47 +100,36 @@ export default async function DriverPage({
         }
       : {}),
   };
+  const raced = (card.years ?? []).filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0);
+  const maxYear = Math.max(1, ...raced.map((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted));
+  const bestYear = raced.reduce(
+    (a, b) => (b.commits + b.prs + b.reviews + b.issues + b.restricted > a.commits + a.prs + a.reviews + a.issues + a.restricted ? b : a),
+    raced[0] ?? { year: 0, commits: 0, prs: 0, reviews: 0, issues: 0, restricted: 0 },
+  );
 
   return (
     <main className="min-h-screen">
-      <header className="border-b" style={{ borderColor: "var(--line)" }}>
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="inline-block w-5 h-5 rounded-[3px]" style={{ background: "var(--f1-red)" }} aria-hidden="true" />
-            <span className="mono font-extrabold tracking-[0.24em] text-[15px]">GITONE</span>
-          </Link>
-          <span className="mono text-[11px] tracking-[0.18em]" style={{ color: "var(--faint)" }}>
-            SCOUT REPORT
-          </span>
-        </div>
-      </header>
+      <SiteHeader back />
 
       <div className="stage">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_340px] lg:gap-10">
-          {/* ── left rail: race craft ──────────────────────────────────── */}
-          <aside className="order-2 lg:order-1 space-y-[14px]">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-7">
+          {/* ── left rail: race craft, traits, silverware, seasons ─────── */}
+          <aside className="order-2 space-y-6 lg:order-1">
             <Reveal>
-              <Section title="RACE NOTES" accent={accent}>
+              <Section title="RACE CRAFT" accent={accent}>
                 <AttributeRow label="Wet pace">
                   <Tip text={card.report.reasons.wetPace} align="right">
-                    <span className="mono font-bold" style={{ color: "var(--purple)" }}>
-                      {card.report.wetPace}/5
-                    </span>
+                    <span className="mono font-bold" style={{ color: "var(--purple)" }}>{card.report.wetPace}/5</span>
                   </Tip>
                 </AttributeRow>
                 <AttributeRow label="Tyre management">
                   <Tip text={card.report.reasons.tyre} align="right">
-                    <span className="mono font-bold" style={{ color: "var(--green)" }}>
-                      {card.report.tyre}/5
-                    </span>
+                    <span className="mono font-bold" style={{ color: "var(--green)" }}>{card.report.tyre}/5</span>
                   </Tip>
                 </AttributeRow>
                 <AttributeRow label="DRS flap">
                   <Tip text={card.report.reasons.drs} align="right">
-                    <span
-                      className="mono font-bold"
-                      style={{ color: card.report.drsOpen ? "var(--green)" : "var(--faint)" }}
-                    >
+                    <span className="mono font-bold" style={{ color: card.report.drsOpen ? "var(--green)" : "var(--faint)" }}>
                       {card.report.drsOpen ? "OPEN" : "CLOSED"}
                     </span>
                   </Tip>
@@ -147,77 +137,104 @@ export default async function DriverPage({
               </Section>
             </Reveal>
 
-            <Reveal delay={60}>
-              <Section title="TROPHY CABINET" accent={accent}>
+            <Reveal delay={50}>
+              <Section title="DRIVER TRAITS" accent={accent}>
+                <TraitChips card={card} accent={accent} />
+              </Section>
+            </Reveal>
+
+            <Reveal delay={100}>
+              <Section
+                title="TROPHY CABINET"
+                accent={accent}
+                aside={<span className="mono text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>{card.awards?.length ?? 0} HELD</span>}
+              >
                 <TrophyCabinet awards={card.awards ?? []} />
               </Section>
             </Reveal>
 
-            {card.years && card.years.filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0).length > 0 && (
-              <Reveal delay={110}>
+            {raced.length > 0 && (
+              <Reveal delay={150}>
                 <Section title="SEASONS RACED" accent={accent}>
-                  <div className="space-y-[11px] pt-1">
-                    {card.years
-                      .filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0)
-                      .slice(-7)
-                      .map((y) => {
-                        const total = y.commits + y.prs + y.reviews + y.issues + y.restricted;
-                        const years = card.years!;
-                        const max = Math.max(...years.map((yy) => yy.commits + yy.prs + yy.reviews + yy.issues + yy.restricted));
-                        const bestYear = years.reduce((a, b) =>
-                          (b.commits + b.prs + b.reviews + b.issues + b.restricted) > (a.commits + a.prs + a.reviews + a.issues + a.restricted) ? b : a,
-                        );
-                        const isBest = y.year === bestYear.year;
-                        return (
-                          <div key={y.year} className="flex items-center gap-3">
-                            <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--faint)", width: 30 }}>
-                              {String(y.year).slice(2)}
-                            </span>
-                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: "rgba(255,255,255,0.06)" }}>
-                              <div
-                                className="bar-fill"
-                                style={{
-                                  width: `${Math.max(3, (total / Math.max(max, 1)) * 100)}%`,
-                                  height: "100%",
-                                  background: isBest
-                                    ? "linear-gradient(90deg, var(--green), rgba(255,255,255,0.5))"
-                                    : `linear-gradient(90deg, ${card.constructor.color}, rgba(255,255,255,0.4))`,
-                                }}
-                              />
-                            </div>
-                            <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
-                              {formatCount(total)}
-                            </span>
+                  <div className="space-y-2 pt-0.5">
+                    {raced.slice(-6).map((y) => {
+                      const total = y.commits + y.prs + y.reviews + y.issues + y.restricted;
+                      const isBest = y.year === bestYear.year;
+                      return (
+                        <div key={y.year} className="flex items-center gap-2.5">
+                          <span className="mono w-7 text-[10px]" style={{ color: isBest ? "var(--green)" : "var(--faint)" }}>
+                            {String(y.year).slice(2)}
+                          </span>
+                          <div className="h-[3px] flex-1 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                            <div
+                              className="bar-fill h-full"
+                              style={{
+                                width: `${Math.max(3, (total / maxYear) * 100)}%`,
+                                background: isBest ? "var(--green)" : accent,
+                              }}
+                            />
                           </div>
-                        );
-                      })}
+                          <span className="mono w-9 text-right text-[10px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
+                            {formatCount(total)}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </Section>
               </Reveal>
             )}
+
+            <Reveal delay={200}>
+              <Section title="CAREER TOTALS" accent={accent}>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  {(["laps", "silverware", "grandstand", "mileage"] as const).map((key) => {
+                    const metric = card.report.metrics.find((m) => m.label.startsWith(key === "laps" ? "laps" : key));
+                    if (!metric) return null;
+                    return (
+                      <div key={key}>
+                        <div className="mono text-[18px] font-extrabold leading-none" style={{ color: "var(--ink)" }}>
+                          {formatCount(metric.value)}
+                        </div>
+                        <div className="mono mt-1 text-[8px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+                          {metric.label.toUpperCase()}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </Section>
+            </Reveal>
           </aside>
 
-          {/* ── center: the dossier. header, then the card as the light ── */}
+          {/* ── centre: the report, then the card as the light ─────────── */}
           <div className="order-1 lg:order-2">
-            <div className="mb-5">
+            <div className="mb-4">
               <ReportHeader card={card} accent={accent} />
             </div>
-            <div className="relative" style={{ width: 290, maxWidth: "100%", margin: "0 auto" }}>
+
+            <div className="relative mx-auto" style={{ width: 292, maxWidth: "100%" }}>
               {champagne && <Confetti colors={confettiPalette(card, theme)} />}
               <TiltCard>
                 <Reveal>
-                  <DriverCard card={flagged} />
+                  <DriverCard card={flagged} eager />
                 </Reveal>
               </TiltCard>
-              {/* the flag's editor rides over the card's own flag slot — a
-                  sibling of the tilt, so it stays level while the card leans */}
               <CountryPicker login={card.login} value={displayFlag} />
-              <TeamPicker login={card.login} current={team?.code ?? null} />
             </div>
-            <Reveal delay={120} className="mt-7">
+
+            <div className="mx-auto mt-3 flex max-w-[340px] items-center justify-between gap-2">
+              <TeamPicker login={card.login} current={team?.code ?? null} />
+              <HowItWorks
+                label="HOW IT WORKS ↗"
+                className="mono text-[9.5px] font-bold tracking-[0.12em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+              />
+            </div>
+
+            <Reveal delay={100} className="mt-6">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>
                 <CardActions login={card.login} />
-                <p className="mono mt-5 text-center text-[10.5px] tracking-[0.06em]" style={{ color: "var(--faint)" }}>
+                <p className="mono mt-4 text-center text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                   SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H
                 </p>
               </div>
@@ -225,7 +242,7 @@ export default async function DriverPage({
           </div>
 
           {/* ── right rail: one tabbed readout, no long scroll ─────────── */}
-          <aside className="order-3 mt-10 lg:mt-0">
+          <aside className="order-3">
             <Reveal delay={60}>
               <ReportTabs card={card} accent={accent} />
             </Reveal>

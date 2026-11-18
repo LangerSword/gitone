@@ -52,17 +52,17 @@ export function TeamPicker({ login, current }: { login: string; current: string 
   };
 
   return (
-    <div ref={root} className="absolute z-20" style={{ right: 8, bottom: 8 }}>
+    <div ref={root} className="relative z-20">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label="Choose team livery"
         title="Choose team livery"
-        className="mono flex items-center gap-2 rounded-full px-3 py-2 text-[10px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
+        className="mono flex h-9 items-center gap-2 border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
         style={{
           background: "rgba(21,21,30,0.85)",
-          border: "1px solid var(--line-bright)",
+          borderColor: "var(--line-bright)",
           color: "var(--dim)",
           backdropFilter: "blur(8px)",
         }}
@@ -71,7 +71,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
       </button>
       {open && (
         <div
-          className="glass absolute bottom-11 right-0 w-[290px] rounded-2xl p-3"
+          className="glass absolute bottom-full right-0 mb-2 w-[290px] p-3"
           style={{ maxHeight: 340, overflowY: "auto" }}
         >
           <div className="mono mb-2 px-1 text-[10px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
@@ -80,7 +80,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
           <button
             type="button"
             onClick={() => choose("")}
-            className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
+            className="flex w-full items-center gap-2 px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
             style={{ color: "var(--dim)" }}
           >
             <span className="h-4 w-4 rounded" style={{ background: "linear-gradient(135deg,#71717d,#24242f)" }} />
@@ -91,7 +91,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
               key={t.code}
               type="button"
               onClick={() => choose(t.code)}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
+              className="flex w-full items-center gap-2 px-2 py-2 text-left text-[12px] transition-colors hover:bg-white/5"
               style={{ color: current === t.code ? "var(--ink)" : "var(--dim)" }}
             >
               <span className="h-4 w-4 rounded" style={{ background: t.color, boxShadow: `0 0 10px ${t.color}55` }} />

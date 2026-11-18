@@ -62,7 +62,7 @@ export function Confetti({ colors, count = 130 }: { colors: string[]; count?: nu
     <canvas
       ref={ref}
       aria-hidden="true"
-      style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 5 }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 5 }}
     />
   );
 }

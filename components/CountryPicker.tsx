@@ -13,7 +13,7 @@ import { flagUrl } from "@/lib/flagUrl";
 // Choosing a country re-navigates with ?country=<code> (the same override
 // the embeddable .png honours) and stores the pick per-login, so returning
 // visitors keep their flag.
-const SLOT = { left: "1.6%", top: "1.5%", width: "6%", height: "8%" } as const;
+const SLOT = { right: "4.2%", top: "12.4%", width: "8.2%", height: "6.2%" } as const;
 const STORAGE_KEY = (login: string) => `gitone:flag:${login.toLowerCase()}`;
 
 interface Props {
@@ -148,7 +148,7 @@ export function CountryPicker({ login, value }: Props) {
         <div
           role="presentation"
           className="glass pointer-events-auto absolute z-30 flex w-[280px] max-w-[80vw] flex-col overflow-hidden rounded-2xl"
-          style={{ left: SLOT.left, top: `calc(${SLOT.top} + ${SLOT.height} + 2%)`, maxHeight: 360 }}
+          style={{ right: 0, top: `calc(${SLOT.top} + ${SLOT.height} + 2%)`, maxHeight: 360 }}
         >
           <div className="relative shrink-0 border-b p-[10px]" style={{ borderColor: "var(--line)" }}>
             <Search

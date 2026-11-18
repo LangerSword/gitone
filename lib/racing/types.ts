@@ -125,3 +125,12 @@ export interface Card {
   legacy: { L: number };
   report: Report;
 }
+
+// The fields a card needs to paint. The landing fan and start grid render
+// from a snapshot of these (lib/racing/samples) so they never wait on a
+// network round-trip; the report page passes a full Card, which is a
+// structural superset.
+export type CardPreview = Pick<
+  Card,
+  "login" | "name" | "avatarUrl" | "country" | "stats" | "rtg" | "number" | "finish" | "finishLabel" | "constructor"
+>;

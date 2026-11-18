@@ -3,6 +3,7 @@ import { cache } from "react";
 import { redis } from "./redis";
 import { buildCard } from "./racing/engine";
 import { computeAwards } from "./awards";
+import { bumpScoutCount } from "./analytics";
 import { fetchProfile, type GithubError } from "./github/client";
 import { signalsFromPayload } from "./github/signals";
 import type { Card } from "./racing/types";
@@ -58,6 +59,7 @@ async function buildFresh(username: string, login: string): Promise<Card> {
   const card = buildCard(signals);
   card.awards = computeAwards(card, signals.active_years);
   await writeCache(login, card);
+  bumpScoutCount();
   return card;
 }
 

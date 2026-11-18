@@ -84,7 +84,7 @@ export const CARD_THEME: Record<Finish, CardTheme> = {
   },
 };
 
-export function resolveCardTheme(card: Card): CardTheme {
+export function resolveCardTheme(card: Pick<Card, "finish"> & { founder?: Card["founder"] }): CardTheme {
   const base = CARD_THEME[card.finish];
   if (!card.founder) return base;
   // Founders keep their bespoke accent driving trim and glow; the frame
