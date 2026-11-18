@@ -1,0 +1,192 @@
+@import "tailwindcss";
+
+/* ── gitone: the github grid ─────────────────────────────────────────────
+   Dark carbon, one livery accent per driver, F1-tv timing colours.
+   Type: Titillium Web (display + body), JetBrains Mono (timing numerals). */
+
+:root {
+  --bg-0: #08080a;
+  --bg-1: #0e0e11;
+  --panel: #131318;
+  --panel-2: #1a1b21;
+  --line: #232429;
+  --line-bright: #2f3038;
+  --ink: #edeef2;
+  --dim: #9a9ca6;
+  --faint: #6a6c76;
+  --f1-red: #e10600;
+  --purple: #b455ff;
+  --green: #2cc66b;
+  --yellow: #ffd140;
+  --font-display: var(--font-titillium), "Titillium Web", system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(70% 42% at 50% -6%, rgba(225, 6, 0, 0.055), transparent 70%),
+    radial-gradient(55% 40% at 88% 110%, rgba(180, 85, 255, 0.045), transparent 70%),
+    var(--bg-0);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(225, 6, 0, 0.55);
+  color: #fff;
+}
+
+/* ── shared vocabulary ─────────────────────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.eyebrow-red {
+  color: var(--f1-red);
+}
+
+.panel {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+}
+
+/* carbon weave for hero surfaces */
+.carbon {
+  background-image:
+    linear-gradient(27deg, rgba(255, 255, 255, 0.018) 5px, transparent 5px),
+    linear-gradient(207deg, rgba(255, 255, 255, 0.018) 5px, transparent 5px),
+    linear-gradient(27deg, rgba(0, 0, 0, 0.24) 5px, transparent 5px),
+    linear-gradient(207deg, rgba(0, 0, 0, 0.24) 5px, transparent 5px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.2) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.2) 75%);
+  background-size: 10px 10px;
+  background-position: 0 2px, 5px 0, 0 1px, 5px 4px;
+}
+
+/* checkered strip — the flag, at any width */
+.checker {
+  background-image: conic-gradient(
+    var(--line-bright) 0 25%,
+    transparent 0 50%,
+    var(--line-bright) 0 75%,
+    transparent 0
+  );
+  background-size: 10px 10px;
+}
+
+/* timing colours */
+.sector-purple { color: var(--purple); }
+.sector-green { color: var(--green); }
+.sector-yellow { color: var(--yellow); }
+.sector-dim { color: var(--faint); }
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* reveal-on-scroll: IntersectionObserver adds .revealed; the timeout safety
+   net in Reveal.tsx guarantees nothing stays invisible. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation-duration: 0.001s !important; }
+}
+
+/* ── the five lights ───────────────────────────────────────────────────── */
+
+@keyframes light-on {
+  from { opacity: 0.15; }
+  to { opacity: 1; }
+}
+
+.lights {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.lights span {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff4a41, #b30400 68%);
+  opacity: 0.12;
+  box-shadow: 0 0 0 1px rgba(255, 74, 65, 0.25);
+}
+
+.lights span.on {
+  opacity: 1;
+  animation: light-on 0.16s ease-out;
+  box-shadow: 0 0 22px rgba(225, 6, 0, 0.75), 0 0 0 1px rgba(255, 74, 65, 0.55);
+}
+
+/* ── stat bars sweep in ─────────────────────────────────────────────────── */
+
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.bar-fill {
+  transform-origin: left center;
+  animation: bar-grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* head-to-head row reveal */
+@keyframes row-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.duel-row {
+  opacity: 0;
+  animation: row-in 0.4s ease-out both;
+}
+
+/* ── inputs ────────────────────────────────────────────────────────────── */
+
+.scout-input {
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line-bright);
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scout-input:focus {
+  outline: none;
+  border-color: rgba(225, 6, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.16);
+}
+
+.scout-input::placeholder {
+  color: var(--faint);
+}
+
+/* focus-visible ring for every interactive element */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--f1-red);
+  outline-offset: 2px;
+  border-radius: 2px;
+}

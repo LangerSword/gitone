@@ -1,0 +1,100 @@
+import type { Finish, FounderMeta, StatKey, Stats } from "./types";
+
+// The four driver-rating categories, verbatim from the EA F1 games.
+// RTG is the pace-weighted combination of all four.
+export const STATS: StatKey[] = ["exp", "rac", "awa", "pac"];
+
+export const STAT_LABELS: Record<StatKey, string> = {
+  exp: "EXP",
+  rac: "RAC",
+  awa: "AWA",
+  pac: "PAC",
+};
+
+export const STAT_NAMES: Record<StatKey, string> = {
+  exp: "Experience",
+  rac: "Racecraft",
+  awa: "Awareness",
+  pac: "Pace",
+};
+
+// How the EA F1 games describe each stat — our scouting copy mirrors it.
+export const STAT_COPY: Record<StatKey, { what: string; scouted: string }> = {
+  pac: {
+    what: "Turning the timing screens purple. Lap times against the clock, and against your teammate.",
+    scouted: "commit velocity, laps turned this season",
+  },
+  rac: {
+    what: "The masters of the overtake. Working through the pack to finish higher than you started.",
+    scouted: "PRs worked through other people's fields, battles judged in review",
+  },
+  awa: {
+    what: "Stay out of the stewards' room. Penalties cost more the heavier they are.",
+    scouted: "hazards flagged early, race-by-race presence",
+  },
+  exp: {
+    what: "Experience counts. Races started over a career, results banked season after season.",
+    scouted: "seasons on the grid, lifetime mileage",
+  },
+};
+
+export const K = {
+  // magnitude → the gravity-well center the four stats sit around
+  magnitude: { w1: 0.5, w2: 0.4, w3: 0.5, w4: 0.08, b: -2.8, lo: 48, hi: 82 },
+  // antagonist pairs: raw speed vs banked experience, overtaking vs clean
+  // record. Nobody is elite at everything (see engine §3.3).
+  tension: {
+    alpha: 0.55,
+    pairs: [
+      ["pac", "exp"],
+      ["rac", "awa"],
+    ] as [StatKey, StatKey][],
+  },
+  spike: { base: 8 },
+  legacy: { a: 1.0, b: 0.7, c: 0.3, d: 0.3, e: 0.3, f: 6.0, activeCap: 15, bonusMax: 11 },
+  ovrCap: 88,
+  finish: { championMin: 90, championLegacy: 0.5, winnerMin: 85, podiumMin: 75, pointsMin: 65 },
+  // #1 is the champion's number, earned. #17 was permanently retired in 2015.
+  championNumberAt: 97,
+  retiredNumbers: [17],
+  iconAllowlist: ["torvalds"],
+};
+
+// EA: "a combination of all driver stats, with Pace having a greater weighting."
+export const RTG_WEIGHTS: Stats = { pac: 0.35, rac: 0.25, awa: 0.2, exp: 0.2 };
+
+export const FINISH_LABELS: Record<Finish, string> = {
+  rookie: "ROOKIE",
+  points: "POINTS",
+  podium: "PODIUM",
+  winner: "WINNER",
+  in_form: "IN FORM",
+  champion: "CHAMPION",
+  founder: "FOUNDER",
+};
+
+// The people who built gitone. Matched case-insensitively in buildCard; each
+// gets a forced overall (>89) and the bespoke founder treatment.
+export const FOUNDERS: Record<string, FounderMeta> = {
+  langersword: {
+    accent: "#e10600", // F1's own red
+    label: "FOUNDER",
+    tagline: "Founder of gitone, they built the very scout reading this card",
+  },
+};
+
+export const FOUNDER_RTG: Record<string, number> = {
+  langersword: 95,
+};
+
+// Raw-signal caps for the report's metric normalizations (0–99 at the cap).
+export const METRIC_CAPS: Record<string, { cap: number; label: string; unit?: string }> = {
+  laps: { cap: 3000, label: "laps completed", unit: "this season" },
+  overtakes: { cap: 400, label: "overtakes", unit: "PRs to other fields" },
+  battles: { cap: 400, label: "battles judged", unit: "reviews" },
+  hazards: { cap: 400, label: "hazards flagged", unit: "issues raised" },
+  seasons: { cap: 15, label: "seasons on the grid", unit: "active years" },
+  silverware: { cap: 20000, label: "silverware", unit: "stars owned" },
+  grandstand: { cap: 50000, label: "grandstand", unit: "followers" },
+  mileage: { cap: 100000, label: "career mileage", unit: "lifetime contributions" },
+};
