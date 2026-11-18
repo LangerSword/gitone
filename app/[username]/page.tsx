@@ -13,6 +13,7 @@ import { TeamPicker } from "@/components/TeamPicker";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Reveal } from "@/components/Reveal";
 import { SiteHeader } from "@/components/SiteHeader";
+import { PersistPrefs } from "@/components/PersistPrefs";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
@@ -120,6 +121,13 @@ export default async function DriverPage({
   return (
     <main className="min-h-screen">
       <SiteHeader back />
+      {(typeof sp.team === "string" || typeof sp.country === "string") && (
+        <PersistPrefs
+          login={card.login}
+          team={typeof sp.team === "string" ? (team?.code ?? null) : null}
+          country={typeof sp.country === "string" ? displayFlag : null}
+        />
+      )}
 
       <div className="stage">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-4">
