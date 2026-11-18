@@ -22,7 +22,7 @@ export function TrackBackdrop() {
           width: "58%",
           height: "62%",
           borderRadius: "50%",
-          background: "radial-gradient(closest-side, rgba(201, 121, 69, 0.2), transparent 72%)",
+          background: "radial-gradient(closest-side, rgba(193, 18, 31, 0.2), transparent 72%)",
         }}
       />
       <div
@@ -33,7 +33,7 @@ export function TrackBackdrop() {
           width: "52%",
           height: "58%",
           borderRadius: "50%",
-          background: "radial-gradient(closest-side, rgba(121, 199, 164, 0.1), transparent 74%)",
+          background: "radial-gradient(closest-side, rgba(255, 255, 255, 0.1), transparent 74%)",
         }}
       />
 

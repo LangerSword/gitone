@@ -24,7 +24,7 @@ export function FanCards() {
           height: 400,
           borderRadius: "50%",
           background:
-            "radial-gradient(closest-side, rgba(201,121,69,0.22), rgba(121,199,164,0.08) 48%, transparent 74%)",
+            "radial-gradient(closest-side, rgba(193, 18, 31,0.22), rgba(255, 255, 255,0.08) 48%, transparent 74%)",
         }}
       />
       <div
@@ -34,7 +34,7 @@ export function FanCards() {
           width: 440,
           height: 440,
           borderRadius: "50%",
-          border: "1px solid rgba(214,133,74,0.16)",
+          border: "1px solid rgba(193, 18, 31,0.16)",
         }}
       />
       <div
@@ -44,7 +44,7 @@ export function FanCards() {
           width: 356,
           height: 356,
           borderRadius: "50%",
-          border: "1px solid rgba(240,232,216,0.07)",
+          border: "1px solid rgba(255, 255, 255,0.07)",
         }}
       />
 
@@ -72,12 +72,12 @@ export function FanCards() {
         className="mono absolute right-[1%] top-[12%] inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[10.5px] font-bold tracking-[0.14em]"
         style={{ background: "rgba(7,8,10,0.72)", border: "1px solid rgba(246,241,232,0.14)", color: "var(--ink)", backdropFilter: "blur(8px)" }}
       >
-        <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: "var(--f1-red)", boxShadow: "0 0 10px rgba(201,121,69,.7)" }} />
+        <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: "var(--f1-red)", boxShadow: "0 0 10px rgba(193, 18, 31,.7)" }} />
         RTG {FAN_CARDS[3].card.rtg} · LIVE
       </span>
       <span
         className="mono absolute bottom-[9%] left-[4%] rounded-full px-3 py-1.5 text-[10.5px] font-bold tracking-[0.14em]"
-        style={{ background: "rgba(121,199,164,0.1)", border: "1px solid rgba(121,199,164,0.3)", color: "var(--green)" }}
+        style={{ background: "rgba(255, 255, 255,0.1)", border: "1px solid rgba(255, 255, 255,0.3)", color: "var(--green)" }}
       >
         PAC {FAN_CARDS[3].card.stats.pac} · FASTEST
       </span>

@@ -21,34 +21,39 @@ function LapChart({ card }: { card: Card }) {
   const weeks = card.recent_calendar ?? [];
   const max = Math.max(1, ...weeks);
   const maxIdx = weeks.indexOf(max);
+  const total = weeks.reduce((s, v) => s + v, 0);
   const livery = card.constructor.color;
   return (
     <div>
-      <div className="flex h-24 items-end gap-[3px]" role="img" aria-label="Laps per week over the last season">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="mono text-[11px] font-bold tracking-[0.1em]" style={{ color: "var(--purple)" }}>
+          PEAK {max}
+        </span>
+        <span className="mono text-[11px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>
+          {formatCount(total)} LAPS
+        </span>
+      </div>
+      <div className="flex h-28 items-end gap-[2px]" role="img" aria-label="Laps per week over the last season">
         {weeks.map((v, i) => {
-          const h = v === 0 ? 8 : Math.max(14, (v / max) * 100);
-          const isFL = v > 0 && i === maxIdx;
+          const h = v === 0 ? 4 : Math.max(8, (v / max) * 100);
+          const isPeak = v > 0 && i === maxIdx;
           return (
             <span
               key={i}
-              role="img"
-              aria-label={`${v} laps in week ${i + 1}`}
               title={`${v} laps · week ${i + 1}`}
-              className="flex-1 transition-opacity hover:opacity-100"
+              className="flex-1 rounded-[1px]"
               style={{
                 height: `${h}%`,
-                background: isFL ? "var(--purple)" : v === 0 ? "rgba(255,255,255,0.06)" : livery,
-                opacity: v === 0 || isFL ? 1 : 0.38 + (0.62 * v) / max,
-                boxShadow: isFL ? "0 0 10px rgba(180,107,255,.8)" : "none",
+                background: isPeak ? "var(--purple)" : livery,
+                opacity: isPeak ? 1 : 0.5,
+                boxShadow: isPeak ? "0 0 10px rgba(179,107,255,.7)" : "none",
               }}
             />
           );
         })}
       </div>
-      <div className="mono mt-3 flex justify-between text-[11px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>
+      <div className="mono mt-2 flex justify-between text-[11px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>
         <span>52 WEEKS AGO</span>
-        <span style={{ color: "var(--purple)" }}>FL {max}</span>
-        <span>{formatCount(weeks.reduce((s, v) => s + v, 0))} LAPS</span>
         <span>NOW</span>
       </div>
     </div>
@@ -90,7 +95,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
         {tab === "RATINGS" && (
           <>
             <div className="mb-4 flex justify-center">
-              <StatRadar card={card} size={176} />
+              <StatRadar card={card} size={210} />
             </div>
             <div className="flex flex-col gap-[12px]">
               {STATS.map((k, i) => (
@@ -111,7 +116,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
         {tab === "TELEMETRY" && (
           <>
             <p className="mono mb-3 text-[11px] tracking-[0.1em]" style={{ color: "var(--dim)" }}>
-              LAPS PER WEEK, LAST SEASON. PURPLE IS THE FASTEST.
+              LAPS PER WEEK, LAST SEASON. PURPLE IS THE PEAK WEEK.
             </p>
             <LapChart card={card} />
           </>

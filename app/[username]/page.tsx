@@ -56,7 +56,7 @@ function ScoutError({ username, message }: { username: string; message: string }
       <Link
         href="/"
         className="mono mt-8 inline-block px-5 py-3 text-[11px] font-bold tracking-[0.16em]"
-        style={{ background: "var(--f1-red)", color: "#1a120b" }}
+        style={{ background: "var(--f1-red)", color: "#ffffff" }}
       >
         BACK TO THE GRID
       </Link>

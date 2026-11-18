@@ -18,7 +18,7 @@ export default async function OgImage() {
           flexDirection: "column",
           justifyContent: "center",
           paddingLeft: 96,
-          background: "radial-gradient(70% 42% at 30% 20%, rgba(225,6,0,0.14), rgba(0,0,0,0)) #0a0a0d",
+          background: "radial-gradient(70% 42% at 30% 20%, rgba(193, 18, 31,0.14), rgba(0,0,0,0)) #0a0a0d",
           color: "#edeef2",
           fontFamily: "Titillium",
         }}
@@ -40,7 +40,7 @@ export default async function OgImage() {
         <div style={{ display: "flex", marginTop: 44, fontWeight: 900, fontSize: 104, lineHeight: 0.95 }}>
           your github,
         </div>
-        <div style={{ display: "flex", fontWeight: 900, fontSize: 104, lineHeight: 0.95, color: "#e10600" }}>
+        <div style={{ display: "flex", fontWeight: 900, fontSize: 104, lineHeight: 0.95, color: "#c1121f" }}>
           rated like f1.
         </div>
         <div style={{ display: "flex", marginTop: 30, fontFamily: "JBMono", fontSize: 26, color: "#9a9ca6" }}>

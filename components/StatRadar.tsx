@@ -4,16 +4,17 @@ import { useState } from "react";
 import { STAT_LABELS, STAT_COPY, STAT_NAMES } from "@/lib/racing/constants";
 import type { Card, StatKey } from "@/lib/racing/types";
 
-// Four-axis telemetry radar with a real readout: hover, focus, tap or keyboard
-// an axis and the caption explains what the rating measures. Pure SVG, no
-// chart library, no animation loop.
+// Four-axis telemetry radar. Labels sit OUTSIDE the plot ring so they never
+// collide with the vertex markers; three concentric rings give a readable
+// scale. Hover, focus, tap or keyboard an axis to read what it measures.
 const ORDER: StatKey[] = ["pac", "rac", "exp", "awa"];
 
-export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
+export function StatRadar({ card, size = 210 }: { card: Card; size?: number }) {
   const [active, setActive] = useState<StatKey>("pac");
   const cx = size / 2;
   const cy = size / 2;
-  const R = size / 2 - 34;
+  const R = size / 2 - 46; // plot radius, leaving room for outside labels
+  const labelR = R + 26;
   const accent = card.constructor.color;
 
   const angleFor = (i: number) => (-90 + i * 90) * (Math.PI / 180);
@@ -24,7 +25,7 @@ export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
   const val = (v: number) => (Math.max(v, 1) / 99) * R;
 
   const poly = ORDER.map((k, i) => point(i, val(card.stats[k])).join(",")).join(" ");
-  const grid = [0.33, 0.66, 1].map((f) => ORDER.map((_, i) => point(i, R * f).join(",")).join(" "));
+  const rings = [0.33, 0.66, 1].map((f) => ORDER.map((_, i) => point(i, R * f).join(",")).join(" "));
 
   return (
     <div>
@@ -36,14 +37,31 @@ export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
         aria-label="Driver rating radar. Choose an axis to read its meaning."
         style={{ display: "block", margin: "0 auto", overflow: "visible" }}
       >
-        {grid.map((g, i) => (
-          <polygon key={i} points={g} fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.12)" strokeWidth={1} />
+        {rings.map((g, i) => (
+          <polygon
+            key={i}
+            points={g}
+            fill={i === 2 ? "rgba(255,255,255,0.025)" : "none"}
+            stroke="rgba(255,255,255,0.22)"
+            strokeWidth={1}
+          />
         ))}
+        {[0.33, 0.66, 1].map((f, i) => {
+          const a = (-45 * Math.PI) / 180;
+          const tx = cx + R * f * Math.cos(a);
+          const ty = cy + R * f * Math.sin(a);
+          return (
+            <text key={i} x={tx + 5} y={ty - 3} fontFamily="var(--font-mono)" fontSize={8.5} fill="rgba(245,245,247,0.34)">
+              {Math.round(f * 99)}
+            </text>
+          );
+        })}
 
-        <polygon points={poly} fill={`${accent}55`} stroke={accent} strokeWidth={2.4} />
+        <polygon points={poly} fill={`${accent}2e`} stroke={accent} strokeWidth={2.4} strokeLinejoin="round" />
 
         {ORDER.map((k, i) => {
           const [x, y] = point(i, R);
+          const [lx, ly] = point(i, labelR);
           const [vx, vy] = point(i, val(card.stats[k]));
           const hot = card.stats[k] >= 90;
           const on = active === k;
@@ -65,21 +83,32 @@ export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
               }}
               style={{ cursor: "pointer", outline: "none" }}
             >
-              <line x1={cx} y1={cy} x2={x} y2={y} stroke={on ? accent : "rgba(255,255,255,0.13)"} strokeWidth={on ? 2 : 1} />
-              <circle cx={vx} cy={vy} r={20} fill="transparent" />
-              <circle cx={vx} cy={vy} r={on ? 7 : hot ? 5 : 4} fill={hot ? "var(--purple)" : accent} stroke="#0a0a0d" strokeWidth={1.5} />
+              <line x1={cx} y1={cy} x2={x} y2={y} stroke={on ? accent : "rgba(255,255,255,0.14)"} strokeWidth={on ? 2 : 1} />
+              <circle cx={vx} cy={vy} r={22} fill="transparent" />
+              <circle cx={vx} cy={vy} r={on ? 6.5 : hot ? 5 : 4} fill={hot ? "var(--purple)" : accent} stroke="#15151e" strokeWidth={1.5} />
               {on && <circle cx={vx} cy={vy} r={11} fill="none" stroke={hot ? "var(--purple)" : accent} strokeWidth={1} opacity={0.55} />}
               <text
-                x={x}
-                y={y + 4}
+                x={lx}
+                y={ly + 4}
                 textAnchor="middle"
                 fontFamily="var(--font-mono)"
                 fontSize={12}
                 fontWeight={700}
-                letterSpacing={1.4}
-                fill={on ? "#f6f1e8" : "rgba(246,241,232,0.55)"}
+                letterSpacing={1.2}
+                fill={on ? "var(--ink)" : "rgba(245,245,247,0.6)"}
               >
                 {STAT_LABELS[k]}
+              </text>
+              <text
+                x={lx}
+                y={ly + 17}
+                textAnchor="middle"
+                fontFamily="var(--font-mono)"
+                fontSize={11}
+                fontWeight={800}
+                fill={hot ? "var(--purple)" : on ? accent : "rgba(245,245,247,0.42)"}
+              >
+                {card.stats[k]}
               </text>
             </g>
           );

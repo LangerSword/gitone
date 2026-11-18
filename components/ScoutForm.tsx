@@ -75,11 +75,11 @@ export function ScoutForm({
             value={login}
             onChange={(e) => setLogin(e.target.value)}
             disabled={phase > 0}
-            placeholder="github login"
+            placeholder="github username"
             spellCheck={false}
             autoCapitalize="none"
             autoComplete="off"
-            aria-label="GitHub login"
+            aria-label="GitHub username"
             className="field pl-10"
           />
         </div>
@@ -88,7 +88,7 @@ export function ScoutForm({
           disabled={!login.trim() || phase > 0}
           aria-live="polite"
           className="btn btn-primary btn-lg group w-full sm:w-auto"
-          style={phase > 0 ? { boxShadow: "0 0 0 4px rgba(214,133,74,.22), 0 0 42px rgba(214,133,74,.5), inset 0 1px 0 rgba(255,255,255,.4)" } : undefined}
+          style={phase > 0 ? { boxShadow: "0 0 0 4px rgba(193, 18, 31,.22), 0 0 42px rgba(193, 18, 31,.5), inset 0 1px 0 rgba(255,255,255,.4)" } : undefined}
         >
           {phase > 0 ? "Scouting" : "Scout"}
           {phase === 0 && (

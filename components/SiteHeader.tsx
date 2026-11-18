@@ -10,17 +10,18 @@ function StarMark() {
 
 function Mark() {
   return (
-    <span
-      aria-hidden
-      className="inline-flex h-[22px] w-[22px] flex-none items-center justify-center rounded-[7px]"
-      style={{
-        background: "linear-gradient(145deg, #e2a36a, var(--f1-red) 55%, var(--red-deep))",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,.35), 0 6px 16px -6px rgba(201,121,69,.55)",
-      }}
-    >
-      <span className="mono text-[12px] font-extrabold leading-none" style={{ color: "#1a120b" }}>
-        G
-      </span>
+    <span aria-hidden className="inline-flex h-[24px] w-[24px] flex-none items-center justify-center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <defs>
+          <pattern id="gitone-check" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="#f5f5f7" />
+            <rect width="3" height="3" fill="#15151e" />
+            <rect x="3" y="3" width="3" height="3" fill="#15151e" />
+          </pattern>
+        </defs>
+        <path d="M5.2 3.4C9 1.8 13 5 19 3.4v10.2c-6 1.6-10-1.6-13.8 0Z" fill="url(#gitone-check)" stroke="rgba(255,255,255,0.3)" strokeWidth="0.6" />
+        <rect x="4" y="2.6" width="1.7" height="19" rx="0.85" fill="#c1121f" />
+      </svg>
     </span>
   );
 }
@@ -39,7 +40,7 @@ export function SiteHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)", boxShadow: "inset 0 2px 0 rgba(214,133,74,0.55)" }}>
+    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)", boxShadow: "inset 0 2px 0 rgba(193, 18, 31,0.55)" }}>
       <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
         <div className="flex items-center gap-5">
           <Link href="/" className="flex min-h-11 items-center gap-3" aria-label="gitone home">
@@ -70,7 +71,7 @@ export function SiteHeader({
           >
             <StarMark />
             <span className="hidden sm:inline">Star</span>
-            <span className="mono rounded-full px-2 py-1 text-[12px] font-bold leading-none tabular-nums transition-colors group-hover:bg-white/10" style={{ background: "rgba(240,232,216,.07)", color: "var(--ink)" }}>
+            <span className="mono rounded-full px-2 py-1 text-[12px] font-bold leading-none tabular-nums transition-colors group-hover:bg-white/10" style={{ background: "rgba(255, 255, 255,.07)", color: "var(--ink)" }}>
               {stars != null ? stars.toLocaleString("en-US") : "★"}
             </span>
           </a>

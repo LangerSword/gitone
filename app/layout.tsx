@@ -2,16 +2,26 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-// Titillium Web — F1's own typeface — as the display + body voice.
-const titillium = localFont({
+// Barlow Condensed — the broadcast grotesque: display, buttons, card names.
+const barlowc = localFont({
   src: [
-    { path: "./fonts/TitilliumWeb-Regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/TitilliumWeb-Italic.ttf", weight: "400", style: "italic" },
-    { path: "./fonts/TitilliumWeb-SemiBold.ttf", weight: "600", style: "normal" },
-    { path: "./fonts/TitilliumWeb-Bold.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/TitilliumWeb-Black.ttf", weight: "900", style: "normal" },
+    { path: "./fonts/BarlowCondensed-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "./fonts/BarlowCondensed-SemiBoldItalic.ttf", weight: "600", style: "italic" },
+    { path: "./fonts/BarlowCondensed-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/BarlowCondensed-ExtraBold.ttf", weight: "800", style: "normal" },
   ],
-  variable: "--font-titillium",
+  variable: "--font-barlowc",
+  display: "swap",
+});
+
+// Barlow — the readable body voice from the same superfamily.
+const barlow = localFont({
+  src: [
+    { path: "./fonts/Barlow-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/Barlow-Medium.ttf", weight: "500", style: "normal" },
+    { path: "./fonts/Barlow-SemiBold.ttf", weight: "600", style: "normal" },
+  ],
+  variable: "--font-barlow",
   display: "swap",
 });
 
@@ -45,13 +55,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08090b",
+  themeColor: "#15151e",
   colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${titillium.variable} ${jbmono.variable}`}>
+    <html lang="en" className={`${barlowc.variable} ${barlow.variable} ${jbmono.variable}`}>
       <head>
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="preconnect" href="https://flagcdn.com" />

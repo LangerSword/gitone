@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Check, ChevronDown, Code2, Copy, Download, ExternalLink } from "lucide-react";
+import { DuelPlate } from "./DuelPlate";
 
 function copy(text: string) {
   navigator.clipboard?.writeText(text).catch(() => {});
@@ -18,10 +18,8 @@ function XMark() {
 
 // One primary split button carries the whole "get the image" family
 // (download / open / embed / JSON); sharing is a single icon button; the
-// duel is a secondary ghost. Three tiers, one radius, no wall of boxes.
+// duel is a rolling fixture plate below. Three tiers, one radius.
 export function CardActions({ login, name, rtg }: { login: string; name?: string; rtg?: number }) {
-  const router = useRouter();
-  const [opp, setOpp] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
@@ -80,7 +78,7 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
             aria-haspopup="menu"
             aria-label="More card formats"
             className="btn btn-primary w-[46px] flex-none rounded-l-none px-0"
-            style={{ boxShadow: "inset 1px 0 0 rgba(26,18,11,.3), 0 8px 22px -8px rgba(214,133,74,.45)" }}
+            style={{ boxShadow: "inset 1px 0 0 rgba(0, 0, 0,.3), 0 8px 22px -8px rgba(193, 18, 31,.45)" }}
           >
             <ChevronDown size={18} strokeWidth={2.6} aria-hidden />
           </button>
@@ -119,30 +117,7 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
         </div>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const clean = opp.trim().replace(/^@/, "");
-          if (clean) router.push(`/${login}/vs/${encodeURIComponent(clean)}`);
-        }}
-        className="flex items-center gap-2"
-      >
-        <input
-          value={opp}
-          onChange={(e) => setOpp(e.target.value)}
-          placeholder="rival login"
-          spellCheck={false}
-          autoCapitalize="none"
-          aria-label="Rival GitHub login"
-          className="field field-sm h-[46px] flex-1"
-        />
-        <button type="submit" disabled={!opp.trim()} className="btn btn-ghost flex-none">
-          Race
-          <span className="mono rounded-full px-1.5 py-0.5 text-[10px] font-bold tracking-[0.08em]" style={{ background: "rgba(180,150,221,.16)", color: "var(--purple)" }} aria-hidden>
-            VS
-          </span>
-        </button>
-      </form>
+      <DuelPlate login={login} />
     </div>
   );
 }

@@ -81,7 +81,7 @@ export function DriverCard({ card }: { card: Card }) {
             position: "absolute",
             right: "3%",
             top: "13%",
-            fontFamily: "var(--font-titillium), sans-serif",
+            fontFamily: "var(--font-barlowc), sans-serif",
             fontWeight: 900,
             fontStyle: "italic",
             fontSize: "28cqw",
@@ -223,7 +223,7 @@ export function DriverCard({ card }: { card: Card }) {
           <div
             style={{
               marginTop: "0.6cqw",
-              fontFamily: "var(--font-titillium), sans-serif",
+              fontFamily: "var(--font-barlowc), sans-serif",
               fontWeight: 900,
               fontSize: "8.2cqw",
               lineHeight: 0.96,
@@ -276,7 +276,7 @@ export function DriverCard({ card }: { card: Card }) {
             <div
               style={{
                 position: "relative",
-                fontFamily: "var(--font-titillium), sans-serif",
+                fontFamily: "var(--font-barlowc), sans-serif",
                 fontWeight: 900,
                 fontSize: "15cqw",
                 lineHeight: 0.86,

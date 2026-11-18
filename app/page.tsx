@@ -5,6 +5,7 @@ import { DriverTicker } from "@/components/DriverTicker";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TrackBackdrop } from "@/components/TrackBackdrop";
 import { MiniCard } from "@/components/MiniCard";
+import Mascot from "@/components/Mascot";
 import { SAMPLE_CARDS } from "@/lib/racing/samples";
 import { getRepoStars } from "@/lib/github/stars";
 import { getScoutCount } from "@/lib/analytics";
@@ -27,6 +28,9 @@ export default async function Home() {
 
       <section className="relative z-10 mx-auto grid w-full max-w-[1240px] flex-1 items-center gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-10 lg:py-2">
         <div className="min-w-0">
+          <div className="rise -ml-1 mb-1.5" style={{ "--i": 0 } as React.CSSProperties}>
+            <Mascot size={116} />
+          </div>
           <div className="rise flex items-center gap-2.5" style={{ "--i": 0 } as React.CSSProperties}>
             <span aria-hidden className="inline-block h-[2px] w-7" style={{ background: "var(--f1-red)" }} />
             <span className="mono text-[10.5px] font-bold tracking-[0.26em]" style={{ color: "var(--dim)" }}>
@@ -36,11 +40,11 @@ export default async function Home() {
 
           <h1
             className="rise mt-3 text-[clamp(64px,9vw,118px)] uppercase"
-            style={{ "--i": 1, color: "var(--ink)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 0.78 } as React.CSSProperties}
+            style={{ "--i": 1, color: "var(--ink)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.82 } as React.CSSProperties}
           >
             GET
-            <span className="block" style={{ textTransform: "none", fontStyle: "italic", fontWeight: 400, letterSpacing: "-0.03em", color: "var(--amber)" }}>
-              rated<span style={{ color: "var(--f1-red)", fontStyle: "normal" }}>.</span>
+            <span className="block" style={{ textTransform: "none", fontStyle: "italic", fontWeight: 600, letterSpacing: "0em", color: "var(--f1-red)" }}>
+              rated<span style={{ color: "var(--ink)", fontStyle: "normal" }}>.</span>
             </span>
           </h1>
 
@@ -66,6 +70,7 @@ export default async function Home() {
         </div>
       </section>
 
+      <div aria-hidden className="checker relative z-10 h-[10px] w-full opacity-40" />
       <div className="relative z-10 flex-none">
         <DriverTicker />
       </div>
@@ -75,9 +80,9 @@ export default async function Home() {
           <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
             NOT AFFILIATED WITH EA SPORTS, FORMULA 1, OR GITHUB
           </span>
-          <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
-            BUILT BY <span style={{ color: "var(--dim)" }}>LAKSHAYA SHARMA</span>
-          </span>
+          <a href="https://github.com/LangerSword" target="_blank" rel="noopener noreferrer" className="link-quiet mono text-[11px] tracking-[0.12em]">
+            MADE BY LANGERSWORD
+          </a>
         </div>
       </footer>
     </main>

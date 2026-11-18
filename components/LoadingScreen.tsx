@@ -41,7 +41,7 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
       aria-label={login ? `Scouting ${login}` : "Loading the scout report"}
       style={{
         background:
-          "radial-gradient(70% 48% at 50% 0%, rgba(201,121,69,0.1), transparent 68%), var(--bg-0)",
+          "radial-gradient(70% 48% at 50% 0%, rgba(193, 18, 31,0.1), transparent 68%), var(--bg-0)",
       }}
     >
       {/* the gantry */}
@@ -100,7 +100,7 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
             style={{
               background: "linear-gradient(90deg, transparent, var(--f1-red) 32%, var(--f1-red) 68%, transparent)",
               animation: "load-sweep 1.15s cubic-bezier(.4,0,.6,1) infinite",
-              boxShadow: "0 0 12px rgba(201,121,69,.55)",
+              boxShadow: "0 0 12px rgba(193, 18, 31,.55)",
             }}
           />
         </div>

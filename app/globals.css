@@ -1,32 +1,34 @@
 @import "tailwindcss";
 
 /* ── gitone: the github grid ─────────────────────────────────────────────
-   A night-race broadcast package, not a dashboard. Carbon ground, paper
-   white type, one signal red, and the livery colour supplied by the card's
-   constructor. Timing purple is reserved for 90+ sectors; green for a win.
-   Type: Titillium Web (display + body), JetBrains Mono (timing numerals). */
+   An F1 night-race broadcast package. Carbon ground, white type, one racing
+   red signal, checkered-flag chrome, and the livery colour supplied by the
+   card's constructor. Timing purple = 90+/fastest, green = a win, yellow =
+   caution. Type: Barlow Condensed (display), Barlow (body), JetBrains Mono
+   (timing numerals). */
 
 :root {
-  /* Night paddock: deep petrol, parchment ink, copper signal. Not a black
-     dashboard; the ground has a visible green cast and warm light. */
-  --bg-0: #0e1c17;
-  --bg-1: #13241d;
-  --panel: #162a23;
-  --panel-2: #1c332b;
-  --line: rgba(240, 232, 216, 0.16);
-  --line-bright: rgba(240, 232, 216, 0.3);
-  --ink: #f0e8d8;
-  --dim: #cbc2b1;
-  --faint: #a89e8e;
-  --f1-red: #d6854a;
-  --red-deep: #a65a2b;
-  --f1-yellow: #e0a86a;
-  --purple: #b496dd;
-  --green: #7fcaa7;
-  --mint: #7fcaa7;
-  --amber: #e0a86a;
-  --yellow: #d9a35a;
-  --font-display: var(--font-titillium), "Titillium Web", system-ui, sans-serif;
+  /* F1 carbon: the brand's own #15151e ground with a woven material, white
+     ink and a single racing-red signal. Not a flat black dashboard. */
+  --bg-0: #15151e;
+  --bg-1: #1b1b26;
+  --panel: #1e1e2a;
+  --panel-2: #262633;
+  --line: rgba(255, 255, 255, 0.12);
+  --line-bright: rgba(255, 255, 255, 0.24);
+  --ink: #f5f5f7;
+  --dim: #c9c9d4;
+  --faint: #9b9bab;
+  --f1-red: #c1121f;
+  --red-deep: #7d0a13;
+  --f1-yellow: #ffd23f;
+  --purple: #b36bff;
+  --green: #2fd07a;
+  --mint: #2fd07a;
+  --amber: #ffd23f;
+  --yellow: #ffd23f;
+  --font-display: var(--font-barlowc), "Barlow Condensed", system-ui, sans-serif;
+  --font-body: var(--font-barlow), "Barlow", system-ui, sans-serif;
   --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -37,18 +39,24 @@ html {
 
 body {
   background:
-    radial-gradient(52% 40% at 7% -8%, rgba(201, 121, 69, 0.16), transparent 70%),
-    radial-gradient(44% 36% at 94% 104%, rgba(121, 199, 164, 0.09), transparent 72%),
+    radial-gradient(52% 40% at 7% -8%, rgba(193, 18, 31, 0.16), transparent 70%),
+    radial-gradient(44% 36% at 94% 104%, rgba(255, 255, 255, 0.05), transparent 72%),
+    linear-gradient(27deg, rgba(255, 255, 255, 0.014) 5px, transparent 5px),
+    linear-gradient(207deg, rgba(255, 255, 255, 0.014) 5px, transparent 5px),
+    linear-gradient(27deg, rgba(0, 0, 0, 0.2) 5px, transparent 5px),
+    linear-gradient(207deg, rgba(0, 0, 0, 0.2) 5px, transparent 5px),
     var(--bg-0);
+  background-size: auto, auto, 10px 10px, 10px 10px, 10px 10px, 10px 10px, auto;
+  background-position: 0 0, 0 0, 0 2px, 5px 0, 0 1px, 5px 4px, 0 0;
   color: var(--ink);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
   background: var(--f1-red);
-  color: #1a120b;
+  color: #ffffff;
 }
 
 /* ── shared vocabulary ─────────────────────────────────────────────────── */
@@ -81,7 +89,7 @@ body {
 .panel {
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
   border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(240, 232, 216, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 /* A measuring grid, not a wallpaper: 1px chalk lines on carbon, masked so
@@ -238,17 +246,17 @@ body {
 
 .scout-input {
   font-family: var(--font-mono);
-  background: rgba(240, 232, 216, 0.06);
-  border: 1px solid rgba(240, 232, 216, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: var(--ink);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .scout-input:focus {
   outline: none;
-  border-color: rgba(201, 121, 69, 0.8);
-  background: rgba(240, 232, 216, 0.09);
-  box-shadow: 0 0 0 3px rgba(201, 121, 69, 0.16);
+  border-color: rgba(193, 18, 31, 0.8);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.16);
 }
 
 .scout-input::placeholder {
@@ -269,7 +277,7 @@ input:focus-visible,
 .stage {
   position: relative;
   background:
-    radial-gradient(64% 48% at 50% -8%, rgba(201, 121, 69, 0.09), transparent 68%);
+    radial-gradient(64% 48% at 50% -8%, rgba(193, 18, 31, 0.09), transparent 68%);
 }
 
 .glass {
@@ -277,7 +285,7 @@ input:focus-visible,
   border: 1px solid var(--line-bright);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  box-shadow: inset 0 1px 0 rgba(240, 232, 216, 0.07), 0 28px 70px -32px rgba(0, 0, 0, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 28px 70px -32px rgba(0, 0, 0, 0.75);
 }
 
 /* tilt glare — only painted under a real hover pointer, never on touch. */
@@ -379,15 +387,15 @@ input:focus-visible,
    Radius rule: controls 14px, pills 999px, menus 14px, menu rows 9px. */
 
 :root {
-  --copper-hi: #e8a06a;
-  --copper-deep: #b06a35;
-  --ink-on-copper: #1a120b;
+  --signal-hi: #e03131;
+  --signal-deep: #7d0a13;
+  --ink-on-signal: #ffffff;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --r-control: 14px;
   --r-pill: 999px;
   --r-row: 9px;
-  --glow-copper: 0 0 0 1px rgba(214, 133, 74, 0.5), 0 8px 22px -8px rgba(214, 133, 74, 0.45);
-  --glow-copper-hi: 0 0 0 1px rgba(232, 160, 106, 0.65), 0 12px 30px -8px rgba(214, 133, 74, 0.55);
+  --glow-signal: 0 0 0 1px rgba(193, 18, 31, 0.5), 0 8px 22px -8px rgba(193, 18, 31, 0.45);
+  --glow-signal-hi: 0 0 0 1px rgba(224, 49, 49, 0.65), 0 12px 30px -8px rgba(193, 18, 31, 0.55);
 }
 
 @layer components {
@@ -415,7 +423,7 @@ input:focus-visible,
 .btn:disabled { cursor: not-allowed; opacity: 0.55; }
 .btn:not(:disabled):hover { transform: translateY(-1px); }
 .btn:not(:disabled):active { transform: translateY(0) scale(0.985); transition-duration: 0.075s; }
-.btn:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.75); outline-offset: 2px; }
+.btn:focus-visible { outline: 2px solid rgba(193, 18, 31, 0.75); outline-offset: 2px; }
 
 /* primary: copper foil, dark ink, a glow that brightens on hover, and a
    single shine sweep so the surface reads as material, not a flat slab. */
@@ -424,12 +432,12 @@ input:focus-visible,
   padding: 0 26px;
   font-size: 18px;
   font-weight: 900;
-  color: var(--ink-on-copper);
-  background: linear-gradient(180deg, var(--copper-hi), var(--f1-red) 55%, var(--copper-deep));
-  box-shadow: var(--glow-copper), inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(26, 18, 11, 0.28);
+  color: var(--ink-on-signal);
+  background: linear-gradient(180deg, var(--signal-hi), var(--f1-red) 55%, var(--signal-deep));
+  box-shadow: var(--glow-signal), inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.28);
 }
 .btn-primary:not(:disabled):hover {
-  box-shadow: var(--glow-copper-hi), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(26, 18, 11, 0.28);
+  box-shadow: var(--glow-signal-hi), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.28);
 }
 .btn-primary::after {
   content: "";
@@ -450,14 +458,14 @@ input:focus-visible,
   font-size: 13.5px;
   letter-spacing: 0.04em;
   color: var(--dim);
-  background: rgba(240, 232, 216, 0.03);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--line-bright);
 }
 .btn-ghost:not(:disabled):hover {
   color: var(--ink);
-  border-color: rgba(214, 133, 74, 0.55);
-  background: rgba(214, 133, 74, 0.08);
-  box-shadow: 0 10px 26px -12px rgba(214, 133, 74, 0.5);
+  border-color: rgba(193, 18, 31, 0.55);
+  background: rgba(193, 18, 31, 0.08);
+  box-shadow: 0 10px 26px -12px rgba(193, 18, 31, 0.5);
 }
 
 /* tertiary: a fixed square for a single glyph. */
@@ -467,13 +475,13 @@ input:focus-visible,
   padding: 0;
   flex: none;
   color: var(--dim);
-  background: rgba(240, 232, 216, 0.03);
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--line-bright);
 }
 .btn-icon:not(:disabled):hover {
   color: var(--ink);
-  border-color: rgba(214, 133, 74, 0.55);
-  background: rgba(214, 133, 74, 0.08);
+  border-color: rgba(193, 18, 31, 0.55);
+  background: rgba(193, 18, 31, 0.08);
 }
 .btn-icon:not(:disabled):active { transform: scale(0.96); }
 
@@ -487,26 +495,26 @@ input:focus-visible,
   width: 100%;
   border-radius: var(--r-control);
   border: 1.5px solid var(--line-bright);
-  background: rgba(240, 232, 216, 0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--ink);
   font-size: 16px;
   font-weight: 500;
   padding: 0 18px;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(240, 232, 216, 0.05);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease), background 0.18s var(--ease);
 }
 .field:focus {
   outline: none;
-  border-color: rgba(214, 133, 74, 0.8);
-  background: rgba(240, 232, 216, 0.08);
-  box-shadow: 0 0 0 4px rgba(214, 133, 74, 0.16), 0 0 42px rgba(214, 133, 74, 0.24);
+  border-color: rgba(193, 18, 31, 0.8);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 4px rgba(193, 18, 31, 0.16), 0 0 42px rgba(193, 18, 31, 0.24);
 }
 .field::placeholder { color: var(--faint); }
 .field:disabled { opacity: 0.6; }
 .field-sm { height: 40px; font-size: 14px; border-radius: var(--r-row); border-width: 1px; padding: 0 12px; }
-.field-sm:focus { box-shadow: 0 0 0 3px rgba(214, 133, 74, 0.14); }
+.field-sm:focus { box-shadow: 0 0 0 3px rgba(193, 18, 31, 0.14); }
 
 /* a quiet text action: underline, warm on hover, never a box. */
 .link-quiet {
@@ -515,13 +523,13 @@ input:focus-visible,
   font-weight: 600;
   color: var(--dim);
   text-decoration: underline;
-  text-decoration-color: rgba(240, 232, 216, 0.2);
+  text-decoration-color: rgba(255, 255, 255, 0.2);
   text-underline-offset: 3px;
   cursor: pointer;
   transition: color 0.18s var(--ease), text-decoration-color 0.18s var(--ease);
 }
-.link-quiet:hover { color: var(--copper-hi); text-decoration-color: rgba(214, 133, 74, 0.5); }
-.link-quiet:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.75); outline-offset: 3px; border-radius: 3px; }
+.link-quiet:hover { color: var(--signal-hi); text-decoration-color: rgba(193, 18, 31, 0.5); }
+.link-quiet:focus-visible { outline: 2px solid rgba(193, 18, 31, 0.75); outline-offset: 3px; border-radius: 3px; }
 
 /* menus and popovers: one surface, one row grammar. */
 .menu-pop {
@@ -530,7 +538,7 @@ input:focus-visible,
   background: linear-gradient(180deg, rgba(28, 51, 43, 0.97), rgba(14, 28, 23, 0.98));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 18px 46px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(240, 232, 216, 0.06);
+  box-shadow: 0 18px 46px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   animation: pop-in 0.16s var(--ease) both;
 }
 .menu-item {
@@ -546,12 +554,34 @@ input:focus-visible,
   cursor: pointer;
   transition: background 0.15s var(--ease), color 0.15s var(--ease);
 }
-.menu-item:hover { background: rgba(240, 232, 216, 0.06); color: var(--ink); }
-.menu-item:focus-visible { outline: 2px solid rgba(214, 133, 74, 0.7); outline-offset: -2px; }
+.menu-item:hover { background: rgba(255, 255, 255, 0.06); color: var(--ink); }
+.menu-item:focus-visible { outline: 2px solid rgba(193, 18, 31, 0.7); outline-offset: -2px; }
 
 @keyframes pop-in {
   from { opacity: 0; transform: translateY(6px) scale(0.98); }
   to { opacity: 1; transform: none; }
+}
+
+/* the duel plate: a floodlight sheen crossing the fixture, and a start-light
+   dot that pulses on hover. Both collapse under reduced motion. */
+@keyframes duel-sweep {
+  0% { transform: translateX(-130%); }
+  55%, 100% { transform: translateX(230%); }
+}
+@keyframes light-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+@keyframes trophy-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes trophy-shine {
+  0% { transform: translateX(-140%) skewX(-18deg); }
+  60%, 100% { transform: translateX(240%) skewX(-18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .duel-sheen, .trophy-float, .trophy-shine { animation: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

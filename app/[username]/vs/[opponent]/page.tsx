@@ -37,7 +37,7 @@ function RedFlag({ message }: { message: string }) {
       <Link
         href="/"
         className="mono mt-8 inline-block px-5 py-3 text-[11px] font-bold tracking-[0.16em]"
-        style={{ background: "var(--f1-red)", color: "#1a120b" }}
+        style={{ background: "var(--f1-red)", color: "#ffffff" }}
       >
         BACK TO THE GRID
       </Link>
@@ -55,7 +55,7 @@ function DuelSide({ card, role, won, href }: { card: Card; role: string; won: bo
         className="relative w-full max-w-[190px]"
         style={won ? { filter: `drop-shadow(0 16px 40px ${card.constructor.color}55)` } : undefined}
       >
-        <Link href={href} className="block transition-transform duration-300 hover:-translate-y-2" aria-label={`${card.name} report`}>
+        <Link href={href} className="block transition-transform duration-300 hover:-translate-y-2" style={{ opacity: won ? 1 : 0.82 }} aria-label={`${card.name} report`}>
           <DriverCard26 card={card} />
         </Link>
         {won && (
@@ -97,6 +97,9 @@ export default async function VsPage({
   const challenger = duel.challenger;
   const opp = duel.opponent;
   const winnerCard = winner === "challenger" ? challenger : winner === "opponent" ? opp : null;
+  const aWins = rows.filter((r) => r.challenger > r.opponent).length;
+  const bWins = rows.filter((r) => r.opponent > r.challenger).length;
+  const domA = rows.length ? aWins / rows.length : 0.5;
 
   return (
     <main className="min-h-screen">
@@ -107,6 +110,10 @@ export default async function VsPage({
           <header className="relative text-center">
             <div className="mb-3 flex items-center justify-center gap-2.5">
               <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
+              <span className="relative flex h-2 w-2" aria-hidden>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: "var(--f1-red)" }} />
+                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--f1-red)" }} />
+              </span>
               <p className="mono text-[11.5px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
                 LIGHTS OUT AND AWAY WE GO
               </p>
@@ -133,13 +140,26 @@ export default async function VsPage({
             </p>
           </header>
 
+          {/* sector dominance — the broadcast split bar */}
+          <div className="mx-auto mt-5 w-full max-w-[440px]">
+            <div className="mono mb-1.5 flex items-center justify-between text-[10.5px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+              <span style={{ color: challenger.constructor.color }}>{aWins}</span>
+              <span>SECTORS WON</span>
+              <span style={{ color: opp.constructor.color }}>{bWins}</span>
+            </div>
+            <div className="flex h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+              <div className="bar-fill h-full" style={{ width: `${domA * 100}%`, background: challenger.constructor.color }} />
+              <div className="bar-fill h-full flex-1" style={{ background: opp.constructor.color, opacity: 0.5 }} />
+            </div>
+          </div>
+
           {/* the two cars */}
           <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-8">
             <DuelSide card={challenger} role="CHALLENGER" won={winner === "challenger"} href={`/${challenger.login}`} />
             <div className="flex h-full flex-col items-center justify-center pt-8">
               <span
                 className="flex h-[clamp(58px,7vw,78px)] w-[clamp(58px,7vw,78px)] items-center justify-center rounded-full"
-                style={{ background: "radial-gradient(circle at 40% 30%, rgba(255,248,234,0.22), rgba(214,133,74,0.12) 46%, transparent 72%)", border: "1px solid rgba(214,133,74,0.38)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 34px rgba(214,133,74,0.18)" }}
+                style={{ background: "radial-gradient(circle at 40% 30%, rgba(255,248,234,0.22), rgba(193, 18, 31,0.12) 46%, transparent 72%)", border: "1px solid rgba(193, 18, 31,0.38)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 34px rgba(193, 18, 31,0.18)" }}
               >
                 <span className="display text-[clamp(24px,3.4vw,40px)] leading-none" style={{ color: "var(--f1-red)" }}>
                   VS
