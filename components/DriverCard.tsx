@@ -1,318 +1,365 @@
 import type { Card, StatKey } from "@/lib/racing/types";
 import { STATS, STAT_LABELS } from "@/lib/racing/constants";
-import { resolveCardTheme, statColor } from "./finishTheme";
+import { artLayers, resolveCardTheme, statColor } from "./finishTheme";
 import { cardDisplayName } from "@/lib/text";
 import { flagUrl } from "@/lib/flagUrl";
 
-// The gitone driver card — EA F1-game rating style, landscape carbon, one
-// livery accent band per constructor. Scales entirely via container queries
-// (1cqw = 1% of card width), so the same card serves the page, the starting
-// grid and the Satori embed (lib/og/card.tsx mirrors these exact positions).
-// Aspect locked to 640:390.
+// The gitone driver card — a material object, not a panel. Foil frame cut
+// per finish, livery bokeh and speed-streak art behind the surface, the
+// photo bled left with a duotone rim-light, the driver's number ghosted
+// behind the ratings. Scales via container queries (1cqw = 1% of card
+// width); lib/og/renderCard.tsx mirrors these exact positions for the
+// embeddable .png.
 
 export function DriverCard({ card }: { card: Card }) {
   const theme = resolveCardTheme(card);
   const livery = card.constructor.color;
-  const liveryInk = card.constructor.ink;
   const flag = flagUrl(card.country, 80);
   const displayName = cardDisplayName(card.name).toUpperCase();
-  const statColorFor = (v: number) => statColor(v, theme);
+  const c = statColor;
 
   return (
     <div
-      className="gitone-card carbon"
       style={{
-        position: "relative",
-        aspectRatio: "640 / 390",
-        containerType: "inline-size",
         width: "100%",
-        borderRadius: "1cqw",
-        overflow: "hidden",
-        background: "linear-gradient(160deg, #17171c 0%, #0c0c0f 55%, #101014 100%)",
-        boxShadow: `0 1cqw 3cqw -0.8cqw ${theme.glow}, inset 0 0 0 1px rgba(255,255,255,0.05)`,
+        containerType: "inline-size",
+        borderRadius: "1.6cqw",
+        padding: "1.5cqw",
+        // the frame — the finish's foil
+        background: theme.foil,
+        boxShadow: `0 1.4cqw 3.6cqw -1cqw ${theme.glow}, 0 0.2cqw 0.6cqw rgba(0,0,0,0.6)`,
       }}
     >
-      {/* livery rail */}
       <div
+        className="gitone-card"
         style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          width: "3.1%",
-          height: "100%",
-          background: livery,
-        }}
-      />
-      {/* livery glow behind the photo */}
-      <div
-        style={{
-          position: "absolute",
-          left: "-4%",
-          top: "-18%",
-          width: "52%",
-          height: "88%",
-          background: `radial-gradient(closest-side, ${livery}2e, transparent)`,
-        }}
-      />
-
-      {/* top band: constructor + finish chip */}
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          left: "5.4%",
-          top: "3.6%",
-          fontSize: "2.35cqw",
-          fontWeight: 700,
-          letterSpacing: "0.18em",
-          color: livery,
+          position: "relative",
+          aspectRatio: "640 / 390",
+          width: "100%",
+          overflow: "hidden",
+          borderRadius: "0.8cqw",
+          background: "#0a0a0d",
         }}
       >
-        {card.constructor.name.toUpperCase()}
-      </div>
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          right: "3.2%",
-          top: "2.9%",
-          fontSize: "2.05cqw",
-          fontWeight: 800,
-          letterSpacing: "0.14em",
-          padding: "0.45cqw 1.1cqw 0.35cqw",
-          borderRadius: "0.5cqw",
-          background: theme.accent,
-          color: "#0c0c0f",
-        }}
-      >
-        {card.finishLabel}
-      </div>
-
-      {/* photo */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={card.avatarUrl}
-        alt={card.name}
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "10.2%",
-          width: "33.4%",
-          height: "63%",
-          objectFit: "cover",
-          objectPosition: "top",
-          borderRadius: "0.8cqw",
-          filter: "saturate(0.92)",
-        }}
-      />
-      {/* photo fade + livery tint */}
-      <div
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "10.2%",
-          width: "33.4%",
-          height: "63%",
-          borderRadius: "0.8cqw",
-          background: `linear-gradient(180deg, transparent 40%, #0c0c0fee 96%), radial-gradient(120% 90% at 80% 10%, ${livery}26, transparent 60%)`,
-        }}
-      />
-      {/* flag chip */}
-      {flag && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={flag}
-          alt=""
+        {/* art: livery bokeh, streaks, grain, vignette */}
+        <div
           style={{
             position: "absolute",
-            left: "6.6%",
-            top: "12.6%",
-            height: "3.4cqw",
-            width: "auto",
-            borderRadius: "0.3cqw",
-            boxShadow: "0 0 0 1px rgba(255,255,255,0.28)",
+            inset: 0,
+            backgroundImage: artLayers(livery, card.finish).join(","),
+            backgroundColor: "#0a0a0d",
           }}
         />
-      )}
-      {/* driver number chip */}
-      <div
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "59.4%",
-          minWidth: "13.4%",
-          height: "13.8%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: livery,
-          color: liveryInk,
-          borderRadius: "0.6cqw 0.9cqw 0 0",
-        }}
-      >
-        <span
-          className="mono"
-          style={{ fontSize: "7cqw", fontWeight: 800, lineHeight: 1, paddingTop: "0.3cqw" }}
+        {/* ghost number watermark */}
+        <div
+          style={{
+            position: "absolute",
+            right: "3%",
+            top: "13%",
+            fontFamily: "var(--font-titillium), sans-serif",
+            fontWeight: 900,
+            fontStyle: "italic",
+            fontSize: "28cqw",
+            lineHeight: 0.8,
+            color: "transparent",
+            WebkitTextStroke: `0.2cqw ${theme.accent}`,
+            opacity: 0.13,
+          }}
         >
           {card.number}
-        </span>
-      </div>
-
-      {/* name block */}
-      <div style={{ position: "absolute", left: "41.8%", top: "12.4%", width: "36%" }}>
+        </div>
+        {/* diagonal gloss sheen — the laminate catch-light */}
         <div
           style={{
-            fontFamily: "var(--font-titillium), sans-serif",
-            fontWeight: 900,
-            fontSize: "7.6cqw",
-            lineHeight: 0.98,
-            letterSpacing: "0.01em",
-            color: "var(--ink)",
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(115deg, rgba(255,255,255,0.07) 0%, transparent 22%, transparent 64%, rgba(255,255,255,0.045) 100%)",
+            pointerEvents: "none",
           }}
-        >
-          {displayName}
-        </div>
-        <div
-          className="mono"
-          style={{ marginTop: "1.1cqw", fontSize: "2.45cqw", color: "var(--dim)", letterSpacing: "0.06em" }}
-        >
-          @{card.login}
-        </div>
-        <div
-          className="mono"
-          style={{ marginTop: "0.7cqw", fontSize: "2.2cqw", color: "var(--faint)", letterSpacing: "0.08em" }}
-        >
-          {card.archetype.toUpperCase()}
-        </div>
-      </div>
+        />
 
-      {/* RTG block */}
-      <div style={{ position: "absolute", right: "3.4%", top: "10.6%", textAlign: "right" }}>
-        <div
-          className="mono"
-          style={{ fontSize: "2.3cqw", letterSpacing: "0.3em", color: "var(--dim)", fontWeight: 700 }}
-        >
-          RTG
-        </div>
+        {/* photo — bled left, duotone + rim light */}
         <div
           style={{
-            fontFamily: "var(--font-titillium), sans-serif",
-            fontWeight: 900,
-            fontSize: "14.2cqw",
-            lineHeight: 0.9,
-            color: card.finish === "champion" || card.finish === "in_form" || card.finish === "founder"
-              ? theme.accent
-              : "var(--ink)",
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "37%",
+            height: "100%",
+            overflow: "hidden",
           }}
         >
-          {card.rtg}
-        </div>
-        <div
-          className="mono"
-          style={{ fontSize: "2.3cqw", color: "var(--faint)", letterSpacing: "0.14em", marginTop: "0.4cqw" }}
-        >
-          CAR {card.car.rating}
-        </div>
-      </div>
-
-      {/* the four rating bars */}
-      <div style={{ position: "absolute", left: "41.8%", top: "47%", width: "54.8%" }}>
-        {STATS.map((k: StatKey, i: number) => (
-          <div
-            key={k}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={card.avatarUrl}
+            alt={card.name}
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1.6cqw",
-              marginTop: i === 0 ? 0 : "2.15cqw",
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "top",
+              filter: "saturate(0.88) contrast(1.04)",
+            }}
+          />
+          {/* duotone + edge fade into the art */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `radial-gradient(90% 70% at 65% 12%, ${livery}30, transparent 60%), linear-gradient(90deg, rgba(10,10,13,0.15) 0%, transparent 18%, transparent 72%, #0a0a0d 100%), linear-gradient(180deg, rgba(10,10,13,0.25) 0%, transparent 22%, transparent 62%, rgba(8,8,11,0.72) 100%)`,
+              boxShadow: "inset 0 0 0 0.3cqw rgba(255,255,255,0.08)",
+            }}
+          />
+          {/* checkered base strip under the photo */}
+          <div
+            className="checker"
+            style={{ position: "absolute", left: 0, bottom: 0, width: "100%", height: "3.2cqw", opacity: 0.5 }}
+          />
+        </div>
+
+        {/* flag chip */}
+        {flag && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={flag}
+            alt=""
+            style={{
+              position: "absolute",
+              left: "2.4%",
+              top: "3%",
+              height: "3.6cqw",
+              width: "auto",
+              borderRadius: "0.3cqw",
+              boxShadow: "0 0.2cqw 0.8cqw rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.3)",
+            }}
+          />
+        )}
+
+        {/* driver number chip — foil material */}
+        <div
+          style={{
+            position: "absolute",
+            left: "2.4%",
+            bottom: "9.5%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0.6cqw 1.6cqw",
+            borderRadius: "0.6cqw",
+            background: theme.foil,
+            boxShadow: `0 0.5cqw 1.6cqw rgba(0,0,0,0.6), inset 0 0 0 1px ${theme.foilEdge}`,
+          }}
+        >
+          <span
+            className="mono"
+            style={{ fontSize: "6.4cqw", fontWeight: 800, lineHeight: 1, color: "#0c0c0f", paddingTop: "0.2cqw" }}
+          >
+            {card.number}
+          </span>
+        </div>
+
+        {/* finish chip — the card's tier, in its own material */}
+        <div
+          style={{
+            position: "absolute",
+            right: "1.8%",
+            top: "3%",
+            padding: "0.5cqw 1.3cqw 0.4cqw",
+            borderRadius: "0.5cqw",
+            background: theme.foil,
+            boxShadow: `inset 0 0 0 1px ${theme.foilEdge}, 0 0.4cqw 1.2cqw rgba(0,0,0,0.5)`,
+          }}
+        >
+          <span
+            className="mono"
+            style={{ fontSize: "2.1cqw", fontWeight: 800, letterSpacing: "0.14em", color: "#0c0c0f" }}
+          >
+            {card.finishLabel}
+          </span>
+        </div>
+
+        {/* identity block */}
+        <div style={{ position: "absolute", left: "40.5%", top: "7.5%", width: "34%" }}>
+          <div
+            className="mono"
+            style={{
+              fontSize: "2.3cqw",
+              fontWeight: 700,
+              letterSpacing: "0.2em",
+              color: livery,
+              textShadow: `0 0 1.4cqw ${livery}55`,
             }}
           >
-            <span
-              className="mono"
-              style={{ width: "5.2cqw", fontSize: "2.7cqw", fontWeight: 700, color: "var(--dim)", letterSpacing: "0.06em" }}
-            >
-              {STAT_LABELS[k]}
-            </span>
+            {card.constructor.name.toUpperCase()}
+          </div>
+          <div
+            style={{
+              marginTop: "0.6cqw",
+              fontFamily: "var(--font-titillium), sans-serif",
+              fontWeight: 900,
+              fontSize: "8.2cqw",
+              lineHeight: 0.96,
+              color: "#f4f5f9",
+              textShadow: `0 0.2cqw 1.2cqw rgba(0,0,0,0.65), 0 0 3cqw ${theme.accent}33`,
+              whiteSpace: "nowrap",
+            }}
+          >
+            {displayName}
+          </div>
+          <div
+            className="mono"
+            style={{ marginTop: "0.7cqw", fontSize: "2.4cqw", color: "rgba(237,238,242,0.6)" }}
+          >
+            @{card.login}
+          </div>
+          <div
+            className="mono"
+            style={{
+              marginTop: "0.5cqw",
+              fontSize: "2.05cqw",
+              letterSpacing: "0.1em",
+              color: theme.ink,
+              textShadow: `0 0 1.2cqw ${theme.glow}`,
+            }}
+          >
+            {card.archetype.toUpperCase()}
+          </div>
+        </div>
+
+        {/* RTG — the headline number, glowing in the finish accent */}
+        <div style={{ position: "absolute", right: "2.4%", top: "11%", textAlign: "right" }}>
+          <div
+            className="mono"
+            style={{ fontSize: "2.2cqw", letterSpacing: "0.3em", color: "rgba(244,245,249,0.85)", fontWeight: 700 }}
+          >
+            RTG
+          </div>
+          <div style={{ position: "relative" }}>
+            {/* halo behind the number */}
             <div
               style={{
-                flex: 1,
-                height: "1.55cqw",
-                borderRadius: "0.8cqw",
-                background: "rgba(255,255,255,0.07)",
-                overflow: "hidden",
+                position: "absolute",
+                inset: "-30% -20%",
+                background: `radial-gradient(60% 70% at 70% 60%, ${theme.accent}40, transparent 70%)`,
+                pointerEvents: "none",
               }}
-            >
-              <div
-                className="bar-fill"
-                style={{
-                  width: `${card.stats[k]}%`,
-                  height: "100%",
-                  borderRadius: "0.8cqw",
-                  background: statColorFor(card.stats[k]),
-                  animationDelay: `${0.15 + i * 0.09}s`,
-                }}
-              />
-            </div>
-            <span
-              className="mono"
+              aria-hidden="true"
+            />
+            <div
               style={{
-                width: "6.4cqw",
-                textAlign: "right",
-                fontSize: "3.5cqw",
-                fontWeight: 800,
-                color: statColorFor(card.stats[k]),
+                position: "relative",
+                fontFamily: "var(--font-titillium), sans-serif",
+                fontWeight: 900,
+                fontSize: "15cqw",
+                lineHeight: 0.86,
+                color: "#ffffff",
+                textShadow: `0 0 1.4cqw rgba(255,255,255,0.35), 0 0 4cqw ${theme.accent}aa, 0 0.3cqw 1cqw rgba(0,0,0,0.7)`,
               }}
             >
-              {card.stats[k]}
-            </span>
+              {card.rtg}
+            </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* divider + chassis strip */}
-      <div
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          right: "3.2%",
-          top: "88.6%",
-          height: "0.28cqw",
-          background: livery,
-          opacity: 0.4,
-        }}
-      />
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "91%",
-          fontSize: "2.15cqw",
-          color: "var(--faint)",
-          letterSpacing: "0.05em",
-        }}
-      >
-        CHASSIS{" "}
-        {(["cor", "top", "aero", "rel"] as const).map((k, i) => (
-          <span key={k}>
-            {i > 0 ? " · " : ""}
-            <span style={{ color: "var(--dim)" }}>{k.toUpperCase()}</span>{" "}
-            <span style={{ color: "var(--ink)", fontWeight: 700 }}>{card.car[k]}</span>
+        {/* the four rating bars */}
+        <div style={{ position: "absolute", left: "40.5%", top: "46%", width: "56.5%" }}>
+          {STATS.map((k: StatKey, i: number) => (
+            <div
+              key={k}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1.6cqw",
+                marginTop: i === 0 ? 0 : "2.05cqw",
+              }}
+            >
+              <span
+                className="mono"
+                style={{
+                  width: "5.4cqw",
+                  fontSize: "2.8cqw",
+                  fontWeight: 700,
+                  color: "rgba(237,238,242,0.55)",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {STAT_LABELS[k]}
+              </span>
+              <div
+                style={{
+                  flex: 1,
+                  height: "1.7cqw",
+                  borderRadius: "0.9cqw",
+                  background: "rgba(255,255,255,0.08)",
+                  boxShadow: "inset 0 0.2cqw 0.5cqw rgba(0,0,0,0.55)",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  className="bar-fill"
+                  style={{
+                    width: `${card.stats[k]}%`,
+                    height: "100%",
+                    borderRadius: "0.9cqw",
+                    background: c(card.stats[k], theme),
+                    boxShadow: `0 0 1.4cqw ${c(card.stats[k], theme)}66`,
+                    animationDelay: `${0.15 + i * 0.09}s`,
+                  }}
+                />
+              </div>
+              <span
+                className="mono"
+                style={{
+                  width: "6.6cqw",
+                  textAlign: "right",
+                  fontSize: "3.8cqw",
+                  fontWeight: 800,
+                  color: c(card.stats[k], theme),
+                  textShadow: card.stats[k] >= 90 ? `0 0 1.6cqw ${theme.hot}` : "none",
+                }}
+              >
+                {card.stats[k]}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* chassis strip */}
+        <div
+          style={{
+            position: "absolute",
+            left: "40.5%",
+            right: "2.4%",
+            bottom: "5%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderTop: `0.24cqw solid ${livery}`,
+            paddingTop: "1.2cqw",
+            opacity: 0.92,
+          }}
+        >
+          <span className="mono" style={{ fontSize: "2.3cqw", color: "rgba(237,238,242,0.75)" }}>
+            <span style={{ color: "rgba(237,238,242,0.5)" }}>CHASSIS</span>{" "}
+            <span style={{ color: "#f4f5f9", fontWeight: 700 }}>{card.car.rating}</span>
+            {(["cor", "top", "aero", "rel"] as const).map((k) => (
+              <span key={k}>
+                {" · "}
+                <span style={{ color: "rgba(237,238,242,0.5)" }}>{k.toUpperCase()}</span>{" "}
+                <span style={{ color: "#f4f5f9", fontWeight: 700 }}>{card.car[k]}</span>
+              </span>
+            ))}
           </span>
-        ))}
-      </div>
-      <div
-        className="mono"
-        style={{
-          position: "absolute",
-          right: "3.2%",
-          top: "91%",
-          fontSize: "2.15cqw",
-          color: "var(--faint)",
-          letterSpacing: "0.14em",
-        }}
-      >
-        GITONE
+          <span
+            className="mono"
+            style={{ fontSize: "2.05cqw", color: theme.ink, letterSpacing: "0.18em", opacity: 0.85 }}
+          >
+            GITONE
+          </span>
+        </div>
       </div>
     </div>
   );

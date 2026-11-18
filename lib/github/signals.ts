@@ -33,7 +33,7 @@ export function signalsFromPayload(p: RawPayload, now = Date.now()): Signals {
   return {
     login: p.login,
     name: p.name || p.login,
-    avatarUrl: p.avatarUrl || `https://github.com/${p.login}.png?size=480`,
+    avatarUrl: p.avatarUrl || `https://github.com/${p.login}.png?size=960`,
     location: p.location,
     followers: p.followers,
     account_age_years,

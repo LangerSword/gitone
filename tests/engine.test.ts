@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { buildCard } from "@/lib/racing/engine";
+import { computeAwards, groupAwards, yearScore } from "@/lib/awards";
 import { computeDuel } from "@/lib/duel";
 import { STATS } from "@/lib/racing/constants";
-import type { Signals } from "@/lib/racing/types";
+import type { Signals, YearBreakdown } from "@/lib/racing/types";
 
 const base: Signals = {
   login: "testdriver",
@@ -148,5 +149,61 @@ describe("computeDuel", () => {
     const duel = computeDuel(a, buildCard({ ...base, recent_commits: 9999 }));
     expect(duel.testSession).toBe(true);
     expect(duel.winner).toBeNull();
+  });
+});
+
+describe("awards", () => {
+  const y = (year: number, commits: number, prs = 0, reviews = 0, issues = 0, restricted = 0): YearBreakdown =>
+    ({ year, commits, prs, reviews, issues, restricted });
+
+  it("yearScore saturates on a single axis and rewards breadth over volume", () => {
+    // single axis: 10× the commits barely outscore — log saturation
+    const spam = yearScore(y(2024, 20000));
+    const twoK = yearScore(y(2024, 2000));
+    expect(spam - twoK).toBeLessThan(5);
+    // breadth: a 2.6k multi-axis season beats a 20k commits-only year
+    const real = yearScore(y(2024, 2000, 300, 200, 80, 100));
+    expect(real).toBeGreaterThan(spam);
+  });
+
+  it("mints world titles for standout seasons and respects the RTG ladder", () => {
+    const years = [y(2015, 900), y(2016, 1200), y(2017, 3000, 200, 150, 60, 90), y(2018, 1100)];
+    const card = { ...buildCard(base), years, rtg: 82 };
+    const awards = computeAwards(card, 4);
+    const titles = awards.filter((a) => a.key === "wdc");
+    expect(titles).toHaveLength(1);
+    expect(titles[0].year).toBe(2017);
+    expect(titles[0].reason).toContain("the career-median season");
+
+    const again = computeAwards({ ...card, years: [...years, y(2019, 3200, 220, 160, 60, 90)] }, 5);
+    expect(again.filter((a) => a.key === "wdc")).toHaveLength(1);
+  });
+
+  it("awards the grand slam only when all four ratings clear 80", () => {
+    const strong = { ...buildCard(base), rtg: 88, stats: { exp: 88, rac: 86, awa: 82, pac: 92 } as never };
+    expect(computeAwards(strong, 5).some((a) => a.key === "grand_slam")).toBe(true);
+    const weak = { ...strong, stats: { exp: 88, rac: 86, awa: 70, pac: 92 } as never };
+    expect(computeAwards(weak, 5).some((a) => a.key === "grand_slam")).toBe(false);
+  });
+
+  it("holds the fastest lap award for purple-sector pace only", () => {
+    const fast = { ...buildCard(base), rtg: 88, stats: { exp: 80, rac: 80, awa: 80, pac: 96 } as never };
+    expect(computeAwards(fast, 5).some((a) => a.key === "fastest_lap")).toBe(true);
+    const slow = { ...fast, stats: { exp: 80, rac: 80, awa: 80, pac: 84 } as never };
+    expect(computeAwards(slow, 5).some((a) => a.key === "fastest_lap")).toBe(false);
+  });
+
+  it("ironman demands a long career and a real card", () => {
+    const vet = { ...buildCard(base), rtg: 84 };
+    expect(computeAwards(vet, 12).some((a) => a.key === "ironman")).toBe(true);
+    expect(computeAwards(vet, 11).some((a) => a.key === "ironman")).toBe(false);
+    expect(computeAwards({ ...vet, rtg: 70 }, 14).some((a) => a.key === "ironman")).toBe(false);
+  });
+
+  it("groups the cabinet in shelf order", () => {
+    const card = { ...buildCard(base), rtg: 90, stats: { exp: 90, rac: 90, awa: 90, pac: 96 } as never };
+    const groups = groupAwards(computeAwards(card, 13));
+    const keys = groups.map((g) => g.key);
+    expect(keys.indexOf("wdc")).toBeLessThan(keys.indexOf("fastest_lap"));
   });
 });

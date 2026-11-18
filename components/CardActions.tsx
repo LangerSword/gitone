@@ -42,6 +42,14 @@ export function CardActions({ login }: { login: string }) {
         >
           OPEN .PNG
         </a>
+        <a
+          href={`/${login}.png?dl=1`}
+          download={`${login}-gitone.png`}
+          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
+          style={{ color: "var(--ink)" }}
+        >
+          DOWNLOAD
+        </a>
         <button
           onClick={() => {
             copy(`${origin}/api/card/${login}`);
@@ -65,7 +73,7 @@ export function CardActions({ login }: { login: string }) {
         <input
           value={opp}
           onChange={(e) => setOpp(e.target.value)}
-          placeholder="rival login — head to head"
+          placeholder="rival login for a head-to-head"
           spellCheck={false}
           autoCapitalize="none"
           className="scout-input flex-1 rounded-md px-4 py-2.5 text-[13px]"

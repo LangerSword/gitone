@@ -208,7 +208,7 @@ function profileQuery(): string {
       user(login: $login) {
         login
         name
-        avatarUrl(size: 480)
+        avatarUrl(size: 960)
         location
         createdAt
         followers { totalCount }
@@ -244,7 +244,7 @@ function basicsQuery(): string {
       user(login: $login) {
         login
         name
-        avatarUrl(size: 480)
+        avatarUrl(size: 960)
         location
         createdAt
         followers { totalCount }

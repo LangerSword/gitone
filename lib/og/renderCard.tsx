@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { STATS, STAT_LABELS } from "@/lib/racing/constants";
-import { resolveCardTheme, statColor } from "@/components/finishTheme";
+import { artLayers, resolveCardTheme, statColor } from "@/components/finishTheme";
 import { cardDisplayName } from "@/lib/text";
 import { flagUrl } from "@/lib/flagUrl";
 import { languageLogoUrl } from "@/lib/github/languages";
@@ -9,15 +9,19 @@ import { loadCardFonts } from "./card";
 
 // Server-side re-creation of the in-app DriverCard (components/DriverCard.tsx),
 // used for the embeddable /<user>.png AND the social unfurl. Rendered with
-// Satori (next/og); the layout IS DriverCard — percentage positions and cqw
-// font sizes resolved to px at the chosen width (1cqw = 1% of card width), so
-// the same tree scales by passing a different W. The DOM card's CSS overlays
-// (photo fade, livery tint) become stacked background layers; no bitmap
-// processing needed — the photo is a plain rectangular crop, so there's no
-// sharp pipeline.
+// Satori (next/og); the layout IS DriverCard v2 — foil frame, art layers,
+// bled photo, ghost number — with cqw sizes resolved to px at the render
+// width. Effects the DOM does with CSS text-shadow/masks are approximated
+// with flat gradient layers (the photo's edge fade paints the art's base
+// colour over the crop, exactly like the DOM overlay does).
 
 const CARD_ASPECT = 640 / 390;
-const cardH = (w: number) => Math.round(w / CARD_ASPECT);
+const FRAME = 0.015; // foil frame thickness, fraction of render width
+
+const framePad = (w: number) => Math.round(FRAME * w);
+const innerW = (w: number) => w - 2 * framePad(w);
+const innerH = (w: number) => Math.round(innerW(w) / CARD_ASPECT);
+export const cardH = (w: number) => innerH(w) + 2 * framePad(w);
 
 // rgba() from a #hex — Satori's gradient stops don't take 8-digit hex.
 function hexAlpha(hex: string, a: number): string {
@@ -62,16 +66,16 @@ export async function loadCardAssets(card: Card): Promise<CardAssets> {
   return { avatar, flag, logo };
 }
 
-// The gitone driver card as a Satori element at width `w`.
+// The gitone driver card as a Satori element at width `w` (frame included).
 export function cardTree(card: Card, assets: CardAssets, w: number) {
-  const H = cardH(w);
-  const cqw = (n: number) => Math.round((n / 100) * w);
-  const at = (left: number, top: number) => ({ position: "absolute" as const, left: `${left}%`, top: `${top}%` });
+  const H = innerH(w);
+  const IW = innerW(w);
+  // sizes resolve against the INNER card (the DOM's cqw unit)
+  const cqw = (n: number) => Math.round((n / 100) * IW);
   const theme = resolveCardTheme(card);
   const livery = card.constructor.color;
-  const liveryInk = card.constructor.ink;
   const displayName = cardDisplayName(card.name).toUpperCase();
-  const statColorFor = (v: number) => statColor(v, theme);
+  const c = statColor;
   const { avatar, flag } = assets;
 
   const statRows = STATS.map((k, i) => (
@@ -80,34 +84,42 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
       style={{
         display: "flex",
         alignItems: "center",
-        marginTop: i === 0 ? 0 : cqw(2.15),
+        marginTop: i === 0 ? 0 : cqw(2.05),
         gap: cqw(1.6),
       }}
     >
       <div
         style={{
           display: "flex",
-          width: cqw(5.2),
+          width: cqw(5.4),
           fontFamily: "JBMono",
-          fontSize: cqw(2.7),
+          fontSize: cqw(2.8),
           fontWeight: 700,
-          color: "#9a9ca6",
+          color: "rgba(237,238,242,0.55)",
         }}
       >
         {STAT_LABELS[k]}
       </div>
-      <div style={{ display: "flex", flex: 1, height: cqw(1.55), borderRadius: cqw(0.8), background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
-        <div style={{ display: "flex", width: `${card.stats[k]}%`, height: "100%", borderRadius: cqw(0.8), background: statColorFor(card.stats[k]) }} />
+      <div style={{ display: "flex", flex: 1, height: cqw(1.7), borderRadius: cqw(0.9), background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+        <div
+          style={{
+            display: "flex",
+            width: `${card.stats[k]}%`,
+            height: "100%",
+            borderRadius: cqw(0.9),
+            background: c(card.stats[k], theme),
+          }}
+        />
       </div>
       <div
         style={{
           display: "flex",
-          width: cqw(6.4),
+          width: cqw(6.6),
           justifyContent: "flex-end",
           fontFamily: "JBMono",
-          fontSize: cqw(3.5),
+          fontSize: cqw(3.8),
           fontWeight: 800,
-          color: statColorFor(card.stats[k]),
+          color: c(card.stats[k], theme),
         }}
       >
         {card.stats[k]}
@@ -119,181 +131,213 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
     <div
       style={{
         width: w,
-        height: H,
+        height: H + 2 * framePad(w),
         display: "flex",
-        position: "relative",
-        fontFamily: "Titillium",
-        borderRadius: cqw(1),
-        overflow: "hidden",
-        background: "linear-gradient(160deg, #17171c 0%, #0c0c0f 55%, #101014 100%)",
+        borderRadius: Math.round(0.016 * w),
+        padding: framePad(w),
+        background: theme.foil,
       }}
     >
-      {/* livery rail + glow */}
-      <div style={{ position: "absolute", left: 0, top: 0, width: "3.1%", height: "100%", background: livery, display: "flex" }} />
       <div
         style={{
-          position: "absolute",
-          left: "-4%",
-          top: "-18%",
-          width: "52%",
-          height: "88%",
+          width: IW,
+          height: H,
           display: "flex",
-          background: `radial-gradient(closest-side, ${hexAlpha(livery, 0.18)}, rgba(0,0,0,0))`,
-        }}
-      />
-
-      {/* top band */}
-      <div
-        style={{
-          ...at(5.4, 3.6),
-          display: "flex",
-          fontFamily: "JBMono",
-          fontSize: cqw(2.35),
-          fontWeight: 700,
-          letterSpacing: cqw(2.35 * 0.18),
-          color: livery,
+          position: "relative",
+          borderRadius: Math.round(0.008 * w),
+          overflow: "hidden",
+          backgroundColor: "#0a0a0d",
+          backgroundImage: artLayers(livery, card.finish).join(","),
         }}
       >
-        {card.constructor.name.toUpperCase()}
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          right: "3.2%",
-          top: "2.9%",
-          display: "flex",
-          padding: `${cqw(0.45)}px ${cqw(1.1)}px ${cqw(0.35)}px`,
-          borderRadius: cqw(0.5),
-          background: theme.accent,
-          color: "#0c0c0f",
-          fontFamily: "JBMono",
-          fontSize: cqw(2.05),
-          fontWeight: 800,
-          letterSpacing: cqw(2.05 * 0.14),
-        }}
-      >
-        {card.finishLabel}
-      </div>
-
-      {/* photo + overlays — the silhouette fills the slot when the fetch
-          fails, so the card never shows a hole */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={avatar ?? AVATAR_FALLBACK}
-        alt={card.name}
-        width={cqw(33.4)}
-        height={Math.round(H * 0.63)}
-        style={{ position: "absolute", left: "5.2%", top: "10.2%", objectFit: "cover", borderRadius: cqw(0.8) }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "10.2%",
-          width: "33.4%",
-          height: "63%",
-          borderRadius: cqw(0.8),
-          display: "flex",
-          backgroundImage: `radial-gradient(120% 90% at 80% 10%, ${hexAlpha(livery, 0.15)}, rgba(0,0,0,0) 60%), linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(12,12,15,0.93) 96%)`,
-        }}
-      />
-      {flag && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={flag}
-          alt=""
-          width={Math.round(cqw(3.4) * 1.4)}
-          height={cqw(3.4)}
-          style={{ position: "absolute", left: "6.6%", top: "12.6%", objectFit: "contain", borderRadius: cqw(0.3) }}
-        />
-      )}
-
-      {/* driver number chip */}
-      <div
-        style={{
-          position: "absolute",
-          left: "5.2%",
-          top: "59.4%",
-          minWidth: "13.4%",
-          height: "13.8%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: livery,
-          color: liveryInk,
-          borderRadius: `${cqw(0.6)}px ${cqw(0.9)}px 0 0`,
-        }}
-      >
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(7), fontWeight: 800, lineHeight: 1 }}>{card.number}</div>
-      </div>
-
-      {/* name block */}
-      <div style={{ ...at(41.8, 12.4), display: "flex", flexDirection: "column", width: "36%" }}>
-        <div style={{ display: "flex", fontWeight: 900, fontSize: cqw(7.6), lineHeight: 0.98, color: "#edeef2" }}>{displayName}</div>
-        <div style={{ display: "flex", marginTop: cqw(1.1), fontFamily: "JBMono", fontSize: cqw(2.45), color: "#9a9ca6" }}>@{card.login}</div>
-        <div style={{ display: "flex", marginTop: cqw(0.7), fontFamily: "JBMono", fontSize: cqw(2.2), color: "#6a6c76" }}>{card.archetype.toUpperCase()}</div>
-      </div>
-
-      {/* RTG block */}
-      <div style={{ position: "absolute", right: "3.4%", top: "10.6%", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.3), letterSpacing: cqw(0.7), color: "#9a9ca6", fontWeight: 700 }}>RTG</div>
+        {/* ghost number watermark */}
         <div
           style={{
+            position: "absolute",
+            right: "3%",
+            top: "13%",
             display: "flex",
+            fontStyle: "italic",
             fontWeight: 900,
-            fontSize: cqw(14.2),
-            lineHeight: 0.9,
-            color: card.finish === "champion" || card.finish === "in_form" || card.finish === "founder" ? theme.accent : "#edeef2",
+            fontSize: cqw(28),
+            lineHeight: 0.8,
+            color: theme.accent,
+            opacity: 0.13,
           }}
         >
-          {card.rtg}
+          {card.number}
         </div>
-        <div style={{ display: "flex", marginTop: cqw(0.4), fontFamily: "JBMono", fontSize: cqw(2.3), color: "#6a6c76" }}>CAR {card.car.rating}</div>
-      </div>
+        {/* diagonal gloss sheen — the laminate catch-light */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            backgroundImage:
+              "linear-gradient(115deg, rgba(255,255,255,0.07) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 64%, rgba(255,255,255,0.045) 100%)",
+          }}
+        />
 
-      {/* the four rating bars */}
-      <div style={{ ...at(41.8, 47), display: "flex", flexDirection: "column", width: "54.8%" }}>{statRows}</div>
+        {/* photo — bled left, duotone + edge fade into the art */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={avatar ?? AVATAR_FALLBACK}
+          alt={card.name}
+          width={cqw(37)}
+          height={H}
+          style={{ position: "absolute", left: 0, top: 0, objectFit: "cover", objectPosition: "top" }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: "37%",
+            height: "100%",
+            display: "flex",
+            backgroundImage: `radial-gradient(90% 70% at 65% 12%, ${hexAlpha(livery, 0.19)}, rgba(0,0,0,0) 60%), linear-gradient(90deg, rgba(10,10,13,0.15) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 72%, #0a0a0d 100%), linear-gradient(180deg, rgba(10,10,13,0.25) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 62%, rgba(8,8,11,0.72) 100%)`,
+          }}
+        />
+        {/* checkered base strip under the photo */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: 0,
+            width: "37%",
+            height: cqw(3.2),
+            display: "flex",
+            opacity: 0.4,
+            backgroundImage:
+              "repeating-linear-gradient(45deg, rgba(255,255,255,0.35) 0 6px, transparent 6px 12px)",
+          }}
+        />
 
-      {/* divider + chassis strip */}
-      <div style={{ position: "absolute", left: "5.2%", right: "3.2%", top: "88.6%", height: cqw(0.28), background: livery, opacity: 0.4, display: "flex" }} />
-      <div
-        style={{
-          ...at(5.2, 91),
-          display: "flex",
-          fontFamily: "JBMono",
-          fontSize: cqw(2.15),
-          color: "#6a6c76",
-        }}
-      >
-        <span>CHASSIS&nbsp;</span>
-        {(["cor", "top", "aero", "rel"] as const).map((k, i) => (
-          <span key={k}>
-            {i > 0 ? " · " : ""}
-            <span style={{ color: "#9a9ca6" }}>{k.toUpperCase()}</span>
-            <span style={{ color: "#edeef2", fontWeight: 700 }}>{card.car[k]}</span>
-          </span>
-        ))}
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          right: "3.2%",
-          top: "91%",
-          display: "flex",
-          fontFamily: "JBMono",
-          fontSize: cqw(2.15),
-          color: "#6a6c76",
-          letterSpacing: cqw(0.3),
-        }}
-      >
-        GITONE
+        {/* flag chip */}
+        {flag && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={flag}
+            alt=""
+            width={Math.round(cqw(3.6) * 1.4)}
+            height={cqw(3.6)}
+            style={{ position: "absolute", left: "2.4%", top: "3%", objectFit: "contain", borderRadius: cqw(0.3) }}
+          />
+        )}
+
+        {/* driver number chip — foil material */}
+        <div
+          style={{
+            position: "absolute",
+            left: "2.4%",
+            bottom: "10.5%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: `${cqw(0.6)}px ${cqw(1.6)}px`,
+            borderRadius: cqw(0.6),
+            background: theme.foil,
+          }}
+        >
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(6.4), fontWeight: 800, lineHeight: 1, color: "#0c0c0f" }}>
+            {card.number}
+          </div>
+        </div>
+
+        {/* finish chip — the card's tier, in its own material */}
+        <div
+          style={{
+            position: "absolute",
+            right: "1.8%",
+            top: "3%",
+            display: "flex",
+            padding: `${cqw(0.5)}px ${cqw(1.3)}px ${cqw(0.4)}px`,
+            borderRadius: cqw(0.5),
+            background: theme.foil,
+          }}
+        >
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.1), fontWeight: 800, letterSpacing: cqw(0.3), color: "#0c0c0f" }}>
+            {card.finishLabel}
+          </div>
+        </div>
+
+        {/* identity block */}
+        <div style={{ position: "absolute", left: "40.5%", top: "7.5%", display: "flex", flexDirection: "column", width: "34%" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.3), fontWeight: 700, letterSpacing: cqw(0.46), color: livery }}>
+            {card.constructor.name.toUpperCase()}
+          </div>
+          <div style={{ display: "flex", marginTop: cqw(0.6), fontWeight: 900, fontSize: cqw(8.2), lineHeight: 0.96, color: "#f4f5f9" }}>
+            {displayName}
+          </div>
+          <div style={{ display: "flex", marginTop: cqw(0.7), fontFamily: "JBMono", fontSize: cqw(2.4), color: "rgba(237,238,242,0.6)" }}>
+            @{card.login}
+          </div>
+          <div style={{ display: "flex", marginTop: cqw(0.5), fontFamily: "JBMono", fontSize: cqw(2.05), letterSpacing: cqw(0.2), color: theme.ink }}>
+            {card.archetype.toUpperCase()}
+          </div>
+        </div>
+
+        {/* RTG block */}
+        <div style={{ position: "absolute", right: "2.4%", top: "11%", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.2), letterSpacing: cqw(0.66), color: "rgba(244,245,249,0.85)", fontWeight: 700 }}>
+            RTG
+          </div>
+          {/* halo behind the number */}
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              backgroundImage: `radial-gradient(60% 70% at 70% 60%, ${hexAlpha(theme.accent, 0.28)}, rgba(0,0,0,0) 70%)`,
+            }}
+          >
+            <div style={{ display: "flex", fontWeight: 900, fontSize: cqw(15), lineHeight: 0.86, color: "#ffffff" }}>
+              {card.rtg}
+            </div>
+          </div>
+        </div>
+
+        {/* the four rating bars */}
+        <div style={{ position: "absolute", left: "40.5%", top: "46%", display: "flex", flexDirection: "column", width: "56.5%" }}>
+          {statRows}
+        </div>
+
+        {/* chassis strip */}
+        <div
+          style={{
+            position: "absolute",
+            left: "40.5%",
+            right: "2.4%",
+            bottom: "5%",
+            display: "flex",
+            borderTop: `${Math.max(2, cqw(0.24))}px solid ${livery}`,
+            paddingTop: cqw(1.2),
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.3), color: "rgba(237,238,242,0.75)" }}>
+            <span style={{ color: "rgba(237,238,242,0.5)" }}>CHASSIS&nbsp;</span>
+            <span style={{ color: "#f4f5f9", fontWeight: 700 }}>{card.car.rating}</span>
+            {(["cor", "top", "aero", "rel"] as const).map((k) => (
+              <span key={k}>
+                {" · "}
+                <span style={{ color: "rgba(237,238,242,0.5)" }}>{k.toUpperCase()}</span>
+                <span style={{ color: "#f4f5f9", fontWeight: 700 }}>{card.car[k]}</span>
+              </span>
+            ))}
+          </div>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.05), letterSpacing: cqw(0.37), color: theme.ink }}>
+            GITONE
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-// The standalone embeddable card image: gitone/<user>.png.
-export async function renderCardImage(card: Card, width = 1280): Promise<ImageResponse> {
+// The standalone embeddable card image: gitone/<user>.png. Rendered at 960
+// (1.5x the 640 design width): crisp for READMEs, and the 460px-square
+// GitHub avatar only upscales ~1.27x into the full-height photo crop.
+export async function renderCardImage(card: Card, width = 960): Promise<ImageResponse> {
   const [fonts, assets] = await Promise.all([loadCardFonts(), loadCardAssets(card)]);
   return new ImageResponse(cardTree(card, assets, width), {
     width,
@@ -347,5 +391,3 @@ export async function renderFallbackImage(username: string): Promise<ImageRespon
     { width: W, height: H, fonts, headers: { "Cache-Control": "public, max-age=300" } },
   );
 }
-
-export { cardH };

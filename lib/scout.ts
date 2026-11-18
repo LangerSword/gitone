@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redis } from "./redis";
 import { buildCard } from "./racing/engine";
+import { computeAwards } from "./awards";
 import { fetchProfile, type GithubError } from "./github/client";
 import { signalsFromPayload } from "./github/signals";
 import type { Card } from "./racing/types";
@@ -17,7 +18,7 @@ import type { Card } from "./racing/types";
 // speed, never behaviour. Only successful builds are stored; scout errors
 // (notfound / ratelimit / …) propagate unchanged and are never cached.
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2"; // v2: cards carry the trophy cabinet
 const CARD_TTL_SECONDS = 120 * 60;
 
 const normalizeLogin = (username: string) => username.trim().replace(/^@/, "").toLowerCase();
@@ -53,7 +54,9 @@ async function writeCache(login: string, card: Card): Promise<void> {
 const inflight = new Map<string, Promise<Card>>();
 
 async function buildFresh(username: string, login: string): Promise<Card> {
-  const card = buildCard(signalsFromPayload(await fetchProfile(username)));
+  const signals = signalsFromPayload(await fetchProfile(username));
+  const card = buildCard(signals);
+  card.awards = computeAwards(card, signals.active_years);
   await writeCache(login, card);
   return card;
 }

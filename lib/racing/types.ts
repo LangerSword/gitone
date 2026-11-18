@@ -2,6 +2,17 @@ export type StatKey = "exp" | "rac" | "awa" | "pac";
 export type Stats = Record<StatKey, number>;
 export type Profile = Record<StatKey, number>;
 
+// The trophy cabinet keys (see lib/awards for the rules).
+export type AwardKey = "wdc" | "grand_slam" | "fastest_lap" | "ironman";
+
+// One earned trophy. WDC titles carry the season; held awards
+// (grand slam / fastest lap / ironman) are current-form and carry no year.
+export interface AwardInstance {
+  key: AwardKey;
+  year?: number;
+  reason: string; // short, plain why-it-was-given (modal)
+}
+
 // Card tiers, EA-F1 flavoured. The 90s stay a legacy gate (see engine §4).
 export type Finish = "rookie" | "points" | "podium" | "winner" | "in_form" | "champion" | "founder";
 
@@ -109,6 +120,8 @@ export interface Card {
   years?: YearBreakdown[];
   // Per-week lap counts for the telemetry chart (see Signals.recent_calendar).
   recent_calendar?: number[];
+  // The trophy cabinet, computed at scout time (lib/awards via lib/scout).
+  awards?: AwardInstance[];
   legacy: { L: number };
   report: Report;
 }

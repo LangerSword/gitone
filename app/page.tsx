@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ScoutForm } from "@/components/ScoutForm";
 import { StartGrid } from "@/components/StartGrid";
+import { HeroCard } from "@/components/HeroCard";
 import { Reveal } from "@/components/Reveal";
 import { STATS, STAT_COPY, STAT_LABELS, STAT_NAMES, FINISH_LABELS } from "@/lib/racing/constants";
 import type { Finish } from "@/lib/racing/types";
@@ -43,31 +44,36 @@ export default function Home() {
         </nav>
       </header>
 
-      <section className="mx-auto max-w-6xl px-5 sm:px-8 pt-16 sm:pt-24 pb-14">
-        <Reveal>
-          <p className="eyebrow eyebrow-red">GITHUB IN, DRIVER CARD OUT</p>
-          <h1
-            className="mt-4 font-black leading-[0.95]"
-            style={{ fontSize: "clamp(46px, 7.2vw, 88px)", letterSpacing: "-0.015em" }}
-          >
-            your github,
-            <br />
-            rated like f1.
-          </h1>
-          <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: "var(--dim)" }}>
-            Every GitHub profile, scored the way the official F1 games score their grid:
-            four ratings read from real commits, PRs and reviews, a livery built from your
-            headline language, and a card that embeds anywhere and re-scouts itself.
-          </p>
-        </Reveal>
-        <Reveal delay={120} className="mt-8 max-w-xl">
-          <ScoutForm autoFocus />
-        </Reveal>
-        <Reveal delay={220} className="mt-10">
-          <div className="flex items-center gap-6 text-[13px] mono" style={{ color: "var(--faint)" }}>
-            <span>EXP · RAC · AWA · PAC</span>
-            <span className="hidden sm:inline">— four stats, pace-weighted</span>
-          </div>
+      <section className="mx-auto max-w-7xl px-5 sm:px-8 pt-16 sm:pt-24 pb-14 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)] lg:gap-14 items-center">
+        <div>
+          <Reveal>
+            <p className="eyebrow eyebrow-red">GITHUB IN, DRIVER CARD OUT</p>
+            <h1
+              className="mt-4 font-black leading-[0.95]"
+              style={{ fontSize: "clamp(46px, 7vw, 84px)", letterSpacing: "-0.015em" }}
+            >
+              your github,
+              <br />
+              rated like f1.
+            </h1>
+            <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: "var(--dim)" }}>
+              Every GitHub profile, scored the way the official F1 games score their grid:
+              four ratings read from real commits, PRs and reviews, a livery built from your
+              headline language, and a card that embeds anywhere and re-scouts itself.
+            </p>
+          </Reveal>
+          <Reveal delay={120} className="mt-8 max-w-xl">
+            <ScoutForm autoFocus />
+          </Reveal>
+          <Reveal delay={220} className="mt-10">
+            <div className="flex items-center gap-6 text-[13px] mono" style={{ color: "var(--faint)" }}>
+              <span>EXP · RAC · AWA · PAC</span>
+              <span className="hidden sm:inline">four stats, pace-weighted</span>
+            </div>
+          </Reveal>
+        </div>
+        <Reveal delay={160} className="mt-12 lg:mt-0">
+          <HeroCard login="langersword" />
         </Reveal>
       </section>
 
@@ -99,7 +105,7 @@ export default function Home() {
             </h2>
             <p className="mt-4 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--dim)" }}>
               The F1 games rate every driver on the same four numbers. Here, those numbers are
-              read straight from GitHub&apos;s GraphQL API — no surveys, no self-reporting. Just the laps.
+              read straight from GitHub&apos;s GraphQL API. No surveys, no self-reporting. Just the laps.
             </p>
           </Reveal>
           <Reveal delay={100} className="mt-8">
@@ -135,7 +141,7 @@ export default function Home() {
             </div>
             <p className="mono mt-4 text-[12px]" style={{ color: "var(--faint)" }}>
               RTG = pace-weighted combination · pace carries the greater weight, like the game · raw
-              stats cap at 88 — the 90s are a legacy gate bought with years and influence
+              stats cap at 88; the 90s are a legacy gate bought with years and influence
             </p>
           </Reveal>
         </div>
@@ -150,7 +156,7 @@ export default function Home() {
           </h2>
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--dim)" }}>
             The F1 games rate constructors as well as drivers. Your constructor is your headline
-            language — the livery band, the name on the card — and its spec sheet is built from
+            language (the livery band, the name on the card), and its spec sheet is built from
             the same live GitHub signals.
           </p>
         </Reveal>
@@ -225,16 +231,16 @@ export default function Home() {
           <div className="panel rounded-lg p-5 sm:p-6">
             <ul className="text-[13px] leading-relaxed space-y-3 mono" style={{ color: "var(--dim)" }}>
               <li>
-                <span style={{ color: "var(--ink)" }}>{"<login>.png"}</span> — the card, as a live image
+                <span style={{ color: "var(--ink)" }}>{"<login>.png"}</span>: the card, as a live image
               </li>
               <li>
-                <span style={{ color: "var(--ink)" }}>{"<login>"}</span> — the full scout report
+                <span style={{ color: "var(--ink)" }}>{"<login>"}</span>: the full scout report
               </li>
               <li>
-                <span style={{ color: "var(--ink)" }}>{"<login>/vs/<other>"}</span> — head-to-head, lights out
+                <span style={{ color: "var(--ink)" }}>{"<login>/vs/<other>"}</span>: head-to-head, lights out
               </li>
               <li>
-                <span style={{ color: "var(--ink)" }}>{"/api/card/<login>"}</span> — the raw JSON
+                <span style={{ color: "var(--ink)" }}>{"/api/card/<login>"}</span>: the raw JSON
               </li>
             </ul>
             <p className="mt-4 text-[12.5px]" style={{ color: "var(--faint)" }}>
