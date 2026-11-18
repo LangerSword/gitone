@@ -149,8 +149,8 @@ export function MetricBar({
             {unit ? ` ${unit}` : ""}
           </span>
           <span
-            className="mono text-[16px] font-bold leading-none tabular-nums"
-            style={{ color: accent, textShadow: `0 0 14px ${accent}44` }}
+            className="mono rounded-md px-2 py-0.5 text-[15px] font-bold leading-none tabular-nums"
+            style={{ color: accent, background: `${accent}18`, border: `1px solid ${accent}33` }}
           >
             {score}
           </span>

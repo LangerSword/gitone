@@ -48,8 +48,8 @@ function AwardDialog({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-[60] flex items-center justify-center p-6 backdrop-blur-[6px]"
-      style={{ background: "rgba(5,5,8,0.82)" }}
+      className="fixed inset-0 z-[60] flex items-center justify-center p-6 backdrop-blur-[10px]"
+      style={{ background: "rgba(5,5,8,0.85)" }}
       role="presentation"
     >
       <div
@@ -59,7 +59,7 @@ function AwardDialog({
         aria-modal="true"
         aria-labelledby="award-title"
         onClick={(e) => e.stopPropagation()}
-        className="glass relative flex w-[min(540px,100%)] max-h-[85vh] flex-col gap-4 overflow-auto rounded-2xl p-6 outline-none sm:flex-row sm:items-start"
+        className="glass relative flex w-[min(580px,100%)] max-h-[85vh] flex-col gap-5 overflow-auto rounded-[20px] p-8 outline-none sm:flex-row sm:items-start sm:gap-7 sm:p-10"
       >
         <button
           onClick={onClose}

@@ -28,7 +28,7 @@ export function CardActions({ login }: { login: string }) {
             copy(`[![My gitone card](${origin}/${login}.png)](${origin}/${login})`);
             flash("embed");
           }}
-          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] transition-colors"
+          className="mono rounded-full px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] transition-colors"
           style={{ background: "var(--f1-red)", color: "#fff" }}
         >
           {copied === "embed" ? "COPIED" : "COPY EMBED MD"}
@@ -37,7 +37,7 @@ export function CardActions({ login }: { login: string }) {
           href={`/${login}.png`}
           target="_blank"
           rel="noreferrer"
-          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
+          className="mono rounded-full px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
           style={{ color: "var(--ink)" }}
         >
           OPEN .PNG
@@ -45,7 +45,7 @@ export function CardActions({ login }: { login: string }) {
         <a
           href={`/${login}.png?dl=1`}
           download={`${login}-gitone.png`}
-          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
+          className="mono rounded-full px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
           style={{ color: "var(--ink)" }}
         >
           DOWNLOAD
@@ -55,7 +55,7 @@ export function CardActions({ login }: { login: string }) {
             copy(`${origin}/api/card/${login}`);
             flash("json");
           }}
-          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
+          className="mono rounded-full px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] panel"
           style={{ color: "var(--ink)" }}
         >
           {copied === "json" ? "COPIED" : "JSON API"}
@@ -76,13 +76,13 @@ export function CardActions({ login }: { login: string }) {
           placeholder="rival login for a head-to-head"
           spellCheck={false}
           autoCapitalize="none"
-          className="scout-input flex-1 rounded-md px-4 py-2.5 text-[13px]"
+          className="scout-input flex-1 rounded-full px-4 py-2.5 text-[13px]"
           aria-label="Rival GitHub login"
         />
         <button
           type="submit"
           disabled={!opp.trim()}
-          className="mono rounded-md px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] transition-opacity disabled:opacity-40"
+          className="mono rounded-full px-4 py-2.5 text-[12px] font-bold tracking-[0.1em] transition-opacity disabled:opacity-40"
           style={{ background: "var(--f1-red)", color: "#fff" }}
         >
           RACE
