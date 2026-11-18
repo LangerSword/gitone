@@ -92,7 +92,10 @@ export function ContribGrid() {
           {/* GRID_SVG is a static, deterministic SVG string built only from
               numeric constants above — no user input — so injecting it is safe
               (one flight node instead of 364 rects, the gitfut approach). */}
-          <div className="relative h-[64px] min-w-0 flex-1" dangerouslySetInnerHTML={{ __html: GRID_SVG }} />
+          <div className="relative h-[64px] min-w-0 flex-1 overflow-hidden">
+            <div className="absolute inset-0" dangerouslySetInnerHTML={{ __html: GRID_SVG }} />
+            <div className="contrib-scan pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(90deg, transparent 46%, rgba(57,211,83,0.55) 49%, rgba(255,255,255,0.35) 50%, rgba(57,211,83,0.55) 51%, transparent 54%)", backgroundSize: "200% 100%", mixBlendMode: "screen" }} />
+          </div>
           <div className="hidden flex-none lg:block">
             <div className="mono mb-1 text-[10px] font-bold tracking-[0.2em]" style={{ color: "var(--faint)" }}>
               TOP OF THE GRID

@@ -366,15 +366,44 @@ input:focus-visible,
   .sector-box:first-child { border-color: rgba(179, 107, 255, 0.7); background: rgba(179, 107, 255, 0.12); }
   .sector-box:first-child .sector-time { color: #b36bff; }
 }
-/* the GitHub contribution heatmap: lit cells pulse in a wave racing left to
-   right (per-cell --cd delay), the "gitty" signature scored in timing colours */
-@keyframes contrib-wave {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
+/* the GitHub contribution heatmap: a live scan sweeps the commit cells (the
+   "gitty" signature), cleaner than every cell pulsing at once */
+.contrib-cell { opacity: 0.92; }
+@keyframes contrib-scan {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
 }
-.contrib-cell { animation: contrib-wave 2.8s ease-in-out infinite; animation-delay: var(--cd, 0s); }
+.contrib-scan { animation: contrib-scan 4.5s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .contrib-cell { animation: none; opacity: 0.85; }
+  .contrib-scan { animation: none; }
+}
+/* the one-of-one card's living holographic sweep */
+@keyframes holo-sweep {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+.holo-sweep { animation: holo-sweep 5s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .holo-sweep { animation: none; }
+}
+/* the one-of-one holofoil: a shimmering rainbow foil over the portrait, the
+   collectible-card "rare" treatment (color-dodge over a darkened photo) */
+@keyframes holo-shimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 200%; }
+}
+.holo-foil {
+  background-image: repeating-linear-gradient(115deg,
+    rgba(255, 0, 0, 0.55) 0%, rgba(255, 154, 0, 0.55) 7%, rgba(208, 222, 33, 0.55) 14%,
+    rgba(79, 220, 74, 0.55) 21%, rgba(63, 218, 216, 0.55) 28%, rgba(47, 201, 226, 0.55) 35%,
+    rgba(28, 127, 238, 0.55) 42%, rgba(95, 21, 242, 0.55) 49%, rgba(186, 12, 248, 0.55) 56%,
+    rgba(251, 7, 217, 0.55) 63%, rgba(255, 0, 0, 0.55) 70%);
+  background-size: 200% 200%;
+  mix-blend-mode: color-dodge;
+  animation: holo-shimmer 6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .holo-foil { animation: none; }
 }
 .ticker-track {
   animation: ticker-run 38s linear infinite;

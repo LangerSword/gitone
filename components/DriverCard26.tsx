@@ -57,7 +57,7 @@ export function DriverCard26({
           padding: "1.15cqw",
           borderRadius: 18,
           overflow: "hidden",
-          background: `linear-gradient(148deg, ${livery} 0%, ${rgba(livery, 0.28)} 22%, ${rgba(livery, 0.95)} 48%, rgba(255,255,255,0.55) 58%, ${rgba(livery, 0.5)} 76%, ${livery} 100%)`,
+          background: card.finish === "founder" ? theme.foil : `linear-gradient(148deg, ${livery} 0%, ${rgba(livery, 0.28)} 22%, ${rgba(livery, 0.95)} 48%, rgba(255,255,255,0.55) 58%, ${rgba(livery, 0.5)} 76%, ${livery} 100%)`,
         }}
       >
         <div
@@ -106,7 +106,7 @@ export function DriverCard26({
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "top center",
-                filter: "contrast(1.06) saturate(0.82) brightness(0.96)",
+                filter: card.finish === "founder" ? "contrast(1.05) saturate(0.7) brightness(0.62)" : "contrast(1.06) saturate(0.82) brightness(0.96)",
               }}
             />
             {/* the livery rim light and the vignette that seats the head */}
@@ -129,13 +129,59 @@ export function DriverCard26({
                 position: "absolute",
                 inset: 0,
                 backgroundImage: theme.foil,
-                mixBlendMode: "screen",
-                opacity: card.finish === "founder" ? 0.34 : 0.2,
-                maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.4) 45%, transparent 72%)",
-                WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.4) 45%, transparent 72%)",
+                mixBlendMode: card.finish === "founder" ? "color-dodge" : "screen",
+                opacity: card.finish === "founder" ? 0.5 : 0.2,
+                maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 55%, transparent 88%)",
+                WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 55%, transparent 88%)",
                 pointerEvents: "none",
               }}
             />
+          )}
+          {/* the one-of-one gets a living holographic sweep + gold flecks */}
+          {card.finish === "founder" && (
+            <>
+              <div
+                aria-hidden
+                className="holo-foil"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  opacity: 0.5,
+                  pointerEvents: "none",
+                  maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.6) 60%, transparent 92%)",
+                  WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.6) 60%, transparent 92%)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="holo-sweep"
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundImage: "linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.5) 50%, rgba(245,214,123,0.3) 54%, transparent 62%)",
+                  backgroundSize: "250% 250%",
+                  mixBlendMode: "screen",
+                  pointerEvents: "none",
+                }}
+              />
+              {[[16, 20], [74, 14], [42, 38], [84, 50], [24, 62], [62, 30]].map(([x, y], i) => (
+                <span
+                  key={i}
+                  aria-hidden
+                  style={{
+                    position: "absolute",
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: "1.5cqw",
+                    height: "1.5cqw",
+                    background: "#fff7d6",
+                    borderRadius: "50%",
+                    boxShadow: "0 0 2cqw rgba(245,214,123,0.95)",
+                    opacity: 0.85,
+                  }}
+                />
+              ))}
+            </>
           )}
 
           {/* rating, top-left — the number the whole card answers to */}

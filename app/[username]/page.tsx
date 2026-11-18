@@ -14,6 +14,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { Reveal } from "@/components/Reveal";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { GitStrip } from "@/components/GitStrip";
 import { PersistPrefs } from "@/components/PersistPrefs";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
@@ -120,7 +121,7 @@ export default async function DriverPage({
   );
 
   return (
-    <main className="min-h-screen" style={{ "--livery": accent } as React.CSSProperties}>
+    <main className="flex min-h-screen flex-col" style={{ "--livery": accent } as React.CSSProperties}>
       <SiteHeader back />
       {(typeof sp.team === "string" || typeof sp.country === "string") && (
         <PersistPrefs
@@ -130,7 +131,7 @@ export default async function DriverPage({
         />
       )}
 
-      <div className="stage">
+      <div className="stage flex-1">
         <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-3">
           {/* ── left rail: race craft, traits, silverware, seasons ─────── */}
           <aside className="order-2 space-y-6 lg:order-1">
@@ -234,14 +235,14 @@ export default async function DriverPage({
 
             {card.founder?.edition && (
               <div
-                className="mx-auto mb-3 flex max-w-[340px] items-center justify-center gap-2.5 rounded-[12px] border px-3 py-2"
+                className="mx-auto mb-3 flex max-w-[340px] flex-nowrap items-center justify-center gap-2 rounded-[12px] border px-3 py-2"
                 style={{ borderColor: "rgba(245,214,123,0.4)", background: "linear-gradient(180deg, rgba(245,214,123,0.12), rgba(245,214,123,0.04))" }}
               >
-                <span className="mono text-[12px] font-extrabold tracking-[0.16em]" style={{ color: "#f5d67b" }}>
+                <span className="mono whitespace-nowrap text-[12px] font-extrabold tracking-[0.14em]" style={{ color: "#f5d67b" }}>
                   {card.founder.edition}
                 </span>
-                <span aria-hidden className="h-3 w-px" style={{ background: "rgba(245,214,123,0.4)" }} />
-                <span className="mono text-[10px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
+                <span aria-hidden className="h-3 w-px flex-none" style={{ background: "rgba(245,214,123,0.4)" }} />
+                <span className="mono whitespace-nowrap text-[9px] tracking-[0.08em]" style={{ color: "var(--dim)" }}>
                   FOUNDERS EDITION · {card.founder.legend?.toUpperCase()}
                 </span>
               </div>
@@ -296,6 +297,7 @@ export default async function DriverPage({
           </aside>
         </div>
       </div>
+      <GitStrip />
       <SiteFooter />
     </main>
   );

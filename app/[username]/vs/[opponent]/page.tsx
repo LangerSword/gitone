@@ -8,6 +8,7 @@ import { formatCount } from "@/lib/format";
 import { cardDisplayName } from "@/lib/text";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { GitStrip } from "@/components/GitStrip";
 import { BattleActions } from "@/components/BattleActions";
 import { DriverCard26 } from "@/components/DriverCard26";
 import type { Card } from "@/lib/racing/types";
@@ -107,10 +108,10 @@ export default async function VsPage({
     : `Dead heat on the gitone grid: ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`;
 
   return (
-    <main className="min-h-screen" style={{ "--livery": challenger.constructor.color } as React.CSSProperties}>
+    <main className="flex min-h-screen flex-col" style={{ "--livery": challenger.constructor.color } as React.CSSProperties}>
       <SiteHeader back backHref={`/${challenger.login}`} backLabel="← BACK TO THE REPORT" />
 
-      <div className="stage">
+      <div className="stage flex-1">
         <div className="mx-auto max-w-[1020px] px-5 py-7 sm:px-8">
           <header className="relative text-center">
             <div className="mb-3 flex items-center justify-center gap-2.5">
@@ -273,6 +274,7 @@ export default async function VsPage({
           </p>
         </div>
       </div>
+      <GitStrip />
       <SiteFooter />
     </main>
   );
