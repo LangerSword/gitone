@@ -3,8 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
-import { LoadingScreen } from "./LoadingScreen";
+import dynamic from "next/dynamic";
+import { ArrowRight } from "lucide-react";
 import { HowItWorks } from "./HowItWorks";
+
+// The pit-wall overlay is only needed after submit, so its code is split out
+// of the first-paint bundle and fetched on demand.
+const LoadingScreen = dynamic(() => import("./LoadingScreen").then((m) => m.LoadingScreen), { ssr: false });
 
 // The scout input. Submitting starts the race: the pit-wall overlay takes
 // over, runs the five lights, and hands the route to Next while the server
@@ -62,7 +67,7 @@ export function ScoutForm({
         className="flex flex-col gap-2.5 sm:flex-row"
       >
         <div className="relative flex-1">
-          <span className="mono pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[14px] font-bold" style={{ color: "var(--f1-red)" }}>
+          <span className="mono pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[16px] font-bold" style={{ color: "var(--f1-red)" }}>
             @
           </span>
           <input
@@ -75,27 +80,20 @@ export function ScoutForm({
             autoCapitalize="none"
             autoComplete="off"
             aria-label="GitHub login"
-            className="scout-input h-[54px] w-full pl-9 pr-4 text-[15px] font-medium disabled:opacity-60"
+            className="field pl-10"
           />
         </div>
         <button
           type="submit"
           disabled={!login.trim() || phase > 0}
           aria-live="polite"
-          className="group flex h-[54px] items-center justify-center gap-3 px-7 text-[13px] font-extrabold tracking-[0.18em] transition-[background,transform,box-shadow] disabled:cursor-not-allowed disabled:opacity-60 active:translate-y-px"
-          style={{
-            background: phase > 0 ? "linear-gradient(180deg, #fff8ea, #e6d5b9)" : "linear-gradient(180deg, #fbf4e6, #e8dac2)",
-            color: "#1a120b",
-            boxShadow:
-              phase > 0
-                ? "0 0 0 4px rgba(214,133,74,.22), 0 0 42px rgba(214,133,74,.5), inset 0 1px 0 #fff"
-                : "0 14px 34px -18px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.8)",
-          }}
+          className="btn btn-primary btn-lg group w-full sm:w-auto"
+          style={phase > 0 ? { boxShadow: "0 0 0 4px rgba(214,133,74,.22), 0 0 42px rgba(214,133,74,.5), inset 0 1px 0 rgba(255,255,255,.4)" } : undefined}
         >
-          <span className="mono">{phase > 0 ? "SCOUTING" : "SCOUT"}</span>
-          <span aria-hidden className="text-[15px] transition-transform group-hover:translate-x-1">
-            →
-          </span>
+          {phase > 0 ? "Scouting" : "Scout"}
+          {phase === 0 && (
+            <ArrowRight size={20} strokeWidth={2.6} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          )}
         </button>
       </form>
 
@@ -119,22 +117,17 @@ export function ScoutForm({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]" style={{ color: "var(--faint)" }}>
-        <span>
-          try{" "}
+        <span className="inline-flex flex-wrap items-center gap-x-1.5">
+          try
           {["torvalds", "sindresorhus"].map((name, i) => (
-            <span key={name}>
-              {i > 0 && " · "}
-              <button
-                type="button"
-                onClick={() => start(name)}
-                className="mono inline-flex min-h-11 items-center underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
-                style={{ color: "var(--dim)" }}
-              >
+            <span key={name} className="inline-flex items-center gap-x-1.5">
+              {i > 0 && <span aria-hidden>·</span>}
+              <button type="button" onClick={() => start(name)} className="link-quiet inline-flex min-h-11 items-center">
                 {name}
               </button>
             </span>
           ))}
-          {" · "}or your own
+          <span aria-hidden>·</span> or your own
         </span>
         <HowItWorks />
         {scoutCount != null && scoutCount > 0 && (
