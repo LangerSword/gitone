@@ -66,7 +66,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
         aria-expanded={open}
         aria-label="Choose team livery"
         title="Choose team livery"
-        className="mono flex h-9 items-center gap-2 border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
+        className="mono flex h-9 items-center gap-2 border px-3 text-[10.5px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)]"
         style={{
           background: "rgba(21,21,30,0.85)",
           borderColor: "var(--line-bright)",
@@ -81,7 +81,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
           className="glass absolute bottom-full right-0 mb-2 w-[290px] p-3"
           style={{ maxHeight: 340, overflowY: "auto" }}
         >
-          <div className="mono mb-2 px-1 text-[10px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <div className="mono mb-2 px-1 text-[11px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
             CHOOSE YOUR CONSTRUCTOR
           </div>
           <button
@@ -103,7 +103,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
             >
               <span className="h-4 w-4 rounded" style={{ background: t.color, boxShadow: `0 0 10px ${t.color}55` }} />
               <span className="flex-1 truncate">{t.name}</span>
-              <span className="mono text-[9px]" style={{ color: "var(--faint)" }}>
+              <span className="mono text-[10.5px]" style={{ color: "var(--faint)" }}>
                 {t.code}
               </span>
             </button>

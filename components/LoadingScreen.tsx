@@ -9,7 +9,7 @@ import Link from "next/link";
 // fake percentage.
 const RADIO = [
   "BOX, BOX. WE ARE READING THE PROFILE.",
-  "PUSH NOW, PUSH NOW — PULLING THE LAST SEASON.",
+  "PUSH NOW, PUSH NOW. PULLING THE LAST SEASON.",
   "GAP TO THE FIELD: MEASURING.",
   "TYRES ARE GOOD. KEEP THE LAPS COMING.",
   "WE ARE CHECKING THE DATA. STAY OUT.",
@@ -41,15 +41,15 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
       aria-label={login ? `Scouting ${login}` : "Loading the scout report"}
       style={{
         background:
-          "radial-gradient(70% 48% at 50% 0%, rgba(255,30,0,0.07), transparent 68%), var(--bg-0)",
+          "radial-gradient(70% 48% at 50% 0%, rgba(201,121,69,0.1), transparent 68%), var(--bg-0)",
       }}
     >
       {/* the gantry */}
       <div className="flex flex-none items-center justify-between px-5 py-4 sm:px-8">
-        <span className="mono text-[10px] font-bold tracking-[0.24em]" style={{ color: "var(--faint)" }}>
+        <span className="mono text-[11px] font-bold tracking-[0.24em]" style={{ color: "var(--faint)" }}>
           GITONE · PIT WALL
         </span>
-        <span className="mono flex items-center gap-2 text-[10px] tracking-[0.2em]" style={{ color: "var(--faint)" }}>
+        <span className="mono flex items-center gap-2 text-[11px] tracking-[0.2em]" style={{ color: "var(--faint)" }}>
           <span
             aria-hidden
             className="inline-block h-[6px] w-[6px] rounded-full"
@@ -74,7 +74,7 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
               <span key={i} className={`lamp ${out ? "out" : lit > i ? "on" : ""}`} style={{ width: 20, height: 20 }} />
             ))}
           </div>
-          <span className="mono ml-1 w-[104px] text-left text-[10px] font-bold leading-tight tracking-[0.18em]" style={{ color: out ? "var(--green)" : "var(--dim)" }}>
+          <span className="mono ml-1 w-[104px] text-left text-[11px] font-bold leading-tight tracking-[0.18em]" style={{ color: out ? "var(--green)" : "var(--dim)" }}>
             {out ? "LIGHTS OUT" : lit < 5 ? "LIGHTS ON" : "HOLD"}
           </span>
         </div>
@@ -88,7 +88,7 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
           )}
         </h1>
 
-        <p key={tick} className="radio-line mono mt-4 h-5 text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
+        <p key={tick} className="radio-line mono mt-4 h-5 text-[12px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
           <span style={{ color: "var(--f1-red)" }}>PIT RADIO · </span>
           {RADIO[tick % RADIO.length]}
         </p>
@@ -100,12 +100,12 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
             style={{
               background: "linear-gradient(90deg, transparent, var(--f1-red) 32%, var(--f1-red) 68%, transparent)",
               animation: "load-sweep 1.15s cubic-bezier(.4,0,.6,1) infinite",
-              boxShadow: "0 0 12px rgba(255,30,0,.6)",
+              boxShadow: "0 0 12px rgba(201,121,69,.55)",
             }}
           />
         </div>
 
-        <div className="mono mt-6 grid w-[min(420px,80vw)] grid-cols-4 gap-3 text-[10px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+        <div className="mono mt-6 grid w-[min(420px,80vw)] grid-cols-4 gap-3 text-[11px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
           {["EXP", "RAC", "AWA", "PAC"].map((k) => (
             <span key={k} className="border-t pt-2" style={{ borderColor: "var(--line)" }}>
               {k}
@@ -114,13 +114,13 @@ export function LoadingScreen({ login, overlay = false }: { login?: string; over
         </div>
 
         {slow && (
-          <Link href="/" className="mono mt-6 text-[9.5px] tracking-[0.16em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]" style={{ color: "var(--faint)" }}>
+          <Link href="/" className="mono mt-6 text-[10.5px] tracking-[0.16em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]" style={{ color: "var(--faint)" }}>
             TAKING LONGER THAN EXPECTED — BACK TO THE GRID
           </Link>
         )}
       </div>
 
-      <div className="mono flex flex-none flex-wrap items-center justify-between gap-2 px-5 py-4 text-[9px] tracking-[0.18em] sm:px-8" style={{ color: "var(--faint)" }}>
+      <div className="mono flex flex-none flex-wrap items-center justify-between gap-2 px-5 py-4 text-[10.5px] tracking-[0.18em] sm:px-8" style={{ color: "var(--faint)" }}>
         <span>READING GITHUB GRAPHQL</span>
         <span>SCORING SEASONS · PRs · REVIEWS</span>
       </div>

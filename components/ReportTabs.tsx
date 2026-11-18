@@ -45,7 +45,7 @@ function LapChart({ card }: { card: Card }) {
           );
         })}
       </div>
-      <div className="mono mt-3 flex justify-between text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
+      <div className="mono mt-3 flex justify-between text-[11px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>
         <span>52 WEEKS AGO</span>
         <span style={{ color: "var(--purple)" }}>FL {max}</span>
         <span>{formatCount(weeks.reduce((s, v) => s + v, 0))} LAPS</span>
@@ -64,7 +64,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
     <Section
       title="THE READOUT"
       accent={accent}
-      aside={<span className="mono text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>LIVE DATA</span>}
+      aside={<span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>LIVE DATA</span>}
     >
       <div className="mb-4 flex border-b" style={{ borderColor: "var(--line)" }} role="tablist">
         {TABS.map((t) => {
@@ -76,7 +76,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(t)}
-              className="mono relative flex-1 py-2 text-[9px] font-bold tracking-[0.12em] transition-colors"
+              className="mono relative flex-1 py-2 text-[11.5px] font-bold tracking-[0.1em] transition-colors"
               style={{ color: active ? "var(--ink)" : "var(--faint)" }}
             >
               {t}
@@ -110,7 +110,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
 
         {tab === "TELEMETRY" && (
           <>
-            <p className="mono mb-3 text-[10px] tracking-[0.1em]" style={{ color: "var(--dim)" }}>
+            <p className="mono mb-3 text-[11px] tracking-[0.1em]" style={{ color: "var(--dim)" }}>
               LAPS PER WEEK, LAST SEASON. PURPLE IS THE FASTEST.
             </p>
             <LapChart card={card} />
@@ -120,7 +120,7 @@ export function ReportTabs({ card, accent }: { card: Card; accent: string }) {
         {tab === "CAR" && (
           <>
             <div className="mb-3 flex items-baseline justify-between">
-              <span className="text-[12.5px]" style={{ color: "var(--dim)" }}>
+              <span className="text-[13.5px]" style={{ color: "var(--dim)" }}>
                 {card.constructor.name}
               </span>
               <span className="mono text-[15px] font-bold" style={{ color: accent }}>

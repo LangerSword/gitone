@@ -16,12 +16,12 @@ const ICONS: Record<AwardKey, typeof Trophy> = {
 };
 
 const TINT: Record<AwardKey, string> = {
-  wdc: "#f5d67b",
-  grand_slam: "#b455ff",
-  fastest_lap: "#b455ff",
-  ironman: "#f0a52c",
-  wcc26: "#6ef3c5",
-  wdc26: "#7fb7ff",
+  wdc: "#d9b36a",
+  grand_slam: "#a78bd6",
+  fastest_lap: "#a78bd6",
+  ironman: "#c98f4f",
+  wcc26: "#79c7a4",
+  wdc26: "#8fb8d9",
 };
 
 // Trophy details dialog: every instance the card holds — a 2× World Champion
@@ -84,7 +84,7 @@ function AwardDialog({
             {meta.title}
           </h3>
           <span
-            className="mono mx-auto inline-block rounded px-2 py-0.5 text-[10px] font-bold tracking-[0.16em] sm:mx-0"
+            className="mono mx-auto inline-block rounded px-2 py-0.5 text-[11px] font-bold tracking-[0.16em] sm:mx-0"
             style={{ background: `${TINT[awardKey]}1a`, color: TINT[awardKey] }}
           >
             {meta.metricLabel.toUpperCase()}
@@ -121,7 +121,7 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
   return (
     <div>
       {groups.length === 0 ? (
-        <p className="mono mt-4 text-[11.5px] leading-relaxed" style={{ color: "var(--faint)" }}>
+        <p className="mono mt-4 text-[12.5px] leading-relaxed" style={{ color: "var(--faint)" }}>
           No silverware yet. Titles are earned season by season: a standout year, a grand
           slam across all four ratings, purple-sector pace, or an ironman career.
         </p>
@@ -147,7 +147,7 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
                   aria-label={`${AWARD_META[g.key].title} details`}
                 >
                   <Icon size={17} strokeWidth={1.8} style={{ color: tint }} />
-                  <span className="mono text-[11.5px] font-bold tracking-[0.12em]" style={{ color: tint }}>
+                  <span className="mono text-[12.5px] font-bold tracking-[0.12em]" style={{ color: tint }}>
                     {AWARD_META[g.key].shelfLabel}
                     {held ? "" : ` ×${g.instances.length}`}
                   </span>

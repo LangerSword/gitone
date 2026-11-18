@@ -15,7 +15,7 @@ export default function NotFound() {
       <Link
         href="/"
         className="mono inline-block mt-8 rounded-md px-5 py-3 text-[12px] font-bold tracking-[0.12em]"
-        style={{ background: "var(--f1-red)", color: "#fff" }}
+        style={{ background: "var(--f1-red)", color: "#1a120b" }}
       >
         BACK TO THE GRID
       </Link>

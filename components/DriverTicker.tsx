@@ -15,21 +15,21 @@ export function DriverTicker() {
           <Link
             key={`${card.login}-${i}`}
             href={`/${card.login}`}
-            className="group flex flex-none items-center gap-2.5 px-5 py-3.5"
+            className="group flex flex-none items-center gap-2.5 px-5 py-4"
             aria-hidden={i >= SAMPLE_CARDS.length}
             tabIndex={i >= SAMPLE_CARDS.length ? -1 : 0}
           >
             <span aria-hidden className="h-[6px] w-[6px] rounded-full" style={{ background: card.constructor.color }} />
-            <span className="mono text-[10px] font-bold tracking-[0.14em] transition-colors group-hover:text-[var(--ink)]" style={{ color: "var(--dim)" }}>
+            <span className="mono text-[12px] font-bold tracking-[0.1em] transition-colors group-hover:text-[var(--ink)]" style={{ color: "var(--dim)" }}>
               {card.login.toUpperCase()}
             </span>
             <span className="mono text-[12px] font-extrabold" style={{ color: card.constructor.color }}>
               {card.rtg}
             </span>
-            <span className="mono text-[8.5px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
+            <span className="mono text-[10.5px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>
               {card.stats.pac} PAC
             </span>
-            <span aria-hidden className="ml-1 text-[10px]" style={{ color: "var(--line-bright)" }}>
+            <span aria-hidden className="ml-1 text-[11px]" style={{ color: "var(--line-bright)" }}>
               /
             </span>
           </Link>

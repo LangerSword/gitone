@@ -84,12 +84,12 @@ export function ScoutForm({
           aria-live="polite"
           className="group flex h-[54px] items-center justify-center gap-3 px-7 text-[13px] font-extrabold tracking-[0.18em] transition-[background,transform,box-shadow] disabled:cursor-not-allowed disabled:opacity-60 active:translate-y-px"
           style={{
-            background: phase > 0 ? "linear-gradient(180deg, #ff3b1f, var(--f1-red))" : "var(--f1-red)",
-            color: "#fff",
+            background: phase > 0 ? "linear-gradient(180deg, #fff8ea, #e6d5b9)" : "linear-gradient(180deg, #fbf4e6, #e8dac2)",
+            color: "#1a120b",
             boxShadow:
               phase > 0
-                ? "0 0 0 4px rgba(255,30,0,.2), 0 0 40px rgba(255,30,0,.65), 0 14px 34px -18px rgba(255,30,0,.9)"
-                : "0 14px 34px -18px rgba(255,30,0,.85)",
+                ? "0 0 0 4px rgba(214,133,74,.22), 0 0 42px rgba(214,133,74,.5), inset 0 1px 0 #fff"
+                : "0 14px 34px -18px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.8)",
           }}
         >
           <span className="mono">{phase > 0 ? "SCOUTING" : "SCOUT"}</span>
@@ -104,16 +104,21 @@ export function ScoutForm({
       <div className="mt-3.5 flex items-center gap-3" aria-live="polite">
         <div className="lights" aria-hidden>
           {[0, 1, 2, 3, 4].map((i) => {
-            const cls = phase === 6 ? "out" : phase > 0 ? (i < phase ? "on" : "") : i === 4 ? "on" : "";
+            const cls = phase === 6 ? "out" : phase > 0 ? (i < phase ? "on" : "") : "";
             return <span key={i} className={`lamp ${cls}`} />;
           })}
         </div>
-        <span className="mono text-[9.5px] tracking-[0.2em]" style={{ color: phase === 6 ? "var(--green)" : "var(--faint)" }}>
+        <span
+          aria-hidden
+          className="h-[6px] w-[6px] rounded-full"
+          style={{ background: phase === 0 || phase === 6 ? "var(--green)" : "var(--f1-red)" }}
+        />
+        <span className="mono text-[11.5px] tracking-[0.14em]" style={{ color: phase === 0 ? "var(--dim)" : "var(--faint)" }}>
           {phase === 0 ? "GRID READY" : phase === 5 ? "HOLD" : phase === 6 ? "LIGHTS OUT" : "FORMATION"}
         </span>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px]" style={{ color: "var(--faint)" }}>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px]" style={{ color: "var(--faint)" }}>
         <span>
           try{" "}
           {["torvalds", "sindresorhus"].map((name, i) => (
@@ -133,7 +138,7 @@ export function ScoutForm({
         </span>
         <HowItWorks />
         {scoutCount != null && scoutCount > 0 && (
-          <span className="mono inline-flex items-baseline gap-1.5 text-[11px]" style={{ color: "var(--faint)" }}>
+          <span className="mono inline-flex items-baseline gap-1.5 text-[12px]" style={{ color: "var(--faint)" }}>
             <span className="tabular-nums" style={{ color: "var(--ink)" }}>
               {scoutCount.toLocaleString("en-US")}
             </span>

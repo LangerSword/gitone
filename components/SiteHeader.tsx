@@ -14,11 +14,11 @@ function Mark() {
       aria-hidden
       className="inline-flex h-[22px] w-[22px] flex-none items-center justify-center rounded-[7px]"
       style={{
-        background: "linear-gradient(145deg, #ff5a3a, var(--f1-red) 55%, var(--red-deep))",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,.35), 0 6px 16px -6px rgba(255,61,31,.8)",
+        background: "linear-gradient(145deg, #e2a36a, var(--f1-red) 55%, var(--red-deep))",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,.35), 0 6px 16px -6px rgba(201,121,69,.55)",
       }}
     >
-      <span className="mono text-[11px] font-extrabold leading-none" style={{ color: "#fff" }}>
+      <span className="mono text-[12px] font-extrabold leading-none" style={{ color: "#1a120b" }}>
         G
       </span>
     </span>
@@ -39,7 +39,7 @@ export function SiteHeader({
   right?: React.ReactNode;
 }) {
   return (
-    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)" }}>
+    <header className="relative z-20 flex-none border-b" style={{ borderColor: "var(--line)", boxShadow: "inset 0 2px 0 rgba(214,133,74,0.55)" }}>
       <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-4 px-5 sm:px-8">
         <div className="flex items-center gap-5">
           <Link href="/" className="flex min-h-11 items-center gap-3" aria-label="gitone home">
@@ -51,7 +51,7 @@ export function SiteHeader({
           {back && (
             <Link
               href={backHref}
-              className="mono hidden text-[10px] font-bold tracking-[0.16em] transition-colors hover:text-[var(--ink)] sm:inline"
+              className="mono hidden text-[12px] font-bold tracking-[0.14em] transition-colors hover:text-[var(--ink)] sm:inline"
               style={{ color: "var(--faint)" }}
             >
               {backLabel}
@@ -61,7 +61,7 @@ export function SiteHeader({
 
         <div className="flex items-center gap-3">
           {right ?? (
-            <span className="mono hidden text-[10px] tracking-[0.2em] md:inline" style={{ color: "var(--faint)" }}>
+            <span className="mono hidden text-[12px] tracking-[0.16em] md:inline" style={{ color: "var(--faint)" }}>
               THE GITHUB GRID
             </span>
           )}
@@ -69,8 +69,8 @@ export function SiteHeader({
             href="https://github.com/LangerSword/gitone"
             target="_blank"
             rel="noopener noreferrer"
-            className="mono inline-flex h-11 items-center gap-2 border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]"
-            style={{ borderColor: "var(--line-bright)", color: "var(--dim)", background: "rgba(255,255,255,0.03)" }}
+            className="mono inline-flex h-11 items-center gap-2 border px-3 text-[11.5px] font-bold tracking-[0.12em] transition-colors hover:border-white/30 hover:text-[var(--ink)]"
+            style={{ borderColor: "rgba(214,133,74,0.38)", color: "var(--ink)", background: "rgba(214,133,74,0.08)" }}
           >
             <StarMark />
             {stars != null ? stars.toLocaleString("en-US") : "STAR"}

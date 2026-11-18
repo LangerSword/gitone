@@ -74,7 +74,7 @@ export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
                 y={y + 4}
                 textAnchor="middle"
                 fontFamily="var(--font-mono)"
-                fontSize={11}
+                fontSize={12}
                 fontWeight={700}
                 letterSpacing={1.4}
                 fill={on ? "#f6f1e8" : "rgba(246,241,232,0.55)"}
@@ -87,11 +87,11 @@ export function StatRadar({ card, size = 176 }: { card: Card; size?: number }) {
       </svg>
 
       <div className="mt-2 text-center" aria-live="polite">
-        <div className="mono text-[10px] font-bold tracking-[0.12em]" style={{ color: card.stats[active] >= 90 ? "var(--purple)" : accent }}>
+        <div className="mono text-[11px] font-bold tracking-[0.12em]" style={{ color: card.stats[active] >= 90 ? "var(--purple)" : accent }}>
           {STAT_LABELS[active]} <span style={{ color: "var(--ink)" }}>{card.stats[active]}</span>{" "}
           <span style={{ color: "var(--faint)" }}>· {STAT_NAMES[active].toUpperCase()}</span>
         </div>
-        <p className="mx-auto mt-1 max-w-[250px] text-[10.5px] leading-snug" style={{ color: "var(--faint)" }}>
+        <p className="mx-auto mt-1 max-w-[250px] text-[11.5px] leading-snug" style={{ color: "var(--faint)" }}>
           {STAT_COPY[active].what}
         </p>
       </div>

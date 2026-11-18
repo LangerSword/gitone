@@ -36,8 +36,8 @@ function RedFlag({ message }: { message: string }) {
       </p>
       <Link
         href="/"
-        className="mono mt-8 inline-block px-5 py-3 text-[10px] font-bold tracking-[0.16em]"
-        style={{ background: "var(--f1-red)", color: "#fff" }}
+        className="mono mt-8 inline-block px-5 py-3 text-[11px] font-bold tracking-[0.16em]"
+        style={{ background: "var(--f1-red)", color: "#1a120b" }}
       >
         BACK TO THE GRID
       </Link>
@@ -48,7 +48,7 @@ function RedFlag({ message }: { message: string }) {
 function DuelSide({ card, role, won, href }: { card: Card; role: string; won: boolean; href: string }) {
   return (
     <div className="flex flex-col items-center gap-3">
-      <span className="mono text-[9px] font-bold tracking-[0.2em]" style={{ color: "var(--faint)" }}>
+      <span className="mono text-[11.5px] font-bold tracking-[0.18em]" style={{ color: "var(--faint)" }}>
         {role}
       </span>
       <div
@@ -59,7 +59,7 @@ function DuelSide({ card, role, won, href }: { card: Card; role: string; won: bo
           <DriverCard26 card={card} />
         </Link>
         {won && (
-          <span className="mono absolute -top-2 right-2 z-10 px-1.5 py-0.5 text-[8.5px] font-extrabold tracking-[0.14em]" style={{ background: "var(--green)", color: "#06180d", boxShadow: "0 4px 12px rgba(0,0,0,.5)" }}>
+          <span className="mono absolute -top-2 right-2 z-10 px-1.5 py-0.5 text-[10px] font-extrabold tracking-[0.14em]" style={{ background: "var(--green)", color: "#06180d", boxShadow: "0 4px 12px rgba(0,0,0,.5)" }}>
             P1
           </span>
         )}
@@ -68,7 +68,7 @@ function DuelSide({ card, role, won, href }: { card: Card; role: string; won: bo
         <div className="text-[14px] font-bold leading-tight" style={{ color: "var(--ink)" }}>
           {cardDisplayName(card.name)}
         </div>
-        <div className="mono mt-1 text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+        <div className="mono mt-1 text-[11.5px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
           #{String(card.number).padStart(2, "0")} · RTG <span style={{ color: card.constructor.color }}>{card.rtg}</span>
         </div>
       </div>
@@ -107,7 +107,7 @@ export default async function VsPage({
           <header className="relative text-center">
             <div className="mb-3 flex items-center justify-center gap-2.5">
               <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
-              <p className="mono text-[9.5px] font-bold tracking-[0.24em]" style={{ color: "var(--dim)" }}>
+              <p className="mono text-[11.5px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
                 LIGHTS OUT AND AWAY WE GO
               </p>
               <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
@@ -124,12 +124,12 @@ export default async function VsPage({
                 "DEAD HEAT"
               )}
             </h1>
-            <p className="mono mt-3 text-[11px] tracking-[0.14em]" style={{ color: "var(--dim)" }}>
+            <p className="mono mt-3 text-[12px] tracking-[0.14em]" style={{ color: "var(--dim)" }}>
               {testSession
-                ? "SAME DRIVER, BOTH CARS — ALWAYS A DRAW"
+                ? "SAME DRIVER, BOTH CARS. ALWAYS A DRAW"
                 : winner
-                  ? `${score.challenger}–${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
-                  : `${score.challenger}–${score.opponent} ON SECTORS · LEVEL ON RTG`}
+                  ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
+                  : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`}
             </p>
           </header>
 
@@ -137,8 +137,13 @@ export default async function VsPage({
           <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-8">
             <DuelSide card={challenger} role="CHALLENGER" won={winner === "challenger"} href={`/${challenger.login}`} />
             <div className="flex h-full flex-col items-center justify-center pt-8">
-              <span className="display text-[clamp(24px,3.6vw,42px)] leading-none" style={{ color: "var(--f1-red)" }}>
-                VS
+              <span
+                className="flex h-[clamp(58px,7vw,78px)] w-[clamp(58px,7vw,78px)] items-center justify-center rounded-full"
+                style={{ background: "radial-gradient(circle at 40% 30%, rgba(255,248,234,0.22), rgba(214,133,74,0.12) 46%, transparent 72%)", border: "1px solid rgba(214,133,74,0.38)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 34px rgba(214,133,74,0.18)" }}
+              >
+                <span className="display text-[clamp(24px,3.4vw,40px)] leading-none" style={{ color: "var(--f1-red)" }}>
+                  VS
+                </span>
               </span>
             </div>
             <DuelSide card={opp} role="RIVAL" won={winner === "opponent"} href={`/${opp.login}`} />
@@ -163,7 +168,7 @@ export default async function VsPage({
                   }}
                 >
                   <div className="flex items-center justify-self-start gap-3">
-                    <span className="mono w-8 text-right text-[15px] font-extrabold" style={{ color: aWins ? challenger.constructor.color : hotA ? "var(--purple)" : "var(--faint)" }}>
+                    <span className="mono w-8 text-right text-[15px] font-extrabold" style={{ color: hotA ? "var(--purple)" : aWins ? challenger.constructor.color : "var(--faint)" }}>
                       {r.challenger}
                     </span>
                     <div className="hidden h-[4px] w-28 overflow-hidden sm:block" style={{ background: "rgba(255,255,255,0.07)" }}>
@@ -171,11 +176,11 @@ export default async function VsPage({
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-0.5">
-                    <span className="mono text-[9px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
+                    <span className="mono text-[11.5px] font-bold tracking-[0.18em]" style={{ color: "var(--dim)" }}>
                       {r.label}
                     </span>
                     <span
-                      className="mono text-[8.5px] font-bold tracking-[0.08em]"
+                      className="mono text-[11px] font-bold tracking-[0.08em]"
                       style={{ color: delta === 0 ? "var(--faint)" : delta > 0 ? "var(--green)" : "var(--faint)" }}
                     >
                       {delta === 0 ? "LEVEL" : `${delta > 0 ? "+" : ""}${delta}`}
@@ -185,7 +190,7 @@ export default async function VsPage({
                     <div className="hidden h-[4px] w-28 overflow-hidden sm:block" style={{ background: "rgba(255,255,255,0.07)" }}>
                       <div className="bar-fill h-full" style={{ width: `${r.opponent}%`, background: bWins ? opp.constructor.color : "rgba(255,255,255,0.2)", marginLeft: "auto" }} />
                     </div>
-                    <span className="mono w-8 text-left text-[15px] font-extrabold" style={{ color: bWins ? opp.constructor.color : hotB ? "var(--purple)" : "var(--faint)" }}>
+                    <span className="mono w-8 text-left text-[15px] font-extrabold" style={{ color: hotB ? "var(--purple)" : bWins ? opp.constructor.color : "var(--faint)" }}>
                       {r.opponent}
                     </span>
                   </div>
@@ -197,38 +202,36 @@ export default async function VsPage({
           {/* receipts */}
           <div className="mx-auto mt-8 w-full max-w-[760px] border-t pt-4" style={{ borderColor: "var(--line)" }}>
             <div className="flex items-baseline justify-between">
-              <p className="mono text-[9px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
+              <p className="mono text-[11.5px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
                 RACE RECEIPTS · REAL COUNTS
               </p>
-              <span className="mono text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
-                REAL COUNTS
-              </span>
+
             </div>
             <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center border-b pb-2" style={{ borderColor: "var(--line)" }}>
-              <span className="mono justify-self-start text-[9px] font-bold tracking-[0.1em]" style={{ color: challenger.constructor.color }}>
+              <span className="mono justify-self-start text-[11.5px] font-bold tracking-[0.1em]" style={{ color: challenger.constructor.color }}>
                 {challenger.constructor.code} · {cardDisplayName(challenger.name).toUpperCase()}
               </span>
-              <span className="mono text-[8px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+              <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
                 METRIC
               </span>
-              <span className="mono justify-self-end text-[9px] font-bold tracking-[0.1em]" style={{ color: opp.constructor.color }}>
+              <span className="mono justify-self-end text-[11.5px] font-bold tracking-[0.1em]" style={{ color: opp.constructor.color }}>
                 {opp.constructor.code} · {cardDisplayName(opp.name).toUpperCase()}
               </span>
             </div>
-            <div className="mt-2 space-y-2">
+            <div className="mt-2.5 space-y-2.5">
               {duel.receipts.map((r, i) => (
                 <div
                   key={r.label}
                   className="duel-row grid grid-cols-[1fr_auto_1fr] items-baseline"
                   style={{ animationDelay: `${0.8 + i * 0.08}s` }}
                 >
-                  <span className="mono justify-self-start text-[11.5px]" style={{ color: r.challenger >= r.opponent ? "var(--ink)" : "var(--faint)" }} title={challenger.name}>
+                  <span className="mono justify-self-start text-[13.5px]" style={{ color: r.challenger >= r.opponent ? "var(--ink)" : "var(--faint)" }} title={challenger.name}>
                     {formatCount(r.challenger)}
                   </span>
-                  <span className="mono text-[8.5px] uppercase tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+                  <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                     {r.label}
                   </span>
-                  <span className="mono justify-self-end text-[11.5px]" style={{ color: r.opponent >= r.challenger ? "var(--ink)" : "var(--faint)" }} title={opp.name}>
+                  <span className="mono justify-self-end text-[13.5px]" style={{ color: r.opponent >= r.challenger ? "var(--ink)" : "var(--faint)" }} title={opp.name}>
                     {formatCount(r.opponent)}
                   </span>
                 </div>
@@ -236,7 +239,7 @@ export default async function VsPage({
             </div>
           </div>
 
-          <p className="mono mt-8 text-center text-[8.5px] leading-relaxed tracking-[0.12em]" style={{ color: "var(--faint)" }}>
+          <p className="mono mt-8 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
             EXP EXPERIENCE · RAC RACECRAFT · AWA AWARENESS · PAC PACE · BOTH 90+ READS PURPLE · RTG BREAKS A LEVEL SCORELINE
           </p>
         </div>

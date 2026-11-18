@@ -7,7 +7,7 @@ import { FINISH_LABELS } from "@/lib/racing/constants";
 import type { StatKey, Finish } from "@/lib/racing/types";
 
 const STAT_ORDER: StatKey[] = ["pac", "rac", "awa", "exp"];
-const TIERS: Finish[] = ["rookie", "points", "podium", "winner", "champion", "in_form", "founder"];
+const TIERS: Finish[] = ["rookie", "points", "podium", "winner", "champion", "in_form"];
 
 const STEPS = [
   {
@@ -18,7 +18,7 @@ const STEPS = [
   {
     kicker: "EVERY CARD HAS A SHAPE",
     title: "NOBODY IS ELITE AT EVERYTHING.",
-    body: "Your strongest signals push the four ratings up; the weakest pull them down. That tension gives the card its shape — and the shape decides your position, archetype and constructor. It is read from the data, never picked by you.",
+    body: "Your strongest signals push the four ratings up; the weakest pull them down. That tension gives the card its shape, and the shape decides your position, archetype and constructor. It is read from the data, never picked by you.",
   },
   {
     kicker: "THE 90s ARE EARNED",
@@ -116,11 +116,11 @@ export function HowItWorks({
                 {STEPS.map((s, i) => (
                   <div key={s.kicker} className="border-t py-5" style={{ borderColor: "var(--line)" }}>
                     <div className="flex items-baseline gap-3">
-                      <span className="mono text-[9px] font-bold tracking-[0.18em]" style={{ color: i === 2 ? "var(--f1-yellow)" : "var(--f1-red)" }}>
+                      <span className="mono text-[10.5px] font-bold tracking-[0.18em]" style={{ color: i === 2 ? "var(--f1-yellow)" : "var(--f1-red)" }}>
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="mono text-[9.5px] font-bold tracking-[0.18em]" style={{ color: i === 2 ? "var(--f1-yellow)" : "var(--dim)" }}>
-                        — {s.kicker}
+                      <span className="mono text-[10.5px] font-bold tracking-[0.18em]" style={{ color: i === 2 ? "var(--f1-yellow)" : "var(--dim)" }}>
+                        {s.kicker}
                       </span>
                     </div>
                     <h3 className="display mt-2 text-[19px] leading-tight" style={{ color: "var(--ink)" }}>
@@ -138,7 +138,7 @@ export function HowItWorks({
                 <div className="mt-3 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
                   {STAT_ORDER.map((k) => (
                     <div key={k} className="flex items-baseline gap-3">
-                      <span className="mono w-9 flex-none text-[11px] font-extrabold" style={{ color: "var(--f1-red)" }}>
+                      <span className="mono w-9 flex-none text-[12px] font-extrabold" style={{ color: "var(--f1-red)" }}>
                         {k.toUpperCase()}
                       </span>
                       <span className="text-[12.5px] leading-snug" style={{ color: "var(--dim)" }}>
@@ -153,7 +153,7 @@ export function HowItWorks({
                 {TIERS.map((t) => (
                   <span
                     key={t}
-                    className="mono px-1.5 py-1 text-[8.5px] font-bold tracking-[0.12em]"
+                    className="mono px-1.5 py-1 text-[10px] font-bold tracking-[0.12em]"
                     style={{ background: "rgba(255,255,255,0.05)", color: t === "champion" ? "var(--f1-yellow)" : "var(--faint)" }}
                   >
                     {FINISH_LABELS[t]}

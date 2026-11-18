@@ -243,7 +243,7 @@ export function CountryPicker({ login, value }: Props) {
                       />
                     )}
                     <span className="min-w-0 flex-1 truncate">{c.name}</span>
-                    <span className="mono text-[11px] uppercase" style={{ color: "var(--faint)" }}>
+                    <span className="mono text-[12px] uppercase" style={{ color: "var(--faint)" }}>
                       {c.code}
                     </span>
                     {selected && (

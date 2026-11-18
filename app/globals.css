@@ -7,23 +7,25 @@
    Type: Titillium Web (display + body), JetBrains Mono (timing numerals). */
 
 :root {
-  --bg-0: #07080a;
-  --bg-1: #0b0d10;
-  --panel: #101216;
-  --panel-2: #16181d;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-bright: rgba(255, 255, 255, 0.16);
-  --ink: #f6f1e8;
-  --dim: #a9a49b;
-  --faint: #807a72;
-  --f1-red: #ff3d1f;
-  --red-deep: #d42408;
-  --f1-yellow: #ffd100;
-  --purple: #b46bff;
-  --green: #34e39a;
-  --mint: #6ef3c5;
-  --amber: #ffb347;
-  --yellow: #ffd100;
+  /* Night paddock: deep petrol, parchment ink, copper signal. Not a black
+     dashboard; the ground has a visible green cast and warm light. */
+  --bg-0: #0e1c17;
+  --bg-1: #13241d;
+  --panel: #162a23;
+  --panel-2: #1c332b;
+  --line: rgba(240, 232, 216, 0.16);
+  --line-bright: rgba(240, 232, 216, 0.3);
+  --ink: #f0e8d8;
+  --dim: #cbc2b1;
+  --faint: #a89e8e;
+  --f1-red: #d6854a;
+  --red-deep: #a65a2b;
+  --f1-yellow: #e0a86a;
+  --purple: #b496dd;
+  --green: #7fcaa7;
+  --mint: #7fcaa7;
+  --amber: #e0a86a;
+  --yellow: #d9a35a;
   --font-display: var(--font-titillium), "Titillium Web", system-ui, sans-serif;
   --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, monospace;
 }
@@ -35,8 +37,8 @@ html {
 
 body {
   background:
-    radial-gradient(52% 40% at 8% -8%, rgba(255, 90, 43, 0.14), transparent 68%),
-    radial-gradient(44% 38% at 94% 102%, rgba(110, 243, 197, 0.06), transparent 70%),
+    radial-gradient(52% 40% at 7% -8%, rgba(201, 121, 69, 0.16), transparent 70%),
+    radial-gradient(44% 36% at 94% 104%, rgba(121, 199, 164, 0.09), transparent 72%),
     var(--bg-0);
   color: var(--ink);
   font-family: var(--font-display);
@@ -46,7 +48,7 @@ body {
 
 ::selection {
   background: var(--f1-red);
-  color: #fff;
+  color: #1a120b;
 }
 
 /* ── shared vocabulary ─────────────────────────────────────────────────── */
@@ -65,9 +67,9 @@ body {
 
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--faint);
 }
@@ -79,6 +81,7 @@ body {
 .panel {
   background: linear-gradient(180deg, var(--panel-2), var(--panel));
   border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(240, 232, 216, 0.05);
 }
 
 /* A measuring grid, not a wallpaper: 1px chalk lines on carbon, masked so
@@ -88,9 +91,9 @@ body {
     linear-gradient(var(--line) 1px, transparent 1px),
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
   background-size: 48px 48px;
-  mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 75%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 35%, #000 75%, transparent);
-  opacity: 0.5;
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 78%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 78%, transparent);
+  opacity: 0.55;
 }
 
 /* the flag, at any width */
@@ -235,17 +238,17 @@ body {
 
 .scout-input {
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(240, 232, 216, 0.06);
+  border: 1px solid rgba(240, 232, 216, 0.3);
   color: var(--ink);
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
 }
 
 .scout-input:focus {
   outline: none;
-  border-color: rgba(255, 30, 0, 0.7);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(255, 30, 0, 0.14);
+  border-color: rgba(201, 121, 69, 0.8);
+  background: rgba(240, 232, 216, 0.09);
+  box-shadow: 0 0 0 3px rgba(201, 121, 69, 0.16);
 }
 
 .scout-input::placeholder {
@@ -267,15 +270,15 @@ input:focus-visible,
 .stage {
   position: relative;
   background:
-    radial-gradient(80% 55% at 50% -6%, rgba(255, 30, 0, 0.06), transparent 65%);
+    radial-gradient(64% 48% at 50% -8%, rgba(201, 121, 69, 0.09), transparent 68%);
 }
 
 .glass {
-  background: linear-gradient(180deg, rgba(21, 24, 30, 0.92), rgba(12, 14, 17, 0.94));
-  border: 1px solid var(--line);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 60px -30px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(180deg, rgba(23, 40, 35, 0.97), rgba(14, 23, 20, 0.98));
+  border: 1px solid var(--line-bright);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(240, 232, 216, 0.07), 0 28px 70px -32px rgba(0, 0, 0, 0.75);
 }
 
 /* tilt glare — only painted under a real hover pointer, never on touch. */
@@ -331,20 +334,6 @@ input:focus-visible,
 @media (max-width: 1160px) { .fan-stage { transform: scale(0.84); } }
 @media (max-width: 1024px) { .fan-stage { transform: scale(0.78); } }
 
-/* ── the landing page's weather: two slow colour fields ────────────────── */
-@keyframes aurora-a {
-  0% { transform: translate3d(-4%, -2%, 0) scale(1); }
-  50% { transform: translate3d(6%, 4%, 0) scale(1.12); }
-  100% { transform: translate3d(-2%, 8%, 0) scale(1.04); }
-}
-@keyframes aurora-b {
-  0% { transform: translate3d(2%, 4%, 0) scale(1.05); }
-  50% { transform: translate3d(-7%, -4%, 0) scale(1.16); }
-  100% { transform: translate3d(4%, -6%, 0) scale(1); }
-}
-.aurora-a { animation: aurora-a 22s ease-in-out infinite alternate; }
-.aurora-b { animation: aurora-b 28s ease-in-out infinite alternate; }
-
 /* ── the driver ticker: a broadcast lower-third that never stops ────────── */
 @keyframes ticker-run {
   from { transform: translate3d(0, 0, 0); }
@@ -357,7 +346,7 @@ input:focus-visible,
 .ticker:hover .ticker-track { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
-  .aurora-a, .aurora-b, .ticker-track { animation: none; }
+  .ticker-track { animation: none; }
 }
 
 /* ── award chips: an animated shine instead of a GIF payload ───────────── */

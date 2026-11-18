@@ -48,7 +48,7 @@ export function DriverCard26({
         containerType: "inline-size",
         borderRadius: 18,
         overflow: "hidden",
-        filter: `drop-shadow(0 12px 24px rgba(0,0,0,0.55)) drop-shadow(0 0 28px ${theme.glow})`,
+        filter: "drop-shadow(0 14px 28px rgba(0,0,0,0.55))",
       }}
     >
       {/* the team-colour rim */}
@@ -131,7 +131,7 @@ export function DriverCard26({
           <div style={{ position: "absolute", left: "5.5%", top: "3.6%" }}>
             <div
               className="mono"
-              style={{ fontSize: "2.9cqw", fontWeight: 700, letterSpacing: "0.3em", color: "rgba(242,243,240,0.62)" }}
+              style={{ fontSize: "3.2cqw", fontWeight: 700, letterSpacing: "0.26em", color: "rgba(242,243,240,0.62)" }}
             >
               RTG
             </div>
@@ -153,9 +153,9 @@ export function DriverCard26({
               style={{
                 display: "inline-block",
                 marginTop: "1.2cqw",
-                fontSize: "2.6cqw",
+                fontSize: "3.0cqw",
                 fontWeight: 800,
-                letterSpacing: "0.16em",
+                letterSpacing: "0.14em",
                 color: theme.ink,
                 background: rgba(theme.accent, 0.16),
                 border: `1px solid ${rgba(theme.accent, 0.42)}`,
@@ -170,7 +170,7 @@ export function DriverCard26({
           <div style={{ position: "absolute", right: "5.5%", top: "4%", textAlign: "right" }}>
             <div
               className="mono"
-              style={{ fontSize: "2.5cqw", fontWeight: 700, letterSpacing: "0.28em", color: "rgba(242,243,240,0.5)" }}
+              style={{ fontSize: "2.9cqw", fontWeight: 700, letterSpacing: "0.24em", color: "rgba(242,243,240,0.5)" }}
             >
               NO.
             </div>
@@ -216,7 +216,7 @@ export function DriverCard26({
               <span aria-hidden style={{ width: "3.2cqw", height: "0.5cqw", background: livery }} />
               <span
                 className="mono"
-                style={{ fontSize: "2.8cqw", fontWeight: 700, letterSpacing: "0.16em", color: livery, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                style={{ fontSize: "3.2cqw", fontWeight: 700, letterSpacing: "0.14em", color: livery, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
               >
                 {card.constructor.name.toUpperCase()}
               </span>
@@ -250,13 +250,13 @@ export function DriverCard26({
                   borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.12)",
                 }}
               >
-                <span className="mono" style={{ fontSize: "3.0cqw", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(242,243,240,0.55)" }}>
+                <span className="mono" style={{ fontSize: "3.6cqw", fontWeight: 700, letterSpacing: "0.12em", color: "rgba(242,243,240,0.55)" }}>
                   {STAT_LABELS[k]}
                 </span>
                 <span
                   className="mono"
                   style={{
-                    fontSize: "6.4cqw",
+                    fontSize: "6.7cqw",
                     fontWeight: 800,
                     lineHeight: 1,
                     color: card.stats[k] >= 90 ? "var(--purple)" : "#ffffff",

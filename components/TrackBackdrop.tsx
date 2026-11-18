@@ -15,27 +15,25 @@ export function TrackBackdrop() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
-        className="aurora-a absolute"
+        className="absolute"
         style={{
           left: "-12%",
           top: "-18%",
           width: "58%",
           height: "62%",
           borderRadius: "50%",
-          background: "radial-gradient(closest-side, rgba(255, 61, 31, 0.22), transparent 72%)",
-          filter: "blur(60px)",
+          background: "radial-gradient(closest-side, rgba(201, 121, 69, 0.2), transparent 72%)",
         }}
       />
       <div
-        className="aurora-b absolute"
+        className="absolute"
         style={{
           right: "-10%",
           bottom: "-16%",
           width: "52%",
           height: "58%",
           borderRadius: "50%",
-          background: "radial-gradient(closest-side, rgba(110, 243, 197, 0.12), transparent 74%)",
-          filter: "blur(70px)",
+          background: "radial-gradient(closest-side, rgba(121, 199, 164, 0.1), transparent 74%)",
         }}
       />
 

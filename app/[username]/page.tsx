@@ -55,8 +55,8 @@ function ScoutError({ username, message }: { username: string; message: string }
       </p>
       <Link
         href="/"
-        className="mono mt-8 inline-block px-5 py-3 text-[10px] font-bold tracking-[0.16em]"
-        style={{ background: "var(--f1-red)", color: "#fff" }}
+        className="mono mt-8 inline-block px-5 py-3 text-[11px] font-bold tracking-[0.16em]"
+        style={{ background: "var(--f1-red)", color: "#1a120b" }}
       >
         BACK TO THE GRID
       </Link>
@@ -130,7 +130,7 @@ export default async function DriverPage({
       )}
 
       <div className="stage">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-4">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-8 px-5 py-8 sm:px-8 lg:grid lg:grid-cols-[248px_minmax(0,1fr)_340px] lg:gap-10 lg:py-3">
           {/* ── left rail: race craft, traits, silverware, seasons ─────── */}
           <aside className="order-2 space-y-6 lg:order-1">
             <Reveal>
@@ -165,7 +165,7 @@ export default async function DriverPage({
               <Section
                 title="TROPHY CABINET"
                 accent={accent}
-                aside={<span className="mono text-[9px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>{cabinet.length} HELD</span>}
+                aside={<span className="mono text-[11px] tracking-[0.1em]" style={{ color: "var(--faint)" }}>{cabinet.length} HELD</span>}
               >
                 <TrophyCabinet awards={cabinet} />
               </Section>
@@ -180,7 +180,7 @@ export default async function DriverPage({
                       const isBest = y.year === bestYear.year;
                       return (
                         <div key={y.year} className="flex items-center gap-2.5">
-                          <span className="mono w-7 text-[10px]" style={{ color: isBest ? "var(--green)" : "var(--faint)" }}>
+                          <span className="mono w-7 text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--faint)" }}>
                             {String(y.year).slice(2)}
                           </span>
                           <div className="h-[3px] flex-1 overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
@@ -192,7 +192,7 @@ export default async function DriverPage({
                               }}
                             />
                           </div>
-                          <span className="mono w-9 text-right text-[10px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
+                          <span className="mono w-9 text-right text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
                             {formatCount(total)}
                           </span>
                         </div>
@@ -214,7 +214,7 @@ export default async function DriverPage({
                         <div className="mono text-[18px] font-extrabold leading-none" style={{ color: "var(--ink)" }}>
                           {formatCount(metric.value)}
                         </div>
-                        <div className="mono mt-1 text-[8px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+                        <div className="mono mt-1 text-[11px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
                           {metric.label.toUpperCase()}
                         </div>
                       </div>
@@ -258,14 +258,14 @@ export default async function DriverPage({
               <TeamPicker login={card.login} current={team?.code ?? null} />
               <HowItWorks
                 label="HOW IT WORKS ↗"
-                className="mono text-[9.5px] font-bold tracking-[0.12em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
+                className="mono text-[10.5px] font-bold tracking-[0.12em] underline decoration-white/20 underline-offset-4 transition-colors hover:text-[var(--ink)]"
               />
             </div>
 
             <Reveal delay={100} className="mt-4">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>
                 <CardActions login={card.login} name={card.name} rtg={card.rtg} />
-                <p className="mono mt-4 text-center text-[9px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
+                <p className="mono mt-4 text-center text-[10.5px] tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                   SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H
                 </p>
               </div>

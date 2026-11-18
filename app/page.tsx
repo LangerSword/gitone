@@ -29,7 +29,7 @@ export default async function Home() {
         <div className="min-w-0">
           <div className="rise flex items-center gap-2.5" style={{ "--i": 0 } as React.CSSProperties}>
             <span aria-hidden className="inline-block h-[2px] w-7" style={{ background: "var(--f1-red)" }} />
-            <span className="mono text-[9.5px] font-bold tracking-[0.26em]" style={{ color: "var(--dim)" }}>
+            <span className="mono text-[10.5px] font-bold tracking-[0.26em]" style={{ color: "var(--dim)" }}>
               GITHUB SCOUT <span style={{ color: "var(--faint)" }}>·</span> SEASON 26
             </span>
           </div>
@@ -72,10 +72,10 @@ export default async function Home() {
 
       <footer className="relative z-10 flex-none">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-2 px-5 py-3.5 sm:px-8">
-          <span className="mono text-[9.5px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
             NOT AFFILIATED WITH EA SPORTS, FORMULA 1, OR GITHUB
           </span>
-          <span className="mono text-[9.5px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
             BUILT BY <span style={{ color: "var(--dim)" }}>LAKSHAYA SHARMA</span>
           </span>
         </div>

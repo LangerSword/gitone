@@ -81,7 +81,7 @@ export function Section({
       <div className="mb-2 flex items-baseline justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span className="h-[2px] w-4" style={{ background: accent }} />
-          <h3 className="mono text-[10px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
+          <h3 className="mono text-[12px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
             {title}
           </h3>
         </div>
@@ -95,10 +95,10 @@ export function Section({
 export function AttributeRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between border-b py-[10px] last:border-0" style={{ borderColor: "var(--line)" }}>
-      <span className="text-[13px]" style={{ color: "var(--dim)" }}>
+      <span className="text-[14px]" style={{ color: "var(--dim)" }}>
         {label}
       </span>
-      <span className="mono text-[13.5px] font-bold" style={{ color: "var(--ink)" }}>
+      <span className="mono text-[14.5px] font-bold" style={{ color: "var(--ink)" }}>
         {children}
       </span>
     </div>
@@ -132,11 +132,11 @@ export function MetricBar({
   const head = (
     <>
       <span className="flex items-baseline justify-between gap-3">
-        <span className="text-[12.5px]" style={{ color: "var(--dim)" }}>
+        <span className="text-[13.5px]" style={{ color: "var(--dim)" }}>
           {label}
         </span>
         <span className="flex items-baseline gap-2">
-          <span className="mono text-[11px] tabular-nums" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[12.5px] tabular-nums" style={{ color: "var(--faint)" }}>
             {value.toLocaleString()}
             {unit ? ` ${unit}` : ""}
           </span>
@@ -195,7 +195,7 @@ export function TraitChips({ card, accent }: { card: Card; accent: string }) {
       {traits.map((t) => (
         <span
           key={t}
-          className="mono inline-flex items-center gap-1.5 border px-2 py-1 text-[8.5px] font-bold tracking-[0.14em]"
+          className="mono inline-flex items-center gap-1.5 border px-2 py-1 text-[10.5px] font-bold tracking-[0.12em]"
           style={{ borderColor: "rgba(255,255,255,0.1)", color: "var(--dim)", background: "rgba(255,255,255,0.025)" }}
         >
           <span aria-hidden className="h-[4px] w-[4px] rounded-full" style={{ background: accent }} />
@@ -224,7 +224,7 @@ export function ReportHeader({ card, accent }: { card: Card; accent: string }) {
           <span className="display" style={{ fontSize: "clamp(36px,6vw,50px)", lineHeight: 0.78, color: "#fff", textShadow: `0 0 18px ${accent}55` }}>
             {card.rtg}
           </span>
-          <span className="mono mt-1.5 text-[9px] font-bold tracking-[0.2em]" style={{ color: accent }}>
+          <span className="mono mt-1.5 text-[10.5px] font-bold tracking-[0.2em]" style={{ color: accent }}>
             {card.finishLabel}
           </span>
         </div>
@@ -232,7 +232,7 @@ export function ReportHeader({ card, accent }: { card: Card; accent: string }) {
 
       <div className="min-w-0 flex-1">
         <Stagger step={1}>
-          <div className="mono flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <div className="mono flex flex-wrap items-center gap-x-2 gap-y-1 text-[11.5px] font-bold tracking-[0.14em]" style={{ color: "var(--faint)" }}>
             <span style={{ color: accent }}>#{String(card.number).padStart(2, "0")}</span>
             <span aria-hidden>·</span>
             <span>{card.constructor.name.toUpperCase()}</span>
@@ -256,12 +256,12 @@ export function ReportHeader({ card, accent }: { card: Card; accent: string }) {
 
         <Stagger step={3}>
           <div className="mt-2 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-            <span className="text-[13.5px] font-semibold" style={{ color: accent }}>
+            <span className="text-[14.5px] font-semibold" style={{ color: accent }}>
               {card.archetype}
             </span>
             <span aria-hidden className="h-[11px] w-px" style={{ background: "var(--line-bright)" }} />
-            <p className="line-clamp-2 max-w-[440px] text-[12.5px] leading-snug" style={{ color: "var(--dim)" }}>
-              <span className="mono mr-1.5 text-[9.5px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+            <p className="line-clamp-2 max-w-[440px] text-[13.5px] leading-snug" style={{ color: "var(--dim)" }}>
+              <span className="mono mr-1.5 text-[11px] font-bold tracking-[0.14em]" style={{ color: "var(--faint)" }}>
                 {VERDICTS[card.finish].toUpperCase()}
               </span>
               {card.archetypeBlurb}.

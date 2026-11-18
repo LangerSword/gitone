@@ -44,7 +44,7 @@ export default async function OgImage() {
           rated like f1.
         </div>
         <div style={{ display: "flex", marginTop: 30, fontFamily: "JBMono", fontSize: 26, color: "#9a9ca6" }}>
-          EXP · RAC · AWA · PAC — scored live from real commits
+          EXP · RAC · AWA · PAC. Scored live from real commits
         </div>
       </div>
     ),

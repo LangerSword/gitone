@@ -55,14 +55,14 @@ export function cardTree(card: Card, assets: Awaited<ReturnType<typeof loadCardA
         borderLeft: i === 0 ? "none" : "1px solid rgba(255,255,255,0.12)",
       }}
     >
-      <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.0), fontWeight: 700, letterSpacing: cqw(0.42), color: "rgba(242,243,240,0.55)" }}>
+      <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.6), fontWeight: 700, letterSpacing: cqw(0.36), color: "rgba(242,243,240,0.55)" }}>
         {STAT_LABELS[k]}
       </div>
       <div
         style={{
           display: "flex",
           fontFamily: "JBMono",
-          fontSize: cqw(6.4),
+          fontSize: cqw(6.7),
           fontWeight: 800,
           lineHeight: 1,
           color: card.stats[k] >= 90 ? "#b46bff" : "#ffffff",
@@ -137,7 +137,7 @@ export function cardTree(card: Card, assets: Awaited<ReturnType<typeof loadCardA
 
         {/* rating */}
         <div style={{ position: "absolute", left: "5.5%", top: "3.6%", display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.9), fontWeight: 700, letterSpacing: cqw(0.87), color: "rgba(242,243,240,0.62)" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.2), fontWeight: 700, letterSpacing: cqw(0.78), color: "rgba(242,243,240,0.62)" }}>
             RTG
           </div>
           <div style={{ display: "flex", marginTop: cqw(0.4), fontWeight: 900, fontSize: cqw(23), lineHeight: 0.78, letterSpacing: -cqw(1), color: "#ffffff" }}>
@@ -148,9 +148,9 @@ export function cardTree(card: Card, assets: Awaited<ReturnType<typeof loadCardA
               display: "flex",
               marginTop: cqw(1.2),
               fontFamily: "JBMono",
-              fontSize: cqw(2.6),
+              fontSize: cqw(3.0),
               fontWeight: 800,
-              letterSpacing: cqw(0.42),
+              letterSpacing: cqw(0.38),
               color: theme.ink,
               background: hexAlpha(theme.accent, 0.16),
               border: `1px solid ${hexAlpha(theme.accent, 0.42)}`,
@@ -163,10 +163,10 @@ export function cardTree(card: Card, assets: Awaited<ReturnType<typeof loadCardA
 
         {/* number + flag */}
         <div style={{ position: "absolute", right: "5.5%", top: "4%", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.5), fontWeight: 700, letterSpacing: cqw(0.7), color: "rgba(242,243,240,0.5)" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.9), fontWeight: 700, letterSpacing: cqw(0.6), color: "rgba(242,243,240,0.5)" }}>
             NO.
           </div>
-          <div style={{ display: "flex", marginTop: cqw(0.2), fontFamily: "JBMono", fontSize: cqw(6.4), fontWeight: 800, lineHeight: 1, color: livery }}>
+          <div style={{ display: "flex", marginTop: cqw(0.2), fontFamily: "JBMono", fontSize: cqw(6.7), fontWeight: 800, lineHeight: 1, color: livery }}>
             {String(card.number).padStart(2, "0")}
           </div>
           {flag && (
@@ -193,7 +193,7 @@ export function cardTree(card: Card, assets: Awaited<ReturnType<typeof loadCardA
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: cqw(1.2), marginTop: cqw(1.6) }}>
             <div style={{ display: "flex", width: cqw(3.2), height: cqw(0.5), background: livery }} />
-            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.8), fontWeight: 700, letterSpacing: cqw(0.45), color: livery }}>
+            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.2), fontWeight: 700, letterSpacing: cqw(0.4), color: livery }}>
               {card.constructor.name.toUpperCase()}
             </div>
           </div>

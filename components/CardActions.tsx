@@ -22,8 +22,8 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const shareText = `${name ?? login} scored ${rtg ?? "a card"} on gitone — GitHub, rated like a driver.`;
 
-  const primary = "mono flex h-10 items-center justify-center px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors";
-  const ghost = "mono flex h-10 items-center justify-center border px-3 text-[9.5px] font-bold tracking-[0.14em] transition-colors hover:border-white/30 hover:text-[var(--ink)]";
+  const primary = "mono flex h-10 items-center justify-center px-2.5 text-[11px] font-bold tracking-[0.1em] transition-colors";
+  const ghost = "mono flex h-10 items-center justify-center border px-2.5 text-[11px] font-bold tracking-[0.1em] transition-colors hover:border-white/30 hover:text-[var(--ink)]";
 
   return (
     <div className="space-y-4">
@@ -35,7 +35,7 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
             flash("embed");
           }}
           className={primary}
-          style={{ background: "var(--f1-red)", color: "#fff" }}
+          style={{ background: "linear-gradient(180deg, #fbf4e6, #e8dac2)", color: "#1a120b", boxShadow: "inset 0 1px 0 rgba(255,255,255,.8)" }}
         >
           {copied === "embed" ? "COPIED" : "COPY EMBED MD"}
         </button>
@@ -93,7 +93,7 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
         className="flex flex-col gap-2 sm:flex-row"
       >
         <div className="flex items-center gap-2 border-b pb-1.5" style={{ borderColor: "var(--line)" }}>
-          <span className="mono text-[8.5px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
+          <span className="mono text-[11px] font-bold tracking-[0.14em]" style={{ color: "var(--faint)" }}>
             HEAD-TO-HEAD
           </span>
           <input
