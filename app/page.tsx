@@ -28,6 +28,28 @@ const CAR_SPEC: { k: "cor" | "top" | "aero" | "rel"; name: string; from: string 
   { k: "rel", name: "Reliability", from: "seasons without breakdowns" },
 ];
 
+// A hand-drawn brush stroke, not a CSS border — the one organic accent on
+// the page, under the line that matters.
+function BrushUnderline({ color = "var(--f1-red)" }: { color?: string }) {
+  return (
+    <svg
+      viewBox="0 0 240 14"
+      aria-hidden="true"
+      style={{ position: "absolute", left: 0, bottom: "-0.12em", width: "100%", height: "0.22em" }}
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M3 9.2C43 4.9 98 2.8 150 4.1c24 .6 47 2.2 87 5.4"
+        stroke={color}
+        strokeWidth="4.5"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.85"
+      />
+    </svg>
+  );
+}
+
 export default function Home() {
   return (
     <main className="min-h-screen">
@@ -54,7 +76,10 @@ export default function Home() {
             >
               your github,
               <br />
-              rated like f1.
+              <span className="relative inline-block">
+                rated like f1.
+                <BrushUnderline />
+              </span>
             </h1>
             <p className="mt-6 max-w-xl text-[17px] leading-relaxed" style={{ color: "var(--dim)" }}>
               Every GitHub profile, scored the way the official F1 games score their grid:
@@ -81,12 +106,9 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16" id="grid">
         <Reveal>
           <div className="flex items-end justify-between mb-6">
-            <div>
-              <p className="eyebrow">LIVE FROM THE JSON API</p>
-              <h2 className="mt-2 font-black text-[34px] sm:text-[40px] leading-none">the starting grid</h2>
-            </div>
-            <span className="mono text-[11px] hidden sm:block" style={{ color: "var(--faint)" }}>
-              SCOUTED ON VIEW · CACHED 2H
+            <h2 className="font-black text-[34px] sm:text-[40px] leading-none">the starting grid</h2>
+            <span className="mono text-[10.5px] hidden sm:block" style={{ color: "var(--faint)" }}>
+              SCOUTED LIVE · CACHED 2H
             </span>
           </div>
         </Reveal>
@@ -99,8 +121,7 @@ export default function Home() {
       <section className="border-y" style={{ borderColor: "var(--line)", background: "var(--bg-1)" }}>
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
           <Reveal>
-            <p className="eyebrow">HOW THE SCOUTING WORKS</p>
-            <h2 className="mt-2 font-black text-[34px] sm:text-[40px] leading-none">
+            <h2 className="font-black text-[34px] sm:text-[40px] leading-none">
               the four stats, ea&apos;s own definitions
             </h2>
             <p className="mt-4 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--dim)" }}>
@@ -150,8 +171,7 @@ export default function Home() {
       {/* ── the car ──────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
         <Reveal>
-          <p className="eyebrow">YOUR FOOTPRINT, AS A CHASSIS</p>
-          <h2 className="mt-2 font-black text-[34px] sm:text-[40px] leading-none">
+          <h2 className="font-black text-[34px] sm:text-[40px] leading-none">
             the car gets rated too
           </h2>
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed" style={{ color: "var(--dim)" }}>
@@ -185,7 +205,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-5 sm:px-8 py-14">
           <Reveal>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-              <p className="eyebrow shrink-0">EVERY CARD WALKS OUT IN A FINISH</p>
+              <h2 className="mr-6 font-black text-[24px] sm:text-[28px] leading-none">every card walks out in a finish</h2>
               <div className="flex flex-wrap gap-2.5">
                 {FINISH_FINISHES.map(({ key, note }) => (
                   <span
@@ -215,8 +235,7 @@ export default function Home() {
       {/* ── embed ────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
         <Reveal>
-          <p className="eyebrow">THE CARD LIVES AT A URL</p>
-          <h2 className="mt-2 font-black text-[34px] sm:text-[40px] leading-none">embed it anywhere</h2>
+          <h2 className="font-black text-[34px] sm:text-[40px] leading-none">embed it anywhere</h2>
         </Reveal>
         <Reveal delay={100} className="mt-7 grid lg:grid-cols-[1.2fr_1fr] gap-4">
           <div className="panel rounded-lg overflow-hidden">

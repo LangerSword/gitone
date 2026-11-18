@@ -7,14 +7,14 @@ import { Confetti } from "@/components/Confetti";
 import { StatRadar } from "@/components/StatRadar";
 import { CardActions } from "@/components/CardActions";
 import { Reveal } from "@/components/Reveal";
+import { ReportHeader, Section, AttributeRow, MetricBar, Tip } from "@/components/dossier";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
 import { STATS, STAT_LABELS, STAT_NAMES, STAT_COPY } from "@/lib/racing/constants";
-import { confettiPalette, resolveCardTheme, statColor } from "@/components/finishTheme";
+import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
 import { CountryPicker } from "@/components/CountryPicker";
 import { formatCount } from "@/lib/format";
-import { deEmDash } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
 
 export async function generateMetadata({
@@ -29,7 +29,7 @@ export async function generateMetadata({
   const s = card.stats;
   return {
     title: `${card.name} · RTG ${card.rtg}`,
-    description: `${card.name} on the github grid: EXP ${s.exp} · RAC ${s.rac} · AWA ${s.awa} · PAC ${s.pac} — ${card.constructor.name}, ${card.finishLabel.toLowerCase()}.`,
+    description: `${card.name} on the github grid: EXP ${s.exp} · RAC ${s.rac} · AWA ${s.awa} · PAC ${s.pac}. ${card.constructor.name}, ${card.finishLabel.toLowerCase()}.`,
     alternates: { canonical: `/${card.login}` },
   };
 }
@@ -112,7 +112,7 @@ export default async function DriverPage({
   }
   const { card } = res;
   const theme = resolveCardTheme(card);
-  const statColorFor = (v: number) => statColor(v, theme);
+  const accent = theme.ink;
   const champagne = POPS.includes(card.finish as (typeof POPS)[number]);
   // The flag a card shows: a manual pick (picker / shared-link ?country=)
   // wins over the GitHub-derived country.
@@ -135,140 +135,93 @@ export default async function DriverPage({
       </header>
 
       <div className="stage">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 lg:grid lg:grid-cols-[270px_minmax(0,1fr)_330px] lg:gap-10">
+        <div className="mx-auto max-w-7xl px-5 sm:px-8 py-12 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_340px] lg:gap-10">
           {/* ── left rail: race craft ──────────────────────────────────── */}
-          <aside className="order-2 lg:order-1 space-y-6">
-            <Reveal className="glass rounded-xl p-6">
-              <p className="eyebrow">RACE NOTES</p>
-              <div className="mt-5 space-y-4 text-[13px]" style={{ color: "var(--dim)" }}>
-                <div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Wet pace</span>
+          <aside className="order-2 lg:order-1 space-y-[14px]">
+            <Reveal>
+              <Section title="RACE NOTES" accent={accent}>
+                <AttributeRow label="Wet pace">
+                  <Tip text={card.report.reasons.wetPace} align="right">
                     <span className="mono font-bold" style={{ color: "var(--purple)" }}>
                       {card.report.wetPace}/5
                     </span>
-                  </div>
-                  <div className="mt-2 rounded-full overflow-hidden" style={{ height: 4, background: "rgba(255,255,255,0.07)" }}>
-                    <div
-                      className="bar-fill"
-                      style={{ width: `${card.report.wetPace * 20}%`, height: "100%", background: "var(--purple)" }}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span>Tyre management</span>
+                  </Tip>
+                </AttributeRow>
+                <AttributeRow label="Tyre management">
+                  <Tip text={card.report.reasons.tyre} align="right">
                     <span className="mono font-bold" style={{ color: "var(--green)" }}>
                       {card.report.tyre}/5
                     </span>
-                  </div>
-                  <div className="mt-2 rounded-full overflow-hidden" style={{ height: 4, background: "rgba(255,255,255,0.07)" }}>
-                    <div
-                      className="bar-fill"
-                      style={{ width: `${card.report.tyre * 20}%`, height: "100%", background: "var(--green)" }}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-4 pt-1">
-                  <span>DRS flap</span>
-                  <span
-                    className="mono font-bold rounded px-2 py-0.5 text-[11px]"
-                    style={{
-                      background: card.report.drsOpen ? "rgba(44,198,107,0.14)" : "rgba(255,255,255,0.05)",
-                      color: card.report.drsOpen ? "var(--green)" : "var(--faint)",
-                    }}
-                  >
-                    {card.report.drsOpen ? "OPEN" : "CLOSED"}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-5 space-y-1.5">
-                {(["wetPace", "tyre", "drs"] as const).map((k) => (
-                  <p key={k} className="mono text-[11.5px] leading-relaxed" style={{ color: "var(--dim)" }}>
-                    {card.report.reasons[k]}
-                  </p>
-                ))}
-              </div>
+                  </Tip>
+                </AttributeRow>
+                <AttributeRow label="DRS flap">
+                  <Tip text={card.report.reasons.drs} align="right">
+                    <span
+                      className="mono font-bold"
+                      style={{ color: card.report.drsOpen ? "var(--green)" : "var(--faint)" }}
+                    >
+                      {card.report.drsOpen ? "OPEN" : "CLOSED"}
+                    </span>
+                  </Tip>
+                </AttributeRow>
+              </Section>
             </Reveal>
 
-            {card.years && card.years.length > 0 && (
-              <Reveal delay={120} className="glass rounded-xl p-6">
-                <p className="eyebrow">SEASONS RACED · LAPS BY YEAR</p>
-                <div className="mt-4 space-y-3">
-                  {card.years
-                    .filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0)
-                    .slice(-7)
-                    .map((y) => {
-                      const total = y.commits + y.prs + y.reviews + y.issues + y.restricted;
-                      const years = card.years!;
-                      const max = Math.max(...years.map((yy) => yy.commits + yy.prs + yy.reviews + yy.issues + yy.restricted));
-                      const bestYear = years.reduce((a, b) =>
-                        (b.commits + b.prs + b.reviews + b.issues + b.restricted) > (a.commits + a.prs + a.reviews + a.issues + a.restricted) ? b : a,
-                      );
-                      const isBest = y.year === bestYear.year;
-                      return (
-                        <div key={y.year} className="flex items-center gap-3">
-                          <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--faint)", width: 30 }}>
-                            {String(y.year).slice(2)}
-                          </span>
-                          <div
-                            className="flex-1 rounded-full overflow-hidden"
-                            style={{ height: 8, background: "rgba(255,255,255,0.06)" }}
-                          >
-                            <div
-                              className="bar-fill"
-                              style={{
-                                width: `${Math.max(3, (total / Math.max(max, 1)) * 100)}%`,
-                                height: "100%",
-                                background: isBest
-                                  ? "linear-gradient(90deg, var(--green), rgba(255,255,255,0.5))"
-                                  : `linear-gradient(90deg, ${card.constructor.color}, rgba(255,255,255,0.4))`,
-                                boxShadow: isBest ? "0 0 10px rgba(44,198,107,0.45)" : "none",
-                              }}
-                            />
+            <Reveal delay={60}>
+              <Section title="TROPHY CABINET" accent={accent}>
+                <TrophyCabinet awards={card.awards ?? []} />
+              </Section>
+            </Reveal>
+
+            {card.years && card.years.filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0).length > 0 && (
+              <Reveal delay={110}>
+                <Section title="SEASONS RACED" accent={accent}>
+                  <div className="space-y-[11px] pt-1">
+                    {card.years
+                      .filter((y) => y.commits + y.prs + y.reviews + y.issues + y.restricted > 0)
+                      .slice(-7)
+                      .map((y) => {
+                        const total = y.commits + y.prs + y.reviews + y.issues + y.restricted;
+                        const years = card.years!;
+                        const max = Math.max(...years.map((yy) => yy.commits + yy.prs + yy.reviews + yy.issues + yy.restricted));
+                        const bestYear = years.reduce((a, b) =>
+                          (b.commits + b.prs + b.reviews + b.issues + b.restricted) > (a.commits + a.prs + a.reviews + a.issues + a.restricted) ? b : a,
+                        );
+                        const isBest = y.year === bestYear.year;
+                        return (
+                          <div key={y.year} className="flex items-center gap-3">
+                            <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--faint)", width: 30 }}>
+                              {String(y.year).slice(2)}
+                            </span>
+                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: "rgba(255,255,255,0.06)" }}>
+                              <div
+                                className="bar-fill"
+                                style={{
+                                  width: `${Math.max(3, (total / Math.max(max, 1)) * 100)}%`,
+                                  height: "100%",
+                                  background: isBest
+                                    ? "linear-gradient(90deg, var(--green), rgba(255,255,255,0.5))"
+                                    : `linear-gradient(90deg, ${card.constructor.color}, rgba(255,255,255,0.4))`,
+                                }}
+                              />
+                            </div>
+                            <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
+                              {formatCount(total)}
+                            </span>
                           </div>
-                          <span className="mono text-[11px]" style={{ color: isBest ? "var(--green)" : "var(--dim)" }}>
-                            {formatCount(total)}
-                          </span>
-                        </div>
-                      );
-                    })}
-                </div>
+                        );
+                      })}
+                  </div>
+                </Section>
               </Reveal>
             )}
-
-            <Reveal delay={80} className="glass rounded-xl p-6">
-              <p className="eyebrow">DRIVER PROFILE</p>
-              <div
-                className="mt-4 font-bold text-[19px] leading-tight"
-                style={{ color: "var(--ink)", textShadow: `0 0 18px ${theme.glow}` }}
-              >
-                {card.archetype}
-              </div>
-              <p className="mt-2 text-[14.5px] leading-relaxed" style={{ color: "var(--dim)" }}>
-                {deEmDash(card.archetypeBlurb)}
-              </p>
-              <div className="mono mt-5 text-[11px] leading-relaxed" style={{ color: "var(--dim)" }}>
-                SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H ·{" "}
-                <a
-                  href={`https://github.com/${card.login}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "var(--dim)", textDecoration: "underline", textUnderlineOffset: 3 }}
-                >
-                  GITHUB PROFILE
-                </a>
-              </div>
-            </Reveal>
-
-            <Reveal delay={100} className="glass rounded-xl p-6">
-              <p className="eyebrow">TROPHY CABINET</p>
-              <TrophyCabinet awards={card.awards ?? []} />
-            </Reveal>
           </aside>
 
-          {/* ── center stage: the card is the light source ─────────────── */}
+          {/* ── center: the dossier. header, then the card as the light ── */}
           <div className="order-1 lg:order-2">
+            <div className="mb-8">
+              <ReportHeader card={card} accent={accent} />
+            </div>
             <div className="relative" style={{ maxWidth: 620, margin: "0 auto" }}>
               {champagne && <Confetti colors={confettiPalette(card, theme)} />}
               <TiltCard>
@@ -283,123 +236,84 @@ export default async function DriverPage({
             <Reveal delay={120} className="mt-7">
               <div style={{ maxWidth: 620, margin: "0 auto" }}>
                 <CardActions login={card.login} />
+                <p className="mono mt-5 text-center text-[10.5px] tracking-[0.06em]" style={{ color: "var(--faint)" }}>
+                  SCORED LIVE FROM GITHUB&apos;S GRAPHQL API · RE-SCOUTED EVERY 2H
+                </p>
               </div>
             </Reveal>
           </div>
 
-          {/* ── right rail: the numbers ────────────────────────────────── */}
-          <aside className="order-3 mt-10 lg:mt-0 space-y-6">
-            <Reveal className="glass rounded-xl p-6">
-              <div className="flex items-center justify-between gap-4">
-                <p className="eyebrow">TELEMETRY RADAR</p>
-                <span className="mono text-[11px]" style={{ color: "var(--faint)" }}>
-                  PAC · RAC · EXP · AWA
-                </span>
-              </div>
-              <div className="mt-3 flex justify-center">
-                <StatRadar card={card} size={230} />
-              </div>
+          {/* ── right rail: the numbers, as a live readout ─────────────── */}
+          <aside className="order-3 mt-10 lg:mt-0 space-y-[14px]">
+            <Reveal>
+              <Section title="TELEMETRY RADAR" accent={accent}>
+                <div className="mt-2 flex justify-center">
+                  <StatRadar card={card} size={230} />
+                </div>
+              </Section>
             </Reveal>
 
-            <Reveal delay={60} className="glass rounded-xl p-6">
-              <div className="flex items-baseline justify-between">
-                <p className="eyebrow">DRIVER RATINGS</p>
-                <span className="mono text-[11px]" style={{ color: "var(--faint)" }}>
-                  EA-F1 CATEGORIES
-                </span>
-              </div>
-              <div className="mt-5 space-y-4">
-                {STATS.map((k) => (
-                  <div key={k}>
-                    <div className="flex items-baseline justify-between">
-                      <span className="mono text-[12px] font-bold" style={{ color: "var(--dim)" }}>
-                        {STAT_LABELS[k]} <span style={{ color: "var(--faint)" }}>{STAT_NAMES[k]}</span>
-                      </span>
-                      <span
-                        className="mono text-[15px] font-extrabold"
-                        style={{ color: statColorFor(card.stats[k]), textShadow: card.stats[k] >= 90 ? `0 0 12px ${theme.hot}` : "none" }}
-                      >
-                        {card.stats[k]}
-                      </span>
-                    </div>
-                    <div className="mt-1.5 rounded-full overflow-hidden" style={{ height: 6, background: "rgba(255,255,255,0.07)" }}>
-                      <div
-                        className="bar-fill"
-                        style={{
-                          width: `${card.stats[k]}%`,
-                          height: "100%",
-                          background: `linear-gradient(90deg, ${statColorFor(card.stats[k])}, ${card.constructor.color})`,
-                        }}
-                      />
-                    </div>
-                    <p className="mt-1.5 text-[12px]" style={{ color: "var(--dim)" }}>
-                      ← {STAT_COPY[k].scouted}
-                    </p>
-                  </div>
-                ))}
-              </div>
+            <Reveal delay={60}>
+              <Section title="DRIVER RATINGS" accent={accent}>
+                <div className="flex flex-col gap-[13px] pt-1">
+                  {STATS.map((k, i) => (
+                    <MetricBar
+                      key={k}
+                      label={`${STAT_LABELS[k]} · ${STAT_NAMES[k]}`}
+                      value={card.stats[k]}
+                      score={card.stats[k]}
+                      accent={accent}
+                      tip={STAT_COPY[k].what}
+                      index={i}
+                    />
+                  ))}
+                </div>
+              </Section>
             </Reveal>
 
             {card.recent_calendar && card.recent_calendar.length > 0 && (
-              <Reveal delay={100} className="glass rounded-xl p-6">
-                <p className="eyebrow">TELEMETRY · LAPS PER WEEK</p>
-                <div className="mt-5">
-                  <LapChart card={card} />
-                </div>
+              <Reveal delay={110}>
+                <Section title="LAPS PER WEEK" accent={accent}>
+                  <div className="pt-2">
+                    <LapChart card={card} />
+                  </div>
+                </Section>
               </Reveal>
             )}
 
-            <Reveal delay={140} className="glass rounded-xl p-6">
-              <div className="flex items-baseline justify-between">
-                <p className="eyebrow">CAR SPEC · {card.constructor.name.toUpperCase()}</p>
-                <span className="mono text-[15px] font-extrabold" style={{ color: "var(--ink)" }}>
-                  CHASSIS {card.car.rating}
-                </span>
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-x-6 gap-y-4">
-                {(["cor", "top", "aero", "rel"] as const).map((k) => (
-                  <div key={k}>
-                    <div className="flex items-baseline justify-between">
-                      <span className="mono text-[11.5px] font-bold tracking-[0.14em]" style={{ color: "var(--dim)" }}>
-                        {k.toUpperCase()}
-                      </span>
-                      <span className="mono text-[14px] font-bold" style={{ color: "var(--ink)" }}>
-                        {card.car[k]}
-                      </span>
-                    </div>
-                    <div className="mt-1.5 rounded-full overflow-hidden" style={{ height: 8, background: "rgba(255,255,255,0.07)" }}>
-                      <div
-                        className="bar-fill"
-                        style={{
-                          width: `${Math.max(3, card.car[k])}%`,
-                          height: "100%",
-                          background: `linear-gradient(90deg, ${card.constructor.color}, ${card.constructor.color}dd 60%, rgba(255,255,255,0.55))`,
-                          boxShadow: `0 0 10px ${card.constructor.color}66`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <p className="mono mt-5 text-[11px] leading-relaxed" style={{ color: "var(--faint)" }}>
-                COR languages · TOP biggest repo · AERO stars owned · REL seasons raced
-              </p>
+            <Reveal delay={160}>
+              <Section title={`CAR SPEC · ${card.constructor.name.toUpperCase()}`} accent={accent}>
+                <div className="flex flex-col gap-[13px] pt-1">
+                  {(["cor", "top", "aero", "rel"] as const).map((k, i) => (
+                    <MetricBar
+                      key={k}
+                      label={k.toUpperCase()}
+                      value={card.car[k]}
+                      score={card.car[k]}
+                      accent={card.constructor.color}
+                      index={i}
+                    />
+                  ))}
+                </div>
+              </Section>
             </Reveal>
 
-            <Reveal delay={180} className="glass rounded-xl p-6">
-              <p className="eyebrow">RAW SIGNALS · REAL GITHUB COUNTS</p>
-              <div className="mt-5 grid grid-cols-2 gap-x-8 gap-y-5">
-                {card.report.metrics.map((m) => (
-                  <div key={m.label} className="flex items-baseline justify-between gap-3">
-                    <span className="text-[13.5px]" style={{ color: "var(--dim)" }}>
-                      {m.label}
-                    </span>
-                    <span className="mono text-[15px] font-bold" style={{ color: "var(--ink)" }}>
-                      {formatCount(m.value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <Reveal delay={210}>
+              <Section title="SCOUTING METRICS" accent={accent}>
+                <div className="flex flex-col gap-[13px] pt-1">
+                  {card.report.metrics.map((m, i) => (
+                    <MetricBar
+                      key={m.label}
+                      label={m.label}
+                      value={m.value}
+                      score={m.score}
+                      accent={accent}
+                      unit={m.unit}
+                      index={i}
+                    />
+                  ))}
+                </div>
+              </Section>
             </Reveal>
           </aside>
         </div>
