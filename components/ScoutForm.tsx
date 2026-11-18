@@ -71,18 +71,18 @@ export function ScoutForm({ autoFocus = false }: { autoFocus?: boolean }) {
           {lit === 0 ? "SCOUT" : "LIGHTS OUT"}
         </button>
       </form>
+      {/* the light bank lives here always — dim at rest, lit on the
+          formation sequence, so a still frame reads F1 too */}
       <div className="lights mt-4 h-[18px]" aria-hidden="true">
         {[0, 1, 2, 3, 4].map((i) => (
           <span key={i} className={lit >= 1 && lit <= 5 && i < lit ? "on" : ""} />
         ))}
-        {lit >= 1 && (
-          <span
-            className="mono ml-3 text-[11px] tracking-[0.22em]"
-            style={{ color: lit === 6 ? "var(--green)" : "var(--dim)" }}
-          >
-            {lit < 5 ? "FORMATION" : lit === 5 ? "HOLD" : "AND AWAY WE GO"}
-          </span>
-        )}
+        <span
+          className="mono ml-3 text-[11px] tracking-[0.22em]"
+          style={{ color: lit === 6 ? "var(--green)" : "var(--faint)" }}
+        >
+          {lit === 0 ? "AWAITING LIGHTS" : lit < 5 ? "FORMATION" : lit === 5 ? "HOLD" : "AND AWAY WE GO"}
+        </span>
       </div>
     </div>
   );

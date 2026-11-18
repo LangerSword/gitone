@@ -51,24 +51,27 @@ function ScoutError({ username, message }: { username: string; message: string }
   );
 }
 
-// Laps per week, oldest first — the contribution calendar as lap times.
+// Laps per week, oldest first — the contribution calendar as lap times,
+// with the fastest lap flagged in the timing purple.
 function LapChart({ card }: { card: Card }) {
   const weeks = card.recent_calendar ?? [];
   const max = Math.max(1, ...weeks);
+  const maxIdx = weeks.indexOf(max);
   const livery = card.constructor.color;
   return (
     <div>
       <div className="flex items-end gap-[3px] h-20" role="img" aria-label="Laps per week over the last season">
         {weeks.map((v, i) => {
           const h = v === 0 ? 8 : Math.max(14, (v / max) * 100);
+          const isFL = v > 0 && i === maxIdx;
           return (
             <span
               key={i}
               className="flex-1 rounded-[1px]"
               style={{
                 height: `${h}%`,
-                background: v === 0 ? "rgba(255,255,255,0.06)" : livery,
-                opacity: v === 0 ? 1 : 0.42 + (0.58 * v) / max,
+                background: isFL ? "var(--purple)" : v === 0 ? "rgba(255,255,255,0.06)" : livery,
+                opacity: v === 0 || isFL ? 1 : 0.42 + (0.58 * v) / max,
               }}
             />
           );
@@ -76,6 +79,7 @@ function LapChart({ card }: { card: Card }) {
       </div>
       <div className="mono mt-3 flex justify-between text-[10px]" style={{ color: "var(--faint)" }}>
         <span>52 WEEKS AGO</span>
+        <span style={{ color: "var(--purple)" }}>FL {max}</span>
         <span>{formatCount(weeks.reduce((s, v) => s + v, 0))} LAPS</span>
         <span>NOW</span>
       </div>

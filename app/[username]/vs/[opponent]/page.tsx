@@ -198,7 +198,12 @@ export default async function VsPage({
 
         {/* receipts */}
         <div className="mt-8 panel rounded-lg p-6">
-          <p className="eyebrow">RACE RECEIPTS · REAL COUNTS</p>
+          <div className="flex items-baseline justify-between">
+            <p className="eyebrow">RACE RECEIPTS · REAL COUNTS</p>
+            <span className="mono text-[10px]" style={{ color: "var(--faint)" }}>
+              CHALLENGER ◀ ▶ RIVAL
+            </span>
+          </div>
           <div className="mt-4 space-y-2.5">
             {duel.receipts.map((r, i) => (
               <div
@@ -209,6 +214,7 @@ export default async function VsPage({
                 <span
                   className="justify-self-start"
                   style={{ color: r.challenger >= r.opponent ? "var(--ink)" : "var(--faint)" }}
+                  title={challenger.name}
                 >
                   {formatCount(r.challenger)}
                 </span>
@@ -218,6 +224,7 @@ export default async function VsPage({
                 <span
                   className="justify-self-end"
                   style={{ color: r.opponent >= r.challenger ? "var(--ink)" : "var(--faint)" }}
+                  title={opp.name}
                 >
                   {formatCount(r.opponent)}
                 </span>
