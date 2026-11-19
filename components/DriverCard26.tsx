@@ -317,6 +317,25 @@ export function DriverCard26({
           {/* the team's colour, closing the card */}
           <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "0.8cqw", background: livery }} />
 
+          {/* the one-of-one's commemorative serial — exclusive by history, not
+              flash: a tone-on-tone edition mark, like a minted plate */}
+          {card.finish === "founder" && (
+            <div
+              className="mono"
+              style={{
+                position: "absolute",
+                left: "5.5%",
+                bottom: "22.2%",
+                fontSize: "1.9cqw",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                color: rgba(theme.accent, 0.6),
+              }}
+            >
+              № 001/001 · EST. 26
+            </div>
+          )}
+
           {/* maker's mark */}
           <div
             className="mono"
