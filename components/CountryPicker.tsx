@@ -14,7 +14,7 @@ import { clearPref, localPrefKey, writePref } from "@/lib/prefs";
 // Choosing a country re-navigates with ?country=<code> (the same override
 // the embeddable .png honours) and stores the pick per-login, so returning
 // visitors keep their flag.
-const SLOT = { right: "4.2%", top: "12.4%", width: "8.2%", height: "6.2%" } as const;
+const SLOT = { left: "13%", top: "36.8%", width: "9%", height: "4.6%" } as const;
 const STORAGE_KEY = (login: string) => localPrefKey("country", login);
 
 interface Props {
@@ -159,7 +159,7 @@ export function CountryPicker({ login, value }: Props) {
         <div
           role="presentation"
           className="menu-pop pointer-events-auto absolute z-30 flex w-[280px] max-w-[80vw] flex-col overflow-hidden"
-          style={{ right: 0, top: `calc(${SLOT.top} + ${SLOT.height} + 2%)`, maxHeight: 360 }}
+          style={{ left: SLOT.left, top: `calc(${SLOT.top} + ${SLOT.height} + 1.5%)`, maxHeight: 360 }}
         >
           <div className="relative shrink-0 border-b p-[10px]" style={{ borderColor: "var(--line)" }}>
             <Search

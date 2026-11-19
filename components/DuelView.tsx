@@ -109,7 +109,7 @@ function SectorRow({
           style={{
             color: ink,
             textAlign: side === "challenger" ? "right" : "left",
-            textShadow: won ? `0 0 12px ${rgba(hot ? "#b36bff" : accent, 0.4)}` : undefined,
+            textShadow: won ? `0 0 14px ${rgba(hot ? "#b36bff" : accent, 0.65)}` : undefined,
           }}
         >
           {row[side]}
@@ -159,7 +159,7 @@ function SectorRow({
             width: `${resolved ? row[side] : 0}%`,
             marginLeft: side === "challenger" ? "auto" : undefined,
             background: lost ? rgba(accent, 0.45) : won ? accent : "rgba(255,255,255,0.2)",
-            boxShadow: won ? `0 0 10px ${rgba(accent, 0.5)}` : undefined,
+            boxShadow: won ? `0 0 16px ${rgba(accent, 0.7)}, 0 0 5px ${rgba(accent, 0.5)}` : undefined,
             transition: "width .6s cubic-bezier(.16,1,.3,1), background .3s ease",
           }}
         />
