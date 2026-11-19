@@ -115,10 +115,12 @@ export const SAMPLE_CARDS: CardPreview[] = [
   },
 ];
 
-// The four on the hero fan, front to back. The GOAT leads.
+// The four on the hero fan, front to back. The GOAT leads. Only single-subject
+// photographic headshots fan well — logos, collages and pet photos read as
+// broken portraits on the metal, so the shop window picks clean faces.
 export const FAN_CARDS: { card: CardPreview; label?: "GOAT" | "LEGEND" }[] = [
-  { card: SAMPLE_CARDS[3] },
-  { card: SAMPLE_CARDS[2] },
-  { card: SAMPLE_CARDS[1], label: "LEGEND" },
+  { card: SAMPLE_CARDS[7] },
+  { card: SAMPLE_CARDS[8] },
+  { card: SAMPLE_CARDS[3], label: "LEGEND" },
   { card: SAMPLE_CARDS[0], label: "GOAT" },
 ];

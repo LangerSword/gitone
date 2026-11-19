@@ -213,7 +213,7 @@ export function DriverCard26({
       </div>
 
       {/* name — centred across the crest below the seam, dark engraved DIN */}
-      <div data-zone="identity" style={{ position: "absolute", left: "10%", right: "10%", top: "59%", textAlign: "center" }}>
+      <div data-zone="identity" style={{ position: "absolute", left: "10%", right: "10%", top: "58%", textAlign: "center" }}>
         {first && (
           <div style={{ fontFamily: WIDE, fontWeight: 700, fontSize: `${Math.max(2.8, nameSize * 0.4)}cqw`, lineHeight: 1, color: label, marginBottom: "0.6cqw", letterSpacing: "0.06em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {first}
@@ -234,7 +234,7 @@ export function DriverCard26({
       {/* the stat rail: four columns, labels over values, hairlines between */}
       <div
         data-zone="stats"
-        style={{ position: "absolute", left: "18%", right: "18%", top: "70%", height: "10.5%", display: "flex" }}
+        style={{ position: "absolute", left: "20%", right: "20%", top: "72%", height: "10.5%", display: "flex" }}
       >
         {STATS.map((k: StatKey, i) => (
           <div

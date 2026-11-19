@@ -1,16 +1,14 @@
-import { FAN_CARDS, SAMPLE_CARDS } from "@/lib/racing/samples";
+import { FAN_CARDS } from "@/lib/racing/samples";
 import { MiniCard } from "./MiniCard";
 
 // The hero: four real cards, preloaded from the sample snapshot. Torvalds
-// leads on the right, ThePrimeagen anchors the left, two champions lean in
-// between. No network on first paint, no wall of cards.
-const prime = SAMPLE_CARDS.find((c) => c.login === "ThePrimeagen") ?? FAN_CARDS[0].card;
-
+// leads on the right, two champions lean in between. No network on first
+// paint, no wall of cards. Every face is a clean single-subject headshot.
 const LAYOUT = [
-  { card: prime, x: -168, rotate: -16, top: 132, width: 152, z: 1 },
-  { card: FAN_CARDS[1].card, x: -56, rotate: -6, top: 94, width: 172, z: 2 },
-  { card: FAN_CARDS[2].card, x: 56, rotate: 6, top: 94, width: 172, z: 2, label: "LEGEND" as const },
-  { card: FAN_CARDS[3].card, x: 168, rotate: 14, top: 42, width: 196, z: 4, label: "GOAT" as const },
+  { card: FAN_CARDS[0].card, x: -132, rotate: -13, top: 132, width: 150, z: 1, label: FAN_CARDS[0].label },
+  { card: FAN_CARDS[1].card, x: -46, rotate: -5, top: 94, width: 170, z: 2, label: FAN_CARDS[1].label },
+  { card: FAN_CARDS[2].card, x: 48, rotate: 5, top: 94, width: 170, z: 2, label: FAN_CARDS[2].label },
+  { card: FAN_CARDS[3].card, x: 142, rotate: 12, top: 42, width: 194, z: 4, label: FAN_CARDS[3].label },
 ];
 
 export function FanCards() {
