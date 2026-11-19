@@ -22,7 +22,7 @@ export function FanCards() {
           height: 400,
           borderRadius: "50%",
           background:
-            "radial-gradient(closest-side, rgba(193, 18, 31,0.22), rgba(255, 255, 255,0.08) 48%, transparent 74%)",
+            "radial-gradient(closest-side, rgba(246,241,232,0.16), rgba(193, 18, 31,0.12) 46%, transparent 74%)",
         }}
       />
       <div
@@ -58,6 +58,7 @@ export function FanCards() {
               {
                 "--rot": `${c.rotate}deg`,
                 animationDelay: `${150 + i * 100}ms`,
+                filter: c.z >= 4 ? "none" : c.z === 2 ? "brightness(0.9) saturate(0.88)" : "brightness(0.78) saturate(0.78)",
               } as React.CSSProperties
             }
           >
