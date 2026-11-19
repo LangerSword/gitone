@@ -30,7 +30,7 @@ const base: Signals = {
 };
 
 describe("buildCard", () => {
-  it("keeps all four stats inside 1..99 for a range of profiles", () => {
+  it("keeps all six stats inside 1..99 for a range of profiles", () => {
     const profiles: Signals[] = [
       base,
       { ...base, recent_commits: 0, recent_contributions: 0, prs_to_others: 0, reviews: 0, issues_closed: 0, total_contributions_lifetime: 3, followers: 0, total_stars_owned: 0 },
@@ -132,7 +132,7 @@ describe("computeDuel", () => {
     const a = buildCard({ ...base, login: "drivera", recent_commits: 3000 });
     const b = buildCard({ ...base, login: "driverb", recent_commits: 20 });
     const duel = computeDuel(a, b);
-    expect(duel.rows).toHaveLength(4);
+    expect(duel.rows).toHaveLength(6);
     const wins = duel.rows.filter((r) => r.winner).length;
     expect(duel.score.challenger + duel.score.opponent).toBe(wins);
     if (duel.score.challenger !== duel.score.opponent) {
@@ -180,17 +180,17 @@ describe("awards", () => {
     expect(again.filter((a) => a.key === "wdc")).toHaveLength(1);
   });
 
-  it("awards the grand slam only when all four ratings clear 80", () => {
-    const strong = { ...buildCard(base), rtg: 88, stats: { exp: 88, rac: 86, awa: 82, pac: 92 } as never };
+  it("awards the grand slam only when all six ratings clear 80", () => {
+    const strong = { ...buildCard(base), rtg: 88, stats: { exp: 88, rac: 86, awa: 82, pac: 92, tyr: 84, wet: 81 } as never };
     expect(computeAwards(strong, 5).some((a) => a.key === "grand_slam")).toBe(true);
-    const weak = { ...strong, stats: { exp: 88, rac: 86, awa: 70, pac: 92 } as never };
+    const weak = { ...strong, stats: { exp: 88, rac: 86, awa: 70, pac: 92, tyr: 84, wet: 81 } as never };
     expect(computeAwards(weak, 5).some((a) => a.key === "grand_slam")).toBe(false);
   });
 
   it("holds the fastest lap award for purple-sector pace only", () => {
-    const fast = { ...buildCard(base), rtg: 88, stats: { exp: 80, rac: 80, awa: 80, pac: 96 } as never };
+    const fast = { ...buildCard(base), rtg: 88, stats: { exp: 80, rac: 80, awa: 80, pac: 96, tyr: 80, wet: 80 } as never };
     expect(computeAwards(fast, 5).some((a) => a.key === "fastest_lap")).toBe(true);
-    const slow = { ...fast, stats: { exp: 80, rac: 80, awa: 80, pac: 84 } as never };
+    const slow = { ...fast, stats: { exp: 80, rac: 80, awa: 80, pac: 84, tyr: 80, wet: 80 } as never };
     expect(computeAwards(slow, 5).some((a) => a.key === "fastest_lap")).toBe(false);
   });
 
@@ -202,7 +202,7 @@ describe("awards", () => {
   });
 
   it("groups the cabinet in shelf order", () => {
-    const card = { ...buildCard(base), rtg: 90, stats: { exp: 90, rac: 90, awa: 90, pac: 96 } as never };
+    const card = { ...buildCard(base), rtg: 90, stats: { exp: 90, rac: 90, awa: 90, pac: 96, tyr: 90, wet: 90 } as never };
     const groups = groupAwards(computeAwards(card, 13));
     const keys = groups.map((g) => g.key);
     expect(keys.indexOf("wdc")).toBeLessThan(keys.indexOf("fastest_lap"));

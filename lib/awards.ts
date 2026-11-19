@@ -1,4 +1,5 @@
 import type { AwardInstance, AwardKey, Card, YearBreakdown } from "./racing/types";
+import { STATS } from "./racing/constants";
 
 // The trophy cabinet, translated from the football original. Four awards,
 // each honest to its own data:
@@ -7,7 +8,7 @@ import type { AwardInstance, AwardKey, Card, YearBreakdown } from "./racing/type
 //                        the rest (log multi-factor score, so volume spam
 //                        can't brute-force it and a commits-only legend
 //                        still counts). Repeats demand a stronger card.
-//   Grand Slam          — HELD. All four ratings at 80+: pole, win, fastest
+//   Grand Slam          — HELD. All six ratings at 80+: pole, win, fastest
 //                        lap, every lap led.
 //   Fastest Lap Award   — HELD, current form. Purple-sector pace, 88+.
 //   Ironman             — HELD. 12+ seasons on the grid and still racing.
@@ -38,7 +39,7 @@ export const AWARD_META: Record<AwardKey, AwardMeta> = {
     shelfLabel: "GRAND SLAM",
     metricLabel: "Perfect Weekend",
     description:
-      "Pole, the win, the fastest lap, and every single lap led. Awarded to drivers whose card has no weak sector: all four ratings at 80 or better.",
+      "Pole, the win, the fastest lap, and every single lap led. Awarded to drivers whose card has no weak sector: all six ratings at 80 or better.",
   },
   fastest_lap: {
     title: "Fastest Lap Award",
@@ -200,11 +201,11 @@ function worldTitles(card: Card): AwardInstance[] {
 function grandSlam(card: Card): AwardInstance[] {
   if (card.rtg < AWARD_RTG_FLOOR) return [];
   const s = card.stats;
-  if (s.pac < 80 || s.rac < 80 || s.awa < 80 || s.exp < 80) return [];
+  if (!STATS.every((k) => s[k] >= 80)) return [];
   return [
     {
       key: "grand_slam" as const,
-      reason: `Pole, win, fastest lap, every lap led: EXP ${s.exp}, RAC ${s.rac}, AWA ${s.awa}, PAC ${s.pac}. No weak sector on the card.`,
+      reason: `Pole, win, fastest lap, every lap led: EXP ${s.exp}, RAC ${s.rac}, AWA ${s.awa}, PAC ${s.pac}, TYR ${s.tyr}, WET ${s.wet}. No weak sector on the card.`,
     },
   ];
 }

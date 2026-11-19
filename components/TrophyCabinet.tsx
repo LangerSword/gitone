@@ -125,7 +125,7 @@ export function TrophyCabinet({ awards }: { awards: AwardInstance[] }) {
       {groups.length === 0 ? (
         <p className="mono mt-4 text-[12.5px] leading-relaxed" style={{ color: "var(--faint)" }}>
           No silverware yet. Titles are earned season by season: a standout year, a grand
-          slam across all four ratings, purple-sector pace, or an ironman career.
+          slam across all six ratings, purple-sector pace, or an ironman career.
         </p>
       ) : (
         <div className="mt-4 flex flex-wrap gap-2">

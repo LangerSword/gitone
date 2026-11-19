@@ -1,4 +1,4 @@
-export type StatKey = "exp" | "rac" | "awa" | "pac";
+export type StatKey = "exp" | "rac" | "awa" | "pac" | "tyr" | "wet";
 export type Stats = Record<StatKey, number>;
 export type Profile = Record<StatKey, number>;
 

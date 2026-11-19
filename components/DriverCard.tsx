@@ -289,8 +289,8 @@ export function DriverCard({ card }: { card: Card }) {
           </div>
         </div>
 
-        {/* the four rating bars */}
-        <div style={{ position: "absolute", left: "40.5%", top: "46%", width: "56.5%" }}>
+        {/* the six rating bars */}
+        <div style={{ position: "absolute", left: "40.5%", top: "45%", width: "56.5%" }}>
           {STATS.map((k: StatKey, i: number) => (
             <div
               key={k}
@@ -298,15 +298,16 @@ export function DriverCard({ card }: { card: Card }) {
                 display: "flex",
                 alignItems: "center",
                 gap: "1.6cqw",
-                marginTop: i === 0 ? 0 : "2.05cqw",
+                marginTop: i === 0 ? 0 : "1.0cqw",
               }}
             >
               <span
                 className="mono"
                 style={{
                   width: "5.4cqw",
-                  fontSize: "2.8cqw",
+                  fontSize: "2.5cqw",
                   fontWeight: 700,
+                  lineHeight: 1,
                   color: "rgba(237,238,242,0.55)",
                   letterSpacing: "0.05em",
                 }}
@@ -316,7 +317,7 @@ export function DriverCard({ card }: { card: Card }) {
               <div
                 style={{
                   flex: 1,
-                  height: "1.7cqw",
+                  height: "1.5cqw",
                   borderRadius: "0.9cqw",
                   background: "rgba(255,255,255,0.08)",
                   boxShadow: "inset 0 0.2cqw 0.5cqw rgba(0,0,0,0.55)",
@@ -340,8 +341,9 @@ export function DriverCard({ card }: { card: Card }) {
                 style={{
                   width: "6.6cqw",
                   textAlign: "right",
-                  fontSize: "3.8cqw",
+                  fontSize: "3.2cqw",
                   fontWeight: 800,
+                  lineHeight: 1,
                   color: c(card.stats[k], theme),
                   textShadow: card.stats[k] >= 90 ? `0 0 1.6cqw ${theme.hot}` : "none",
                 }}

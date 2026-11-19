@@ -77,12 +77,16 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
           <div style={{ display: "flex", width: cqw(3), height: cqw(0.5), background: hexAlpha(INK, 0.55) }} />
         </div>
       </div>
-      {/* stat rail */}
-      <div style={{ position: "absolute", left: "20%", width: "60%", top: "72%", height: "10.5%", display: "flex" }}>
-        {STATS.map((k, i) => (
-          <div key={k} style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", alignItems: "center", justifyContent: "center", gap: cqw(0.5), borderLeft: i === 0 ? "none" : `1px solid ${hexAlpha(INK, 0.28)}` }}>
-            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.1), fontWeight: 700, letterSpacing: cqw(0.2), color: label, whiteSpace: "nowrap" }}>{STAT_LABELS[k]}</div>
-            <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(7.6), lineHeight: 1, color: INK }}>{card.stats[k]}</div>
+      {/* stat rail — six stats, 3×2: [pac,rac,awa] over [exp,tyr,wet] */}
+      <div style={{ position: "absolute", left: "16%", width: "68%", top: "72.5%", height: "11.5%", display: "flex", flexDirection: "column" }}>
+        {[STATS.slice(0, 3), STATS.slice(3)].map((row, r) => (
+          <div key={row[0]} style={{ display: "flex", flex: 1, borderTop: r === 0 ? "none" : `1px solid ${hexAlpha(INK, 0.28)}` }}>
+            {row.map((k, i) => (
+              <div key={k} style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", alignItems: "center", justifyContent: "center", borderLeft: i === 0 ? "none" : `1px solid ${hexAlpha(INK, 0.28)}` }}>
+                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.9), fontWeight: 700, letterSpacing: cqw(0.2), lineHeight: 0.95, color: label, whiteSpace: "nowrap" }}>{STAT_LABELS[k]}</div>
+                <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(6.6), lineHeight: 0.9, color: INK }}>{card.stats[k]}</div>
+              </div>
+            ))}
           </div>
         ))}
       </div>

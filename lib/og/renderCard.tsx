@@ -84,7 +84,7 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
       style={{
         display: "flex",
         alignItems: "center",
-        marginTop: i === 0 ? 0 : cqw(2.05),
+        marginTop: i === 0 ? 0 : cqw(1.0),
         gap: cqw(1.6),
       }}
     >
@@ -93,14 +93,15 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
           display: "flex",
           width: cqw(5.4),
           fontFamily: "JBMono",
-          fontSize: cqw(2.8),
+          fontSize: cqw(2.5),
           fontWeight: 700,
+          lineHeight: 1,
           color: "rgba(237,238,242,0.55)",
         }}
       >
         {STAT_LABELS[k]}
       </div>
-      <div style={{ display: "flex", flex: 1, height: cqw(1.7), borderRadius: cqw(0.9), background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+      <div style={{ display: "flex", flex: 1, height: cqw(1.5), borderRadius: cqw(0.9), background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
         <div
           style={{
             display: "flex",
@@ -117,8 +118,9 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
           width: cqw(6.6),
           justifyContent: "flex-end",
           fontFamily: "JBMono",
-          fontSize: cqw(3.8),
+          fontSize: cqw(3.2),
           fontWeight: 800,
+          lineHeight: 1,
           color: c(card.stats[k], theme),
         }}
       >
@@ -296,8 +298,8 @@ export function cardTree(card: Card, assets: CardAssets, w: number) {
           </div>
         </div>
 
-        {/* the four rating bars */}
-        <div style={{ position: "absolute", left: "40.5%", top: "46%", display: "flex", flexDirection: "column", width: "56.5%" }}>
+        {/* the six rating bars */}
+        <div style={{ position: "absolute", left: "40.5%", top: "45%", display: "flex", flexDirection: "column", width: "56.5%" }}>
           {statRows}
         </div>
 

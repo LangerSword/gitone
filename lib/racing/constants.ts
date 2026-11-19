@@ -1,14 +1,16 @@
 import type { Finish, FounderMeta, StatKey, Stats } from "./types";
 
-// The four driver-rating categories, verbatim from the EA F1 games.
-// RTG is the pace-weighted combination of all four.
-export const STATS: StatKey[] = ["exp", "rac", "awa", "pac"];
+// The six driver-rating categories, verbatim from the EA F1 games.
+// RTG is the pace-weighted combination of all six.
+export const STATS: StatKey[] = ["pac", "rac", "awa", "exp", "tyr", "wet"];
 
 export const STAT_LABELS: Record<StatKey, string> = {
   exp: "EXP",
   rac: "RAC",
   awa: "AWA",
   pac: "PAC",
+  tyr: "TYR",
+  wet: "WET",
 };
 
 export const STAT_NAMES: Record<StatKey, string> = {
@@ -16,6 +18,8 @@ export const STAT_NAMES: Record<StatKey, string> = {
   rac: "Racecraft",
   awa: "Awareness",
   pac: "Pace",
+  tyr: "Tyre Management",
+  wet: "Wet Pace",
 };
 
 // How the EA F1 games describe each stat — our scouting copy mirrors it.
@@ -36,6 +40,14 @@ export const STAT_COPY: Record<StatKey, { what: string; scouted: string }> = {
     what: "Experience counts. Races started over a career, results banked season after season.",
     scouted: "seasons on the grid, lifetime mileage",
   },
+  tyr: {
+    what: "Looking after the rubber over a stint. Consistency session after session keeps the tyres — and the career — alive.",
+    scouted: "race-by-race presence, active days this season",
+  },
+  wet: {
+    what: "When the rain comes, the greats adapt. Range across languages and conditions is wet-weather pace.",
+    scouted: "languages on the books, adaptability",
+  },
 };
 
 // The GOAT invariant: Torvalds is the ceiling at 98. Every other card is
@@ -45,7 +57,7 @@ export const GOAT_RTG = 98;
 export const RIVAL_RTG_CAP = 95;
 
 export const K = {
-  // magnitude → the gravity-well center the four stats sit around
+  // magnitude → the gravity-well center the six stats sit around
   magnitude: { w1: 0.5, w2: 0.4, w3: 0.5, w4: 0.08, b: -2.8, lo: 48, hi: 82 },
   // antagonist pairs: raw speed vs banked experience, overtaking vs clean
   // record. Nobody is elite at everything (see engine §3.3).
@@ -67,7 +79,7 @@ export const K = {
 };
 
 // EA: "a combination of all driver stats, with Pace having a greater weighting."
-export const RTG_WEIGHTS: Stats = { pac: 0.35, rac: 0.25, awa: 0.2, exp: 0.2 };
+export const RTG_WEIGHTS: Stats = { pac: 0.3, rac: 0.2, awa: 0.15, exp: 0.15, tyr: 0.1, wet: 0.1 };
 
 export const FINISH_LABELS: Record<Finish, string> = {
   rookie: "ROOKIE",

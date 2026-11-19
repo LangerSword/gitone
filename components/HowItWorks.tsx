@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { STAT_COPY } from "@/lib/racing/constants";
+import { STAT_COPY, STATS } from "@/lib/racing/constants";
 import { FINISH_LABELS } from "@/lib/racing/constants";
-import type { StatKey, Finish } from "@/lib/racing/types";
+import type { Finish } from "@/lib/racing/types";
 
-const STAT_ORDER: StatKey[] = ["pac", "rac", "awa", "exp"];
 const TIERS: Finish[] = ["rookie", "points", "podium", "winner", "champion", "in_form"];
 
 const STEPS = [
@@ -19,7 +18,7 @@ const STEPS = [
   {
     kicker: "EVERY CARD HAS A SHAPE",
     title: "NOBODY IS ELITE AT EVERYTHING.",
-    body: "Your strongest signals push the four ratings up; the weakest pull them down. That tension gives the card its shape, and the shape decides your position, archetype and constructor. It is read from the data, never picked by you.",
+    body: "Your strongest signals push the six ratings up; the weakest pull them down. That tension gives the card its shape, and the shape decides your position, archetype and constructor. It is read from the data, never picked by you.",
   },
   {
     kicker: "THE 90s ARE EARNED",
@@ -107,7 +106,7 @@ export function HowItWorks({
                 WE READ YOUR SEASON<span style={{ color: "var(--f1-red)" }}>.</span>
               </h2>
               <p className="mt-4 max-w-[540px] text-[14px] leading-relaxed" style={{ color: "var(--dim)" }}>
-                Four signals from your live GitHub, weighed against each other and against your own
+                Six ratings from your live GitHub, weighed against each other and against your own
                 history. The card is a scouting report, not a scoreboard.
               </p>
 
@@ -133,9 +132,9 @@ export function HowItWorks({
               </div>
 
               <div className="border-t pt-5" style={{ borderColor: "var(--line)" }}>
-                <p className="eyebrow">WHAT FEEDS THE FOUR</p>
+                <p className="eyebrow">WHAT FEEDS THE SIX</p>
                 <div className="mt-3 grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
-                  {STAT_ORDER.map((k) => (
+                  {STATS.map((k) => (
                     <div key={k} className="flex items-baseline gap-3">
                       <span className="mono w-9 flex-none text-[12px] font-extrabold" style={{ color: "var(--f1-red)" }}>
                         {k.toUpperCase()}

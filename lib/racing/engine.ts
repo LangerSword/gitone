@@ -48,12 +48,18 @@ function rawStats(s: Signals): Stats {
     awa: 34 + 12 * Lg(s.issues_closed) + 18 * Math.min(s.active_days_recent / 240, 1),
     // Experience: seasons raced and mileage banked, weighted toward results.
     exp: 28 + 10 * Lg(s.total_contributions_lifetime) + 2.0 * Math.min(s.active_years, 12),
+    // Tyre management: looking after the rubber over a stint — race-by-race
+    // presence this season, backed by seasons of keeping the career alive.
+    tyr: 34 + 16 * Math.min(s.active_days_recent / 240, 1) + 3 * Math.min(s.active_years, 12),
+    // Wet pace: when the rain comes, the greats adapt. Range across languages
+    // and conditions is wet-weather pace.
+    wet: 36 + 13 * Lg(s.languages + 1) + 6 * Math.min(s.languages / 12, 1),
   };
   for (const k of STATS) o[k] = clamp(Math.round(o[k]), 1, 99);
   return o;
 }
 
-// §3.1 — magnitude → gravity-well center the four sit around.
+// §3.1 — magnitude → gravity-well center the six sit around.
 function center(s: Signals): number {
   const { w1, w2, w3, w4, b, lo, hi } = K.magnitude;
   const M = sigmoid(
@@ -66,7 +72,7 @@ function center(s: Signals): number {
   return lerp(lo, hi, M);
 }
 
-// §3.2 — z-score of their own four.
+// §3.2 — z-score of their own six.
 function zscore(raw: Stats): Profile {
   const v = vals(raw);
   const m = mean(v);
@@ -99,7 +105,7 @@ function spike(p: Profile, c: number): Stats {
   return stats;
 }
 
-// §3.5 — EA's rule: overall is a combination of the four with Pace weighted
+// §3.5 — EA's rule: overall is a combination of the six with Pace weighted
 // greater. Stats alone cap at 88.
 function weightedRTG(stats: Stats): number {
   const rtg = STATS.reduce((s, k) => s + stats[k] * RTG_WEIGHTS[k], 0);

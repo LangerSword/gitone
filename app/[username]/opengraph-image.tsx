@@ -65,11 +65,15 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
               {card.finishLabel} · #{String(card.number).padStart(2, "0")} · {card.constructor.name.toUpperCase()}
             </div>
           </div>
-          <div style={{ display: "flex", gap: 1, marginTop: 42, borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 22 }}>
-            {STATS.map((k) => (
-              <div key={k} style={{ display: "flex", flex: 1, flexDirection: "column", gap: 6 }}>
-                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 14, fontWeight: 700, letterSpacing: 3, color: "#6a7079" }}>{STAT_LABELS[k]}</div>
-                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 36, fontWeight: 800, color: card.stats[k] >= 90 ? "#b46bff" : "#f2f3f0" }}>{card.stats[k]}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 42, borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 22 }}>
+            {[STATS.slice(0, 3), STATS.slice(3)].map((row) => (
+              <div key={row[0]} style={{ display: "flex", gap: 1 }}>
+                {row.map((k) => (
+                  <div key={k} style={{ display: "flex", flex: 1, flexDirection: "column", gap: 6 }}>
+                    <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 14, fontWeight: 700, letterSpacing: 3, color: "#6a7079" }}>{STAT_LABELS[k]}</div>
+                    <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 36, fontWeight: 800, color: card.stats[k] >= 90 ? "#b46bff" : "#f2f3f0" }}>{card.stats[k]}</div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>

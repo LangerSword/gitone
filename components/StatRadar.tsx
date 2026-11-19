@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { STAT_LABELS, STAT_COPY, STAT_NAMES } from "@/lib/racing/constants";
+import { STATS, STAT_LABELS, STAT_COPY, STAT_NAMES } from "@/lib/racing/constants";
 import type { Card, StatKey } from "@/lib/racing/types";
 
-// Four-axis telemetry radar. Labels sit OUTSIDE the plot ring so they never
+// Six-axis telemetry radar. Labels sit OUTSIDE the plot ring so they never
 // collide with the vertex markers; three concentric rings give a readable
 // scale. Hover, focus, tap or keyboard an axis to read what it measures.
-const ORDER: StatKey[] = ["pac", "rac", "exp", "awa"];
 
 export function StatRadar({ card, size = 210 }: { card: Card; size?: number }) {
   const [active, setActive] = useState<StatKey>("pac");
@@ -17,15 +16,15 @@ export function StatRadar({ card, size = 210 }: { card: Card; size?: number }) {
   const labelR = R + 26;
   const accent = card.constructor.color;
 
-  const angleFor = (i: number) => (-90 + i * 90) * (Math.PI / 180);
+  const angleFor = (i: number) => (-90 + (i * 360) / STATS.length) * (Math.PI / 180);
   const point = (i: number, r: number) => {
     const a = angleFor(i);
     return [cx + r * Math.cos(a), cy + r * Math.sin(a)] as const;
   };
   const val = (v: number) => (Math.max(v, 1) / 99) * R;
 
-  const poly = ORDER.map((k, i) => point(i, val(card.stats[k])).join(",")).join(" ");
-  const rings = [0.33, 0.66, 1].map((f) => ORDER.map((_, i) => point(i, R * f).join(",")).join(" "));
+  const poly = STATS.map((k, i) => point(i, val(card.stats[k])).join(",")).join(" ");
+  const rings = [0.33, 0.66, 1].map((f) => STATS.map((_, i) => point(i, R * f).join(",")).join(" "));
 
   return (
     <div>
@@ -59,7 +58,7 @@ export function StatRadar({ card, size = 210 }: { card: Card; size?: number }) {
 
         <polygon points={poly} fill={`${accent}2e`} stroke={accent} strokeWidth={2.4} strokeLinejoin="round" />
 
-        {ORDER.map((k, i) => {
+        {STATS.map((k, i) => {
           const [x, y] = point(i, R);
           const [lx, ly] = point(i, labelR);
           const [vx, vy] = point(i, val(card.stats[k]));
