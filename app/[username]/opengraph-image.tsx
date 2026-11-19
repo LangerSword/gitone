@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { loadCard } from "@/lib/scout";
-import { cardTree, cardH } from "@/lib/og/renderCard26";
-import { loadCardAssets } from "@/lib/og/renderCard";
+import { renderCardPng, cardFrame } from "@/lib/og/renderCard26";
 import { loadCardFonts } from "@/lib/og/card";
 import { STATS, STAT_LABELS } from "@/lib/racing/constants";
 
@@ -30,10 +29,11 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
   }
 
   const card = res.card;
-  const assets = await loadCardAssets(card);
   const cardW = 340;
-  const H = cardH(cardW);
-  const top = Math.round((630 - H) / 2);
+  const frame = cardFrame(cardW);
+  const cardPng = await renderCardPng(card, cardW);
+  const cardSrc = `data:image/png;base64,${cardPng.toString("base64")}`;
+  const top = Math.round((630 - frame.H) / 2);
 
   return new ImageResponse(
     (
@@ -51,7 +51,7 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
         />
 
         <div style={{ position: "absolute", left: 92, top, display: "flex" }}>
-          {cardTree(card, assets, cardW)}
+          <img src={cardSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
         </div>
 
         <div style={{ position: "absolute", left: 560, top: 96, width: 560, display: "flex", flexDirection: "column" }}>
