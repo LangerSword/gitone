@@ -40,7 +40,7 @@ export default async function Home() {
           </div>
 
           <h1
-            className="hero-title rise mt-3 text-[clamp(64px,9vw,118px)] uppercase"
+            className="hero-title display rise mt-3 text-[clamp(64px,9vw,118px)] uppercase"
             style={{ "--i": 1, color: "var(--ink)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 0.82 } as React.CSSProperties}
           >
             GET

@@ -27,7 +27,8 @@
   --mint: #2fd07a;
   --amber: #ffd23f;
   --yellow: #ffd23f;
-  --font-display: var(--font-barlowc), "Barlow Condensed", system-ui, sans-serif;
+  --font-display: var(--font-archivo), "Archivo Expanded", "Archivo", system-ui, sans-serif;
+  --font-cond: var(--font-barlowc), "Barlow Condensed", system-ui, sans-serif;
   --font-body: var(--font-barlow), "Barlow", system-ui, sans-serif;
   --font-mono: var(--font-jbmono), "JetBrains Mono", ui-monospace, monospace;
 }
@@ -63,9 +64,10 @@ body {
 
 .display {
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 800;
+  font-stretch: 125%;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .mono {
@@ -119,6 +121,13 @@ body {
     linear-gradient(207deg, rgba(0, 0, 0, 0.22) 5px, transparent 5px);
   background-size: 10px 10px;
   background-position: 0 2px, 5px 0, 0 1px, 5px 4px;
+}
+
+/* F1 speed-lines: the broadcast swoosh motif — faint diagonal aero stripes,
+   the same grammar formula1.com runs behind its nav. A pattern with meaning
+   (velocity), not arbitrary scatter. */
+.speedlines {
+  background-image: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.045) 0 2px, transparent 2px 15px);
 }
 
 /* timing colours, used only where they mean something */
@@ -281,7 +290,7 @@ input:focus-visible,
 }
 
 .glass {
-  background: linear-gradient(180deg, rgba(23, 40, 35, 0.97), rgba(14, 23, 20, 0.98));
+  background: linear-gradient(180deg, rgba(30, 30, 42, 0.97), rgba(21, 21, 30, 0.98));
   border: 1px solid var(--line-bright);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -465,7 +474,7 @@ input:focus-visible,
   align-items: center;
   justify-content: center;
   gap: 9px;
-  font-family: var(--font-display);
+  font-family: var(--font-cond);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -594,7 +603,7 @@ input:focus-visible,
 .menu-pop {
   border-radius: var(--r-control);
   border: 1px solid var(--line-bright);
-  background: linear-gradient(180deg, rgba(28, 51, 43, 0.97), rgba(14, 28, 23, 0.98));
+  background: linear-gradient(180deg, rgba(32, 32, 45, 0.97), rgba(22, 22, 32, 0.98));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 18px 46px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);

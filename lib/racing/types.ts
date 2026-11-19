@@ -149,5 +149,5 @@ export interface Card {
 // structural superset.
 export type CardPreview = Pick<
   Card,
-  "login" | "name" | "avatarUrl" | "country" | "stats" | "rtg" | "number" | "finish" | "finishLabel" | "constructor"
+  "login" | "name" | "avatarUrl" | "country" | "stats" | "rtg" | "number" | "finish" | "finishLabel" | "constructor" | "founder"
 >;

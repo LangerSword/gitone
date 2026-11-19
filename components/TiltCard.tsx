@@ -47,22 +47,6 @@ export function TiltCard({ children, max = 8 }: { children: React.ReactNode; max
       }}
       className="tilt-wrap group/tilt"
     >
-      {/* glass: a sharp diagonal streak riding the pointer over a soft sheen */}
-      <div
-        aria-hidden
-        className="tilt-glare"
-        style={{
-          background: `
-            linear-gradient(115deg,
-              transparent calc(var(--mx, 50%) - 22%),
-              rgba(255,255,255,.05) calc(var(--mx, 50%) - 9%),
-              rgba(255,255,255,.22) var(--mx, 50%),
-              rgba(255,255,255,.06) calc(var(--mx, 50%) + 9%),
-              transparent calc(var(--mx, 50%) + 20%)),
-            radial-gradient(120% 90% at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.10), transparent 60%)`,
-          mixBlendMode: "screen",
-        }}
-      />
       {children}
     </div>
   );

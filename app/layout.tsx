@@ -43,6 +43,12 @@ const dinCond = localFont({ src: "./fonts/DINPro-Cond.otf", variable: "--font-di
 const dinBold = localFont({ src: "./fonts/DINPro-CondBold.otf", variable: "--font-din-bold", display: "swap" });
 const dinMedium = localFont({ src: "./fonts/DINPro-CondMedium.otf", variable: "--font-din-medium", display: "swap" });
 
+// Archivo (variable, wdth 62–125) — the F1 broadcast grotesque. Set at the
+// Expanded cut (font-stretch:125%) it is the wide, technical headline voice
+// formula1.com uses; a refined grotesque, not a squared techno face.
+const archivo = localFont({ src: "./fonts/Archivo-var.ttf", variable: "--font-archivo", weight: "100 900", display: "swap" });
+const archivoItalic = localFont({ src: "./fonts/Archivo-Italic-var.ttf", variable: "--font-archivo-it", weight: "100 900", style: "italic", display: "swap" });
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001"),
   title: {
@@ -67,7 +73,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${barlowc.variable} ${barlow.variable} ${jbmono.variable} ${dinCond.variable} ${dinBold.variable} ${dinMedium.variable}`}>
+    <html lang="en" className={`${barlowc.variable} ${barlow.variable} ${jbmono.variable} ${dinCond.variable} ${dinBold.variable} ${dinMedium.variable} ${archivo.variable} ${archivoItalic.variable}`}>
       <head>
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="preconnect" href="https://flagcdn.com" />

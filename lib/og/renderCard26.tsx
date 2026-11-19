@@ -106,7 +106,7 @@ export async function renderCardPng(card: Card, width = 720): Promise<Buffer> {
   const founder = card.finish === "founder";
 
   // 1. the baked metal plate, resized to the card box (its alpha = the crest)
-  const metalPath = join(process.cwd(), "public", "cards", "f1-gold.png");
+  const metalPath = join(process.cwd(), "public", "cards", "f1-gold.webp");
   const metalPng = await sharp(await readFile(metalPath)).resize(w, H, { fit: "fill" }).png().toBuffer();
   let plate = metalPng;
 
