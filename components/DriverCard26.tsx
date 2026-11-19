@@ -63,7 +63,7 @@ const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 18%)";
 const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
-  const gid = useId().replace(/:/g, "");
+  const gid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const livery = card.constructor.color;
   const flag = flagUrl(card.country, 80);
   const { first, last } = nameLines(card.name);
