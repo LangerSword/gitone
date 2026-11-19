@@ -31,7 +31,7 @@ export function GitStrip() {
         <div className="relative h-[9px] min-w-0 flex-1 overflow-hidden">
           {/* static, deterministic SVG string — no user input, safe to inject */}
           <div className="absolute inset-0" dangerouslySetInnerHTML={{ __html: STRIP_SVG }} />
-          <div className="contrib-scan pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(90deg, transparent 46%, rgba(57,211,83,0.55) 49%, rgba(255,255,255,0.35) 50%, rgba(57,211,83,0.55) 51%, transparent 54%)", backgroundSize: "200% 100%", mixBlendMode: "screen" }} />
+          <div className="contrib-scan pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(90deg, transparent 46%, rgba(57,211,83,0.3) 49%, rgba(255,255,255,0.2) 50%, rgba(57,211,83,0.3) 51%, transparent 54%)", backgroundSize: "200% 100%", mixBlendMode: "screen" }} />
         </div>
       </div>
     </div>

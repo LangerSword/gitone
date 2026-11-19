@@ -9,7 +9,7 @@ interface MascotProps {
   animate?: boolean;
 }
 
-function Mascot({ size = 140, className, animate = true }: MascotProps) {
+function Mascot({ size = 140, className, animate = false }: MascotProps) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img

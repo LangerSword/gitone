@@ -373,7 +373,7 @@ input:focus-visible,
   0% { background-position: 150% 0; }
   100% { background-position: -50% 0; }
 }
-.contrib-scan { animation: contrib-scan 4.5s linear infinite; }
+.contrib-scan { animation: contrib-scan 10s linear infinite; }
 @media (prefers-reduced-motion: reduce) {
   .contrib-scan { animation: none; }
 }
