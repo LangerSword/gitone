@@ -53,6 +53,9 @@ export const STAT_COPY: Record<StatKey, { what: string; scouted: string }> = {
 // The GOAT invariant: Torvalds is the ceiling at 98. Every other card is
 // capped at 95, which is also the founder's fixed rating.
 export const GOAT_LOGIN = "torvalds";
+// The GOAT tier honours multiple legends — Torvalds is the ceiling (98), the
+// rest of the pantheon shares the platinum crest below him.
+export const GOAT_LOGINS = ["torvalds", "gaearon", "sindresorhus", "antfu"];
 export const GOAT_RTG = 98;
 export const RIVAL_RTG_CAP = 95;
 

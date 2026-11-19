@@ -1,6 +1,6 @@
 import { useId } from "react";
 import type { CardPreview, StatKey } from "@/lib/racing/types";
-import { STATS, STAT_LABELS, GOAT_LOGIN } from "@/lib/racing/constants";
+import { STATS, STAT_LABELS, GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
 import { resolveCardTheme, rgba } from "./finishTheme";
 import { flagUrl } from "@/lib/flagUrl";
 
@@ -58,9 +58,9 @@ function avatarFor(url: string): string {
   return url.replace(/([?&])s=\d+/, "$1s=640");
 }
 
-const FEATHER = "radial-gradient(ellipse 70% 84% at 52% 40%, #000 56%, transparent 88%)";
+const FEATHER = "radial-gradient(ellipse 70% 82% at 52% 40%, #000 54%, transparent 82%)";
 const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 18%)";
-const FADE_BOTTOM = "linear-gradient(to bottom, #000 72%, transparent 100%)";
+const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
   const gid = useId().replace(/:/g, "");
@@ -71,10 +71,15 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
   const nameSize = last.length > 11 ? 8.0 : last.length > 8 ? 9.8 : 11.0;
   const avatar = avatarFor(card.avatarUrl);
   const founder = card.finish === "founder" || !!card.founder;
-  const goat = !founder && (card.login.toLowerCase() === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97));
+  const goat = !founder && (GOAT_LOGINS.includes(card.login.toLowerCase()) || card.login.toLowerCase() === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97));
   const plate = founder ? { bg: FOUNDER_PLATE, ink: FOUNDER_INK } : goat ? GOAT_PLATE : (PLATES[card.finish] ?? PLATES.podium);
   const ink = plate.ink;
   const label = rgba(ink, 0.68);
+  // contrast scrim for the identity column: lift light ink with a dark wash,
+  // dark ink with a light wash, so the rating/flag read on any plate art.
+  const inkNum = parseInt(ink.replace("#", ""), 16);
+  const inkLum = (0.299 * ((inkNum >> 16) & 255) + 0.587 * ((inkNum >> 8) & 255) + 0.114 * (inkNum & 255)) / 255;
+  const scrimRGB = inkLum > 0.5 ? "0,0,0" : "255,255,255";
   const plateMask = `url("${plate.bg}")`;
   const clipId = `clip-${gid}`;
   const chip = goat ? "THE GOAT" : card.finishLabel;
@@ -86,7 +91,7 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={avatar} alt={card.name} width={640} height={640} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : "auto"}
             style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%", filter: "saturate(1.12) contrast(1.06) brightness(1.03)" }} />
-          <div aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 72% 76% at 52% 40%, transparent 46%, ${rgba(livery, 0.3)} 78%, rgba(58,46,22,0.42))` }} />
+          <div aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 72% 78% at 52% 40%, transparent 46%, ${rgba(livery, 0.24)} 80%, rgba(58,46,22,0.36) 96%)` }} />
         </div>
       </div>
     </div>
@@ -116,6 +121,10 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
       {!founder && (
         <div aria-hidden style={{ position: "absolute", inset: 0, background: livery, mixBlendMode: "color", opacity: 0.1, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }} />
       )}
+
+      {/* soft contrast scrim behind the identity column so RTG/NO./flag/pill
+          read cleanly whatever the plate art carries underneath */}
+      <div aria-hidden style={{ position: "absolute", left: 0, top: 0, width: "30%", height: "52%", background: `linear-gradient(90deg, rgba(${scrimRGB},0.3) 0%, rgba(${scrimRGB},0.12) 62%, transparent 100%)`, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%", zIndex: 2, pointerEvents: "none" }} />
 
       {/* portrait masked into the plate's alpha, feathered, full colour */}
       <div style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}>{portrait}</div>

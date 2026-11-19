@@ -113,14 +113,26 @@ export const SAMPLE_CARDS: CardPreview[] = [
     finishLabel: "CHAMPION",
     constructor: { language: null, name: "JavaScript GP", code: "JS", color: "#f7df1e", ink: "#15161a" },
   },
+  {
+    login: "NetworkChuck",
+    name: "NetworkChuck",
+    avatarUrl: "/drivers/networkchuck.webp",
+    country: "us",
+    stats: { exp: 84, rac: 88, awa: 70, pac: 90, tyr: 78, wet: 82 },
+    rtg: 90,
+    number: 42,
+    finish: "champion",
+    finishLabel: "CHAMPION",
+    constructor: { language: null, name: "Python GP", code: "PY", color: "#4b8bbe", ink: "#ffffff" },
+  },
 ];
 
 // The four on the hero fan, front to back. The GOAT leads. Only single-subject
 // photographic headshots fan well — logos, collages and pet photos read as
 // broken portraits on the metal, so the shop window picks clean faces.
 export const FAN_CARDS: { card: CardPreview; label?: "GOAT" | "LEGEND" }[] = [
-  { card: SAMPLE_CARDS[7] },
-  { card: SAMPLE_CARDS[8] },
+  { card: SAMPLE_CARDS[1] },
+  { card: SAMPLE_CARDS[9] },
   { card: SAMPLE_CARDS[3], label: "LEGEND" },
   { card: SAMPLE_CARDS[0], label: "GOAT" },
 ];
