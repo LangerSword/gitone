@@ -35,15 +35,24 @@ const INK = "#33290f";
 const WIDE = "var(--font-din-bold), 'DINPro Condensed', sans-serif";
 const MED = "var(--font-din-medium), 'DINPro Condensed', sans-serif";
 
-// Silhouettes in a 540×820 viewBox (the card's own aspect).
+// Silhouettes in a 540×820 viewBox (the card's own aspect). Each rank has a
+// distinct signature cut from the FUT crest grammar — notched/peaked tops,
+// waisted sides, pointed or notched heels — not a flat chamfered rectangle.
 const SHAPES: Record<string, [number, number][]> = {
+  // three-point crown over chamfered shoulders
   goat: [[24, 64], [170, 64], [200, 20], [235, 52], [270, 12], [305, 52], [340, 20], [370, 64], [516, 64], [516, 720], [440, 796], [24, 796]],
-  champion: [[70, 24], [430, 24], [516, 110], [516, 710], [430, 796], [24, 796], [24, 78], [48, 78]],
-  in_form: [[110, 24], [430, 24], [516, 110], [516, 710], [430, 796], [110, 796], [24, 710], [24, 110]],
-  winner: [[24, 24], [400, 24], [516, 140], [516, 796], [140, 796], [24, 680]],
-  podium: [[90, 24], [450, 24], [516, 90], [516, 796], [24, 796], [24, 90]],
-  points: [[24, 24], [440, 24], [516, 100], [516, 796], [24, 796]],
-  rookie: [[24, 24], [516, 24], [516, 720], [440, 796], [24, 796]],
+  // lone top peak, waisted sides, concave heel notch
+  champion: [[270, 16], [336, 54], [474, 54], [516, 98], [496, 410], [516, 704], [432, 792], [270, 744], [108, 792], [24, 704], [44, 410], [24, 98], [66, 54], [204, 54]],
+  // octagonal speed-cut with a waist
+  in_form: [[118, 22], [422, 22], [516, 108], [500, 410], [516, 712], [422, 798], [118, 798], [24, 712], [40, 410], [24, 108]],
+  // diagonal slash: big nose chamfer + cut heel
+  winner: [[24, 22], [378, 22], [516, 158], [516, 796], [162, 796], [24, 662]],
+  // twin top peaks, waisted sides, downward heel point
+  podium: [[24, 64], [158, 64], [208, 22], [254, 58], [300, 22], [350, 64], [516, 64], [496, 410], [516, 704], [432, 792], [270, 818], [108, 792], [24, 704], [44, 410]],
+  // top step-notch + nose chamfer + angled heel
+  points: [[24, 22], [198, 22], [198, 58], [240, 58], [240, 22], [438, 22], [516, 98], [516, 704], [438, 796], [200, 796], [24, 722]],
+  // small shoulder step + cut heel
+  rookie: [[62, 22], [516, 22], [516, 722], [440, 796], [24, 796], [24, 80], [62, 80]],
 };
 const toClip = (pts: [number, number][]) =>
   `polygon(${pts.map(([x, y]) => `${((x / 540) * 100).toFixed(2)}% ${((y / 820) * 100).toFixed(2)}%`).join(", ")})`;
