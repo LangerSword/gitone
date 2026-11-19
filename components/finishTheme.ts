@@ -32,8 +32,6 @@ const ROSE_FOIL =
   "linear-gradient(135deg,#ffe2c4 0%,#d98a4a 20%,#ffcf9e 38%,#b06428 55%,#f2b57e 72%,#c47a3a 90%,#ffd9ad 100%)";
 const PURPLE_FOIL =
   "linear-gradient(135deg,#ecd3ff 0%,#8b3fd4 20%,#d9a8ff 38%,#6a2aa8 55%,#c98cff 72%,#7c33c2 90%,#e5c2ff 100%)";
-const IRIDESCENT_FOIL =
-  "linear-gradient(135deg,#f7e8b5 0%,#e6b4e0 16%,#f3d67b 33%,#9fd8c9 50%,#f5d67b 66%,#d8a8f0 84%,#ffe9a3 100%)";
 const CARBON_FOIL =
   "linear-gradient(135deg,#3a3d45 0%,#14151a 22%,#2c2f36 42%,#0e0f13 62%,#33363d 82%,#17181d 100%)";
 
@@ -69,16 +67,16 @@ export const CARD_THEME: Record<Finish, CardTheme> = {
     confetti: ["#b455ff", "#d08cff", "#ffffff", "#ecd9ff"],
   },
   champion: {
-    foil: IRIDESCENT_FOIL, foilEdge: "rgba(255,250,230,0.85)",
+    foil: "linear-gradient(135deg,#fdf3cf 0%,#e8c96a 16%,#fff6d8 32%,#c9a13b 50%,#f5df9a 68%,#d4af5a 86%,#fff0c0 100%)", foilEdge: "rgba(255,250,230,0.85)",
     accent: "#f5d67b", ink: "#fff3cf", glow: "rgba(245,214,123,0.6)",
     bar: "#f5d67b", hot: "#ffe9a3",
-    confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],
+    confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e8c96a", "#c9a13b"],
   },
   founder: {
     foil: GOLD_FOIL, foilEdge: "rgba(255,250,230,0.85)",
     accent: "#f5d67b", ink: "#fff3cf", glow: "rgba(245,214,123,0.6)",
     bar: "#f5d67b", hot: "#b455ff",
-    confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],
+    confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e8c96a", "#c9a13b"],
   },
 };
 

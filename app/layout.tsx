@@ -37,6 +37,12 @@ const jbmono = localFont({
   display: "swap",
 });
 
+// DINPro Condensed — the football-card face (the FUT number/name type), ported
+// from gitfut: medium for the rating, bold for the name and stat values.
+const dinCond = localFont({ src: "./fonts/DINPro-Cond.otf", variable: "--font-din-cond", display: "swap" });
+const dinBold = localFont({ src: "./fonts/DINPro-CondBold.otf", variable: "--font-din-bold", display: "swap" });
+const dinMedium = localFont({ src: "./fonts/DINPro-CondMedium.otf", variable: "--font-din-medium", display: "swap" });
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001"),
   title: {
@@ -61,7 +67,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${barlowc.variable} ${barlow.variable} ${jbmono.variable}`}>
+    <html lang="en" className={`${barlowc.variable} ${barlow.variable} ${jbmono.variable} ${dinCond.variable} ${dinBold.variable} ${dinMedium.variable}`}>
       <head>
         <link rel="preconnect" href="https://avatars.githubusercontent.com" />
         <link rel="preconnect" href="https://flagcdn.com" />
