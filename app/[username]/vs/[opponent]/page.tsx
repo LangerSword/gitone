@@ -4,14 +4,10 @@ import { notFound } from "next/navigation";
 import { computeDuel } from "@/lib/duel";
 import { loadCard } from "@/lib/scout";
 import type { GithubError } from "@/lib/github/client";
-import { formatCount } from "@/lib/format";
-import { cardDisplayName } from "@/lib/text";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { GitStrip } from "@/components/GitStrip";
-import { BattleActions } from "@/components/BattleActions";
-import { DriverCard26 } from "@/components/DriverCard26";
-import type { Card } from "@/lib/racing/types";
+import { DuelView } from "@/components/DuelView";
 
 export async function generateMetadata({
   params,
@@ -48,37 +44,6 @@ function RedFlag({ message }: { message: string }) {
   );
 }
 
-function DuelSide({ card, role, won, href }: { card: Card; role: string; won: boolean; href: string }) {
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <span className="mono text-[11.5px] font-bold tracking-[0.18em]" style={{ color: "var(--faint)" }}>
-        {role}
-      </span>
-      <div
-        className="relative w-full max-w-[190px]"
-        style={won ? { filter: `drop-shadow(0 16px 40px ${card.constructor.color}55)` } : undefined}
-      >
-        <Link href={href} className="block transition-transform duration-300 hover:-translate-y-2" style={{ opacity: won ? 1 : 0.82 }} aria-label={`${card.name} report`}>
-          <DriverCard26 card={card} />
-        </Link>
-        {won && (
-          <span className="mono absolute -top-2 right-2 z-10 px-1.5 py-0.5 text-[10px] font-extrabold tracking-[0.14em]" style={{ background: "var(--green)", color: "#06180d", boxShadow: "0 4px 12px rgba(0,0,0,.5)" }}>
-            P1
-          </span>
-        )}
-      </div>
-      <div className="text-center">
-        <div className="text-[14px] font-bold leading-tight" style={{ color: "var(--ink)" }}>
-          {cardDisplayName(card.name)}
-        </div>
-        <div className="mono mt-1 text-[11.5px] tracking-[0.12em]" style={{ color: "var(--faint)" }}>
-          #{String(card.number).padStart(2, "0")} · RTG <span style={{ color: card.constructor.color }}>{card.rtg}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default async function VsPage({
   params,
 }: {
@@ -96,184 +61,16 @@ export default async function VsPage({
   }
 
   const duel = computeDuel(a.card, b.card);
-  const { rows, score, winner, onCountback, testSession } = duel;
-  const challenger = duel.challenger;
-  const opp = duel.opponent;
-  const winnerCard = winner === "challenger" ? challenger : winner === "opponent" ? opp : null;
-  const aWins = rows.filter((r) => r.challenger > r.opponent).length;
-  const bWins = rows.filter((r) => r.opponent > r.challenger).length;
-  const domA = rows.length ? aWins / rows.length : 0.5;
-  const shareText = winnerCard
-    ? `${cardDisplayName(winnerCard.name)} takes the gitone battle ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`
-    : `Dead heat on the gitone grid: ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`;
 
+  // The server loads both cards and computes the duel; the broadcast itself
+  // (walkout → live shootout → chequered flag → settled) is a client reveal.
   return (
-    <main className="flex min-h-screen flex-col" style={{ "--livery": challenger.constructor.color } as React.CSSProperties}>
-      <SiteHeader back backHref={`/${challenger.login}`} backLabel="← BACK TO THE REPORT" />
-
-      <div className="stage flex-1">
-        <div className="mx-auto max-w-[1020px] px-5 py-7 sm:px-8">
-          <header className="relative text-center">
-            <div className="mb-3 flex items-center justify-center gap-2.5">
-              <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
-              <span className="relative flex h-2 w-2" aria-hidden>
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: "var(--f1-red)" }} />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--f1-red)" }} />
-              </span>
-              <p className="mono text-[11.5px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
-                LIGHTS OUT AND AWAY WE GO
-              </p>
-              <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
-            </div>
-            <h1 className="display text-[clamp(34px,5.2vw,58px)] leading-[0.9]" style={{ color: "var(--ink)" }}>
-              {testSession ? (
-                "TEST SESSION"
-              ) : winner ? (
-                <>
-                  {cardDisplayName(winnerCard!.name).toUpperCase()}{" "}
-                  <span style={{ color: "var(--f1-red)" }}>TAKES IT</span>
-                </>
-              ) : (
-                "DEAD HEAT"
-              )}
-            </h1>
-            <p className="mono mt-3 text-[12px] tracking-[0.14em]" style={{ color: "var(--dim)" }}>
-              {testSession
-                ? "SAME DRIVER, BOTH CARS. ALWAYS A DRAW"
-                : winner
-                  ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
-                  : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`}
-            </p>
-          </header>
-
-          {/* sector dominance — the broadcast split bar */}
-          <div className="mx-auto mt-5 w-full max-w-[440px]">
-            <div className="mono mb-1.5 flex items-center justify-between text-[10.5px] font-bold tracking-[0.16em]" style={{ color: "var(--faint)" }}>
-              <span style={{ color: challenger.constructor.color }}>{aWins}</span>
-              <span>SECTORS WON</span>
-              <span style={{ color: opp.constructor.color }}>{bWins}</span>
-            </div>
-            <div className="flex h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <div className="bar-fill h-full" style={{ width: `${domA * 100}%`, background: challenger.constructor.color }} />
-              <div className="bar-fill h-full flex-1" style={{ background: opp.constructor.color, opacity: 0.5 }} />
-            </div>
-          </div>
-
-          {/* the two cars */}
-          <div className="mt-6 grid grid-cols-[1fr_auto_1fr] items-start gap-3 sm:gap-8">
-            <DuelSide card={challenger} role="CHALLENGER" won={winner === "challenger"} href={`/${challenger.login}`} />
-            <div className="flex h-full flex-col items-center justify-center pt-8">
-              <span
-                className="flex h-[clamp(58px,7vw,78px)] w-[clamp(58px,7vw,78px)] items-center justify-center rounded-full"
-                style={{ background: "radial-gradient(circle at 40% 30%, rgba(255,248,234,0.22), rgba(193, 18, 31,0.12) 46%, transparent 72%)", border: "1px solid rgba(193, 18, 31,0.38)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 0 34px rgba(193, 18, 31,0.18)" }}
-              >
-                <span className="display text-[clamp(24px,3.4vw,40px)] leading-none" style={{ color: "var(--f1-red)" }}>
-                  VS
-                </span>
-              </span>
-            </div>
-            <DuelSide card={opp} role="RIVAL" won={winner === "opponent"} href={`/${opp.login}`} />
-          </div>
-
-          {/* sector shootout */}
-          <div className="mx-auto mt-8 w-full max-w-[860px] border-t" style={{ borderColor: "var(--line)" }}>
-            {rows.map((r, i) => {
-              const aWins = r.challenger > r.opponent;
-              const bWins = r.opponent > r.challenger;
-              const hotA = r.challenger >= 90;
-              const hotB = r.opponent >= 90;
-              const delta = r.challenger - r.opponent;
-              return (
-                <div
-                  key={r.key}
-                  className="duel-row grid grid-cols-[1fr_auto_1fr] items-center gap-3 border-b py-3 sm:gap-6"
-                  style={{
-                    borderColor: "var(--line)",
-                    animationDelay: `${0.15 + i * 0.1}s`,
-                    background: aWins ? `${challenger.constructor.color}08` : bWins ? `${opp.constructor.color}08` : "transparent",
-                  }}
-                >
-                  <div className="flex items-center justify-self-start gap-3">
-                    <span className="mono w-8 text-right text-[15px] font-extrabold" style={{ color: hotA ? "var(--purple)" : aWins ? challenger.constructor.color : "var(--faint)" }}>
-                      {r.challenger}
-                    </span>
-                    <div className="hidden h-[4px] w-28 overflow-hidden sm:block" style={{ background: "rgba(255,255,255,0.07)" }}>
-                      <div className="bar-fill h-full" style={{ width: `${r.challenger}%`, background: aWins ? challenger.constructor.color : "rgba(255,255,255,0.2)" }} />
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="mono text-[11.5px] font-bold tracking-[0.18em]" style={{ color: "var(--dim)" }}>
-                      {r.label}
-                    </span>
-                    <span
-                      className="mono text-[11px] font-bold tracking-[0.08em]"
-                      style={{ color: delta === 0 ? "var(--faint)" : delta > 0 ? "var(--green)" : "var(--faint)" }}
-                    >
-                      {delta === 0 ? "LEVEL" : `${delta > 0 ? "+" : ""}${delta}`}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-self-end gap-3">
-                    <div className="hidden h-[4px] w-28 overflow-hidden sm:block" style={{ background: "rgba(255,255,255,0.07)" }}>
-                      <div className="bar-fill h-full" style={{ width: `${r.opponent}%`, background: bWins ? opp.constructor.color : "rgba(255,255,255,0.2)", marginLeft: "auto" }} />
-                    </div>
-                    <span className="mono w-8 text-left text-[15px] font-extrabold" style={{ color: hotB ? "var(--purple)" : bWins ? opp.constructor.color : "var(--faint)" }}>
-                      {r.opponent}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* receipts */}
-          <div className="mx-auto mt-8 w-full max-w-[760px] border-t pt-4" style={{ borderColor: "var(--line)" }}>
-            <div className="flex items-baseline justify-between">
-              <p className="mono text-[11.5px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
-                RACE RECEIPTS · REAL COUNTS
-              </p>
-
-            </div>
-            <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center border-b pb-2" style={{ borderColor: "var(--line)" }}>
-              <span className="mono justify-self-start text-[11.5px] font-bold tracking-[0.1em]" style={{ color: challenger.constructor.color }}>
-                {challenger.constructor.code} · {cardDisplayName(challenger.name).toUpperCase()}
-              </span>
-              <span className="mono text-[11px] tracking-[0.12em]" style={{ color: "var(--dim)" }}>
-                METRIC
-              </span>
-              <span className="mono justify-self-end text-[11.5px] font-bold tracking-[0.1em]" style={{ color: opp.constructor.color }}>
-                {opp.constructor.code} · {cardDisplayName(opp.name).toUpperCase()}
-              </span>
-            </div>
-            <div className="mt-2.5 space-y-2.5">
-              {duel.receipts.map((r, i) => (
-                <div
-                  key={r.label}
-                  className="duel-row grid grid-cols-[1fr_auto_1fr] items-baseline"
-                  style={{ animationDelay: `${0.8 + i * 0.08}s` }}
-                >
-                  <span className="mono justify-self-start text-[13.5px]" style={{ color: r.challenger >= r.opponent ? "var(--ink)" : "var(--faint)" }} title={challenger.name}>
-                    {formatCount(r.challenger)}
-                  </span>
-                  <span className="mono text-[11px] uppercase tracking-[0.14em]" style={{ color: "var(--faint)" }}>
-                    {r.label}
-                  </span>
-                  <span className="mono justify-self-end text-[13.5px]" style={{ color: r.opponent >= r.challenger ? "var(--ink)" : "var(--faint)" }} title={opp.name}>
-                    {formatCount(r.opponent)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mx-auto mt-8 w-full max-w-[440px]">
-            <BattleActions username={challenger.login} opponent={opp.login} text={shareText} />
-          </div>
-
-          <p className="mono mt-6 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
-            EXP EXPERIENCE · RAC RACECRAFT · AWA AWARENESS · PAC PACE · BOTH 90+ READS PURPLE · RTG BREAKS A LEVEL SCORELINE
-          </p>
-        </div>
-      </div>
+    <main
+      className="flex min-h-screen flex-col"
+      style={{ "--livery": duel.challenger.constructor.color } as React.CSSProperties}
+    >
+      <SiteHeader back backHref={`/${duel.challenger.login}`} backLabel="← BACK TO THE REPORT" />
+      <DuelView duel={duel} />
       <GitStrip />
       <SiteFooter />
     </main>

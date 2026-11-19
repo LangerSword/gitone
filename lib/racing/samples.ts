@@ -131,8 +131,8 @@ export const SAMPLE_CARDS: CardPreview[] = [
 // photographic headshots fan well — logos, collages and pet photos read as
 // broken portraits on the metal, so the shop window picks clean faces.
 export const FAN_CARDS: { card: CardPreview; label?: "GOAT" | "LEGEND" }[] = [
-  { card: SAMPLE_CARDS[1] },
-  { card: SAMPLE_CARDS[9] },
+  { card: SAMPLE_CARDS[1], label: "LEGEND" },
+  { card: SAMPLE_CARDS[9], label: "LEGEND" },
   { card: SAMPLE_CARDS[3], label: "LEGEND" },
   { card: SAMPLE_CARDS[0], label: "GOAT" },
 ];

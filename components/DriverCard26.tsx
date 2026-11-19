@@ -1,7 +1,7 @@
 import { useId } from "react";
 import type { CardPreview, StatKey } from "@/lib/racing/types";
 import { STATS, STAT_LABELS, GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
-import { resolveCardTheme, rgba } from "./finishTheme";
+import { rgba } from "./finishTheme";
 import { flagUrl } from "@/lib/flagUrl";
 
 /* The F1 26 driver card, built the way gitfut builds its collectibles: the
@@ -64,7 +64,6 @@ const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
   const gid = useId().replace(/:/g, "");
-  const theme = resolveCardTheme(card);
   const livery = card.constructor.color;
   const flag = flagUrl(card.country, 80);
   const { first, last } = nameLines(card.name);
@@ -75,11 +74,6 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
   const plate = founder ? { bg: FOUNDER_PLATE, ink: FOUNDER_INK } : goat ? GOAT_PLATE : (PLATES[card.finish] ?? PLATES.podium);
   const ink = plate.ink;
   const label = rgba(ink, 0.68);
-  // contrast scrim for the identity column: lift light ink with a dark wash,
-  // dark ink with a light wash, so the rating/flag read on any plate art.
-  const inkNum = parseInt(ink.replace("#", ""), 16);
-  const inkLum = (0.299 * ((inkNum >> 16) & 255) + 0.587 * ((inkNum >> 8) & 255) + 0.114 * (inkNum & 255)) / 255;
-  const scrimRGB = inkLum > 0.5 ? "0,0,0" : "255,255,255";
   const plateMask = `url("${plate.bg}")`;
   const clipId = `clip-${gid}`;
   const chip = goat ? "THE GOAT" : card.finishLabel;
@@ -99,7 +93,7 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
 
   return (
     <div data-card="f1-26"
-      style={{ width: "100%", containerType: "inline-size", position: "relative", aspectRatio: "540 / 820", filter: `drop-shadow(0 12px 22px rgba(0,0,0,0.5)) drop-shadow(0 0 10px ${theme.glow})`, userSelect: "none", WebkitUserSelect: "none" }}
+      style={{ width: "100%", containerType: "inline-size", position: "relative", aspectRatio: "540 / 820", userSelect: "none", WebkitUserSelect: "none" }}
     >
       {founder && (
         <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
@@ -121,10 +115,6 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
       {!founder && (
         <div aria-hidden style={{ position: "absolute", inset: 0, background: livery, mixBlendMode: "color", opacity: 0.1, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }} />
       )}
-
-      {/* soft contrast scrim behind the identity column so RTG/NO./flag/pill
-          read cleanly whatever the plate art carries underneath */}
-      <div aria-hidden style={{ position: "absolute", left: 0, top: 0, width: "30%", height: "52%", background: `linear-gradient(90deg, rgba(${scrimRGB},0.3) 0%, rgba(${scrimRGB},0.12) 62%, transparent 100%)`, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%", zIndex: 2, pointerEvents: "none" }} />
 
       {/* portrait masked into the plate's alpha, feathered, full colour */}
       <div style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}>{portrait}</div>

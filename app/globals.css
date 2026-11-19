@@ -190,6 +190,51 @@ body {
   animation: row-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* ── the duel broadcast: walkout → live shootout → chequered flag ─────────
+   One ease vocabulary (cubic-bezier(.16,1,.3,1)); transforms + opacity only
+   for the moving parts. The phase timing lives in lib/reveal.ts. */
+
+/* each car enters from its own side of the grid */
+@keyframes walkout-left {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes walkout-right {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* a sector row resolving: a small pop as the timing lights up */
+@keyframes sector-resolve {
+  0% { opacity: 0; transform: translateY(7px) scale(0.96); }
+  55% { opacity: 1; transform: translateY(0) scale(1.04); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* scoreboard digit tick — pops as a sector goes to one side */
+@keyframes score-tick {
+  0% { transform: translateY(-40%) scale(1.25); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* one-shot livery shimmer sweep across the winner's name at the flag */
+@keyframes name-shimmer {
+  0% { background-position: 130% 0; }
+  60%, 100% { background-position: -20% 0; }
+}
+
+/* the result underline draws out from the centre */
+@keyframes underline-draw {
+  0% { transform: scaleX(0); opacity: 0; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+/* soft rise for the flag banner and the settled receipts */
+@keyframes rise-soft {
+  0% { opacity: 0; transform: translateY(22px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* the card fan settles: each card drops in from its own angle */
 @keyframes fan-in {
   from { opacity: 0; transform: translateY(26px) rotate(var(--rot, 0deg)) scale(0.94); }
