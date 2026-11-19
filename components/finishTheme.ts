@@ -75,7 +75,7 @@ export const CARD_THEME: Record<Finish, CardTheme> = {
     confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],
   },
   founder: {
-    foil: IRIDESCENT_FOIL, foilEdge: "rgba(255,250,230,0.85)",
+    foil: GOLD_FOIL, foilEdge: "rgba(255,250,230,0.85)",
     accent: "#f5d67b", ink: "#fff3cf", glow: "rgba(245,214,123,0.6)",
     bar: "#f5d67b", hot: "#b455ff",
     confetti: ["#f5d67b", "#f9e9b8", "#ffffff", "#e6b4e0", "#9fd8c9"],

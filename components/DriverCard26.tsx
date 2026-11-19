@@ -129,8 +129,8 @@ export function DriverCard26({
                 position: "absolute",
                 inset: 0,
                 backgroundImage: theme.foil,
-                mixBlendMode: card.finish === "founder" ? "color-dodge" : "screen",
-                opacity: card.finish === "founder" ? 0.5 : 0.2,
+                mixBlendMode: "screen",
+                opacity: card.finish === "founder" ? 0.22 : 0.18,
                 maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 55%, transparent 88%)",
                 WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.5) 55%, transparent 88%)",
                 pointerEvents: "none",
@@ -142,29 +142,17 @@ export function DriverCard26({
             <>
               <div
                 aria-hidden
-                className="holo-foil"
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  opacity: 0.5,
-                  pointerEvents: "none",
-                  maskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.6) 60%, transparent 92%)",
-                  WebkitMaskImage: "linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.6) 60%, transparent 92%)",
-                }}
-              />
-              <div
-                aria-hidden
                 className="holo-sweep"
                 style={{
                   position: "absolute",
                   inset: 0,
-                  backgroundImage: "linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.5) 50%, rgba(245,214,123,0.3) 54%, transparent 62%)",
+                  backgroundImage: "linear-gradient(115deg, transparent 42%, rgba(255,244,214,0.22) 50%, rgba(245,214,123,0.16) 54%, transparent 62%)",
                   backgroundSize: "250% 250%",
                   mixBlendMode: "screen",
                   pointerEvents: "none",
                 }}
               />
-              {[[16, 20], [74, 14], [42, 38], [84, 50], [24, 62], [62, 30]].map(([x, y], i) => (
+              {[[18, 22], [76, 18], [40, 40]].map(([x, y], i) => (
                 <span
                   key={i}
                   aria-hidden
@@ -172,12 +160,12 @@ export function DriverCard26({
                     position: "absolute",
                     left: `${x}%`,
                     top: `${y}%`,
-                    width: "1.5cqw",
-                    height: "1.5cqw",
+                    width: "1.2cqw",
+                    height: "1.2cqw",
                     background: "#fff7d6",
                     borderRadius: "50%",
-                    boxShadow: "0 0 2cqw rgba(245,214,123,0.95)",
-                    opacity: 0.85,
+                    boxShadow: "0 0 1.4cqw rgba(245,214,123,0.7)",
+                    opacity: 0.5,
                   }}
                 />
               ))}
