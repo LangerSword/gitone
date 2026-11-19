@@ -139,5 +139,22 @@ export function artLayers(livery: string, finish?: string): string[] {
       "repeating-linear-gradient(72deg, rgba(245,214,123,0.05) 0 3px, transparent 3px 14px)",
       ...base.slice(1),
     ];
+  if (finish === "winner")
+    return [
+      "radial-gradient(26% 32% at 48% 38%, rgba(240,200,90,0.16), transparent 70%)",
+      "repeating-linear-gradient(72deg, rgba(240,200,90,0.04) 0 3px, transparent 3px 15px)",
+      ...base,
+    ];
+  if (finish === "podium")
+    return [
+      "radial-gradient(30% 36% at 50% 42%, rgba(205,140,70,0.16), transparent 70%)",
+      ...base,
+    ];
+  if (finish === "points")
+    return [
+      "radial-gradient(30% 36% at 52% 36%, rgba(190,205,225,0.12), transparent 70%)",
+      "repeating-linear-gradient(115deg, rgba(200,215,235,0.035) 0 2px, transparent 2px 12px)",
+      ...base,
+    ];
   return base;
 }
