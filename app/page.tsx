@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ScoutForm } from "@/components/ScoutForm";
 import { FanCards } from "@/components/FanCards";
-import { ContribGrid } from "@/components/ContribGrid";
+import { GitStrip } from "@/components/GitStrip";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { TrackBackdrop } from "@/components/TrackBackdrop";
@@ -73,7 +73,7 @@ export default async function Home() {
 
       <div aria-hidden className="checker relative z-10 h-[10px] w-full opacity-40" />
       <div className="relative z-10 flex-none">
-        <ContribGrid />
+        <GitStrip />
       </div>
 
       <SiteFooter />
