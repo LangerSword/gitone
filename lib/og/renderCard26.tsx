@@ -131,13 +131,21 @@ function pickPlate(card: Card): { bg: string; ink: string } {
 // pre-tinted tier plate) and the engraved type. No sharp, no fs.
 async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
   const plate = pickPlate(card);
+  // width-appropriate plates: a cold composite must fit the Workers CPU
+  // budget, and rasterising an 820px PNG for a 340px card is what pushed the
+  // double-pass user OG over it (deterministic CF 1102s). Small renders load
+  // the 420px twins; the full-size embed keeps the 820px set.
+  const platePath =
+    width <= 500
+      ? plate.bg.replace(/^\/cards\//, "cards/og400/").replace(/\.webp$/, ".png")
+      : plate.bg.replace(/^\/cards\//, "cards/og/").replace(/\.webp$/, ".png");
   const [fonts, assets, plateSrc] = await Promise.all([
     loadCardFonts(),
     loadCardAssets(card),
     // satori/resvg cannot decode webp — the tier plates ship as PNG twins in
-    // /cards/og/ (palette-quantised, 820px) for every Satori composite; the
+    // /cards/og{,400}/ (palette-quantised) for every Satori composite; the
     // DOM <img> and the sharp twin keep the small webp originals.
-    publicAssetDataUri(plate.bg.replace(/^\/cards\//, "cards/og/").replace(/\.webp$/, ".png")),
+    publicAssetDataUri(platePath),
   ]);
   const w = width;
   const H = cardH(w);
