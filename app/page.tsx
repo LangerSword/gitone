@@ -4,7 +4,6 @@ import { FanCards } from "@/components/FanCards";
 import { GitStrip } from "@/components/GitStrip";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SupportPills } from "@/components/SupportPills";
 import { TrackBackdrop } from "@/components/TrackBackdrop";
 import { MiniCard } from "@/components/MiniCard";
 import Mascot from "@/components/Mascot";
@@ -78,7 +77,6 @@ export default async function Home() {
       </div>
 
       <SiteFooter />
-      <SupportPills />
     </main>
   );
 }

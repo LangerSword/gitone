@@ -6,7 +6,6 @@ import { loadCard } from "@/lib/scout";
 import type { GithubError } from "@/lib/github/client";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { SupportPills } from "@/components/SupportPills";
 import { GitStrip } from "@/components/GitStrip";
 import { DuelView } from "@/components/DuelView";
 
@@ -76,7 +75,6 @@ export default async function VsPage({
       <DuelView duel={duel} />
       <GitStrip />
       <SiteFooter />
-      <SupportPills />
     </main>
   );
 }

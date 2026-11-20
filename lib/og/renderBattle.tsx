@@ -1,17 +1,20 @@
 import { ImageResponse } from "next/og";
 import { loadCardFonts } from "./card";
+import { renderCardPng, cardFrame } from "./renderCard26";
 import { computeDuel } from "@/lib/duel";
 import { cardDisplayName } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
 
-// The battle unfurl / download: a broadcast race-result graphic. Carbon stage,
-// checkered chrome, the two drivers' name plates in their livery colours, a big
-// sector scoreline and the winner. No avatar fetch — renders fast and reads
-// like a timing-screen result, not a screenshot.
+// The battle unfurl / download: a broadcast race-result graphic with BOTH
+// drivers' real rendered cards flanking the sector scoreline — the same card
+// renderer the scout report unfurl uses, so the poster shows exactly what the
+// product shows. Carbon stage, checkered chrome, championship-gold winner,
+// the address baked in. One card render per side, then the composite.
 const W = 1200;
 const H = 630;
 const CACHE = {
-  "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+  "Cache-Control":
+    "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
 };
 
 function Checkers({ y }: { y: number }) {
@@ -27,29 +30,17 @@ function Checkers({ y }: { y: number }) {
   );
 }
 
-function Plate({ card, align }: { card: Card; align: "left" | "right" }) {
-  const name = cardDisplayName(card.name).toUpperCase();
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: align === "left" ? "flex-start" : "flex-end", width: 400 }}>
-      <div style={{ display: "flex", width: 120, height: 6, background: card.constructor.color, marginBottom: 18 }} />
-      <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 24, letterSpacing: 4, color: "#9b9bab" }}>
-        {card.constructor.code} · #{String(card.number).padStart(2, "0")}
-      </div>
-      <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 52 : 64, lineHeight: 1, color: "#f5f5f7", marginTop: 8, textAlign: align }}>
-        {name}
-      </div>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginTop: 16 }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 22, letterSpacing: 3, color: "#9b9bab" }}>RTG</div>
-        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 72, lineHeight: 1, color: card.constructor.color }}>
-          {card.rtg}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
-  const fonts = await loadCardFonts();
+  const cardW = 286;
+  const frame = cardFrame(cardW);
+  const [fonts, aPng, bPng] = await Promise.all([
+    loadCardFonts(),
+    renderCardPng(a, cardW),
+    renderCardPng(b, cardW),
+  ]);
+  const aSrc = `data:image/png;base64,${aPng.toString("base64")}`;
+  const bSrc = `data:image/png;base64,${bPng.toString("base64")}`;
+
   const duel = computeDuel(a, b);
   const { score, winner, onCountback, testSession } = duel;
   const winnerCard = winner === "challenger" ? a : winner === "opponent" ? b : null;
@@ -64,6 +55,10 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
       ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
       : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`;
 
+  const cardTop = Math.round((H - frame.H) / 2);
+  const leftX = 118;
+  const rightX = W - leftX - frame.W;
+
   return new ImageResponse(
     (
       <div
@@ -74,7 +69,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           flexDirection: "column",
           background: "#15151e",
           backgroundImage:
-            "radial-gradient(700px 340px at 50% -10%, rgba(193,18,31,0.22), transparent 62%), radial-gradient(900px 240px at 50% 108%, rgba(255,255,255,0.05), transparent 70%)",
+            "radial-gradient(760px 360px at 50% -12%, rgba(193,18,31,0.20), transparent 62%), radial-gradient(900px 240px at 50% 108%, rgba(255,255,255,0.05), transparent 70%)",
           position: "relative",
           fontFamily: "Titillium",
         }}
@@ -82,27 +77,34 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
         <Checkers y={0} />
         <Checkers y={H - 16} />
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 40, fontFamily: "JBMono", fontSize: 24, letterSpacing: 8, color: "#c9c9d4" }}>
+        <div style={{ display: "flex", justifyContent: "center", marginTop: 36, fontFamily: "JBMono", fontSize: 24, letterSpacing: 8, color: "#c9c9d4" }}>
           GITONE · RACE RESULT
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 70px", marginTop: 36, flex: 1 }}>
-          <Plate card={a} align="left" />
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 220 }}>
-            <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 96, lineHeight: 1, color: "#c1121f" }}>
-              {score.challenger}-{score.opponent}
-            </div>
-            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 22, letterSpacing: 6, color: "#9b9bab", marginTop: 6 }}>
-              SECTORS
-            </div>
-            <div style={{ display: "flex", width: 64, height: 64, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 18, fontFamily: "Titillium", fontWeight: 800, fontSize: 30, color: "#f5f5f7" }}>
-              VS
-            </div>
-          </div>
-          <Plate card={b} align="right" />
+        {/* the two cars — the actual rendered cards, challenger left / rival right */}
+        <div style={{ position: "absolute", left: leftX, top: cardTop, display: "flex" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={aSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
+        </div>
+        <div style={{ position: "absolute", left: rightX, top: cardTop, display: "flex" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={bSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 34 }}>
+        {/* the scoreline between them */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 64 }}>
+          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 92, lineHeight: 1, color: "#c1121f" }}>
+            {score.challenger}-{score.opponent}
+          </div>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 20, letterSpacing: 6, color: "#9b9bab", marginTop: 8 }}>
+            SECTORS
+          </div>
+          <div style={{ display: "flex", width: 58, height: 58, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 16, fontFamily: "Titillium", fontWeight: 800, fontSize: 26, color: "#f5f5f7" }}>
+            VS
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
           {/* the winner wears championship gold — the trophy read, same as the
               live banner; a dead heat stays in the timing-screen white */}
           <div
@@ -110,7 +112,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
               display: "flex",
               fontFamily: "Titillium",
               fontWeight: 800,
-              fontSize: 56,
+              fontSize: 52,
               lineHeight: 1,
               letterSpacing: 1,
               color: winnerCard ? "#f5d67b" : "#f5f5f7",
@@ -119,12 +121,12 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           >
             {headline}
           </div>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 24, letterSpacing: 4, color: "#c9c9d4", marginTop: 12 }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 22, letterSpacing: 4, color: "#c9c9d4", marginTop: 11 }}>
             {sub}
           </div>
           {/* every shared frame carries the address — a poster without the
               product URL is a dead end */}
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f", marginTop: 14 }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f", marginTop: 12 }}>
             gitone.langersword.in
           </div>
         </div>
