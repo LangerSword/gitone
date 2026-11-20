@@ -11,3 +11,11 @@ verify-shots/
 .wrangler/
 prod-*.png
 battle-v2.png
+*-card.png
+*-card2.png
+fixed-*.png
+fresh-*.png
+audit-*.png
+poster-v*.png
+battle-v*.png
+prod-*.png
