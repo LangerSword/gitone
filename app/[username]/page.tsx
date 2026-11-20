@@ -14,6 +14,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { Reveal } from "@/components/Reveal";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { SupportPills } from "@/components/SupportPills";
 import { GitStrip } from "@/components/GitStrip";
 import { PersistPrefs } from "@/components/PersistPrefs";
 import { loadCard } from "@/lib/scout";
@@ -301,6 +302,7 @@ export default async function DriverPage({
       </div>
       <GitStrip />
       <SiteFooter />
+      <SupportPills />
     </main>
   );
 }

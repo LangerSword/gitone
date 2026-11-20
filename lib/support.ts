@@ -2,7 +2,7 @@
 // page move is a one-line change — the pills, metadata and share copy all
 // import from this file.
 //
-// Buy Me a Coffee: creator page for the project's maintainer.
-// Product Hunt: the upcoming page, so visitors can subscribe for launch day.
-export const BMC_URL = "https://buymeacoffee.com/lakshaya";
-export const PH_URL = "https://www.producthunt.com/upcoming/gitone";
+// Buy Me a Coffee: the maintainer's creator page (buymeacoffee.com/langersword).
+// Product Hunt: the product page — live from launch day (2026-11-21).
+export const BMC_URL = "https://buymeacoffee.com/langersword";
+export const PH_URL = "https://www.producthunt.com/posts/gitone";
