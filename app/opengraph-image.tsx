@@ -20,7 +20,7 @@ const BG = "#0a0d10";
 // property renders transparent/white — that bug shipped the old white root
 // unfurl); backgroundColor and backgroundImage must be separate properties.
 export default async function OgImage() {
-  return cachedPng("og:root:v1", async () => {
+  return cachedPng("og:root:v2", async () => {
     const fonts = await loadCardFonts();
     const cardW = 340;
     const frame = cardFrame(cardW);

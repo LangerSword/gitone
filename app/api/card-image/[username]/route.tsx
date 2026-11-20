@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   const teamCode = new URL(req.url).searchParams.get("team");
   // Pinned variants (README flags / team liveries) cache under their own key
   // so they never evict the plain embed.
-  const cacheKey = `cardpng:v2:${username.toLowerCase()}:${override ?? ""}:${teamCode ?? ""}`;
+  const cacheKey = `cardpng:v3:${username.toLowerCase()}:${override ?? ""}:${teamCode ?? ""}`;
 
   return cachedPng(cacheKey, async () => {
     try {

@@ -134,7 +134,10 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
   const [fonts, assets, plateSrc] = await Promise.all([
     loadCardFonts(),
     loadCardAssets(card),
-    publicAssetDataUri(plate.bg.replace(/^\//, "")),
+    // satori/resvg cannot decode webp — the tier plates ship as PNG twins in
+    // /cards/og/ (palette-quantised, 820px) for every Satori composite; the
+    // DOM <img> and the sharp twin keep the small webp originals.
+    publicAssetDataUri(plate.bg.replace(/^\/cards\//, "cards/og/").replace(/\.webp$/, ".png")),
   ]);
   const w = width;
   const H = cardH(w);
