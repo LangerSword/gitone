@@ -102,12 +102,30 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           <Plate card={b} align="right" />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 46 }}>
-          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 56, lineHeight: 1, color: "#f5f5f7", letterSpacing: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 34 }}>
+          {/* the winner wears championship gold — the trophy read, same as the
+              live banner; a dead heat stays in the timing-screen white */}
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Titillium",
+              fontWeight: 800,
+              fontSize: 56,
+              lineHeight: 1,
+              letterSpacing: 1,
+              color: winnerCard ? "#f5d67b" : "#f5f5f7",
+              textShadow: winnerCard ? "0 0 34px rgba(245,214,123,0.35), 0 2px 0 rgba(0,0,0,.55)" : "0 2px 0 rgba(0,0,0,.55)",
+            }}
+          >
             {headline}
           </div>
           <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 24, letterSpacing: 4, color: "#c9c9d4", marginTop: 12 }}>
             {sub}
+          </div>
+          {/* every shared frame carries the address — a poster without the
+              product URL is a dead end */}
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f", marginTop: 14 }}>
+            gitone.langersword.in
           </div>
         </div>
       </div>

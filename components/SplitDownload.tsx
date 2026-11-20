@@ -16,6 +16,7 @@ const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : us
 export function SplitDownload({
   label,
   getCaptureNode,
+  posterUrl,
   captureBackgroundColor,
   captureExclude,
   filename,
@@ -28,7 +29,9 @@ export function SplitDownload({
   /** Idle main-zone label, e.g. "Download result" / "Download card". */
   label: string;
   /** Finds the live DOM node to capture for the PNG (card / duel graphic). */
-  getCaptureNode: () => HTMLElement | null;
+  getCaptureNode?: () => HTMLElement | null;
+  /** Composed share graphic URL; when set, the export is that poster. */
+  posterUrl?: string;
   /** Background painted behind the capture (the duel graphic). */
   captureBackgroundColor?: string;
   /** Selector stripped from the capture clone (e.g. the action row itself). */
@@ -53,7 +56,7 @@ export function SplitDownload({
     canNativeShare,
     nativeShare,
     mainLabel,
-  } = useImageActions({ getCaptureNode, captureBackgroundColor, captureExclude, filename, linkUrl, shareText, shareTitle, intentUrl, idleLabel: label });
+  } = useImageActions({ getCaptureNode, posterUrl, captureBackgroundColor, captureExclude, filename, linkUrl, shareText, shareTitle, intentUrl, idleLabel: label });
 
   const menuRef = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLButtonElement>(null);

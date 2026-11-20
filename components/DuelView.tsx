@@ -38,14 +38,16 @@ function tierColor(card: Card): string {
   return resolveCardTheme(card).accent;
 }
 
-// A scoreboard digit that pops as a sector goes to one side.
+// A scoreboard digit that pops as a sector goes to one side. Big enough to
+// carry the settled page: this is the result's headline number pair.
 function ScoreDigit({ value, accent }: { value: number; accent: string }) {
   return (
     <span
       key={value}
-      className="display inline-block text-[clamp(30px,4.4vw,46px)] leading-none"
+      className="display inline-block text-[clamp(38px,5.6vw,62px)] leading-none"
       style={{
         color: accent,
+        textShadow: `0 0 22px ${rgba(accent, 0.35)}`,
         animation: "score-tick .38s cubic-bezier(.16,1,.3,1) both",
       }}
     >
@@ -73,12 +75,12 @@ function Scoreline({
     <div className="w-full max-w-[440px]" data-duel-scoreline>
       <div className="flex items-end justify-between">
         <ScoreDigit value={scoreA} accent={aColor} />
-        <span className="mono pb-1 text-[10.5px] font-bold tracking-[0.16em]" style={{ color: "var(--dim)" }}>
+        <span className="mono pb-1.5 text-[10.5px] font-bold tracking-[0.16em]" style={{ color: "var(--dim)" }}>
           SECTORS WON
         </span>
         <ScoreDigit value={scoreB} accent={bColor} />
       </div>
-      <div className="mt-1.5 flex h-2 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.08)" }}>
+      <div className="mt-2 flex h-2.5 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.09)" }}>
         <div
           className="h-full"
           style={{ width: `${pctA}%`, background: aColor, transition: "width .7s cubic-bezier(.16,1,.3,1)" }}
@@ -86,6 +88,13 @@ function Scoreline({
         {/* both halves wear their own livery at (near) full strength — the
             split reads by width, never by one side going grey */}
         <div className="h-full flex-1" style={{ background: rgba(bColor, 0.9) }} />
+      </div>
+      {/* the dominance split, spoken in numbers — each side's share of the
+          raw stat totals, in that side's own ink */}
+      <div className="mono mt-1.5 flex w-full items-center justify-between text-[10.5px] font-bold tracking-[0.14em]" style={{ color: "var(--dim)" }}>
+        <span style={{ color: aColor }}>{pctA}%</span>
+        <span>DOMINANCE</span>
+        <span style={{ color: bColor }}>{100 - pctA}%</span>
       </div>
     </div>
   );
@@ -171,7 +180,7 @@ function SectorRow({
       <div
         data-track={side}
         className="h-[5px] min-w-0 flex-1 overflow-hidden rounded-full"
-        style={{ background: "rgba(255,255,255,0.07)" }}
+        style={{ background: "rgba(255,255,255,0.10)" }}
       >
         <div
           className="h-full"
@@ -180,7 +189,7 @@ function SectorRow({
             marginLeft: side === "challenger" ? "auto" : undefined,
             // every resolved bar wears its side's livery: full strength for
             // the winner, dimmed for the loser, mid for a level sector.
-            background: won ? accent : rgba(accent, lost ? 0.45 : 0.7),
+            background: won ? accent : rgba(accent, lost ? 0.6 : 0.75),
             boxShadow: won ? `0 0 16px ${rgba(accent, 0.7)}, 0 0 5px ${rgba(accent, 0.5)}` : undefined,
             transition: "width .6s cubic-bezier(.16,1,.3,1), background .3s ease",
           }}
@@ -330,6 +339,8 @@ export function DuelView({ duel }: { duel: Duel }) {
   const focus: DuelSide | null = stamped ? winner : null;
   const winnerCard: Card | null =
     winner === "challenger" ? challenger : winner === "opponent" ? opponent : null;
+  const loserCard: Card | null =
+    winner === "challenger" ? opponent : winner === "opponent" ? challenger : null;
   // The winner banner is the trophy moment — always championship gold (a warm,
   // celebratory read) regardless of the winner's cool tier, with a clean shimmer.
   const resultAccent = winnerCard ? "#f5d67b" : "var(--f1-red)";
@@ -339,9 +350,11 @@ export function DuelView({ duel }: { duel: Duel }) {
   // banner below says CHEQUERED FLAG, so the headline is never duplicated.
   const status = stamped ? "SCOUT DUEL" : shown === 0 ? "LIGHTS OUT" : "LIVE";
 
+  // X copy: both drivers named (both audiences), the sector score, what the
+  // numbers are made of, then the CTA.
   const shareText = winnerCard
-    ? `🏁 ${cardDisplayName(winnerCard.name)} takes the gitone scout duel ${score.challenger}–${score.opponent} on sectors. Who wins your matchup? →`
-    : `🏁 Dead heat on the gitone grid: ${score.challenger}–${score.opponent} on sectors. Who wins your matchup? →`;
+    ? `🏁 ${cardDisplayName(winnerCard.name)} takes the gitone duel ${score.challenger}-${score.opponent} vs ${cardDisplayName(loserCard!.name)} — six sectors of real GitHub numbers, scored like F1. race your own rival →`
+    : `🏁 dead heat ${score.challenger}-${score.opponent} on the gitone grid — level on RTG, real GitHub numbers. settle it with your own rival →`;
 
   // Both fixture names share one size — the longer login sets it, shrinking
   // smoothly for long handles so neither side shoves the VS badge off centre.
@@ -388,34 +401,40 @@ export function DuelView({ duel }: { duel: Duel }) {
         <header className="relative text-center">
           {/* the start gantry: five lights ignite in sequence during the
               walkout, then go out as the race goes live. The slot height is
-              reserved so the header never jumps. */}
-          <div className="mb-3 flex h-4 items-center justify-center" aria-hidden>
-            {phase.kind === "walkout" && (
-              <div className="lights">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="lamp on"
-                    style={{ opacity: 0, animation: `light-on .14s ease-out ${0.12 + i * 0.16}s both` }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+              reserved so the header never jumps. Once the flag drops this
+              whole block (and the status line below) collapses — the settled
+              page opens straight on the fixture, no dead broadcast furniture. */}
+          {!stamped && (
+            <div className="mb-3 flex h-4 items-center justify-center" aria-hidden>
+              {phase.kind === "walkout" && (
+                <div className="lights">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <span
+                      key={i}
+                      className="lamp on"
+                      style={{ opacity: 0, animation: `light-on .14s ease-out ${0.12 + i * 0.16}s both` }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
-          <div className="mb-3 flex items-center justify-center gap-2.5">
-            <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
-            {status === "LIVE" && (
-              <span className="relative flex h-2 w-2" aria-hidden>
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: "var(--f1-red)" }} />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--f1-red)" }} />
-              </span>
-            )}
-            <p role="status" aria-live="polite" className="mono text-[11.5px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
-              {status}
-            </p>
-            <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
-          </div>
+          {!stamped && (
+            <div className="mb-3 flex items-center justify-center gap-2.5">
+              <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
+              {status === "LIVE" && (
+                <span className="relative flex h-2 w-2" aria-hidden>
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: "var(--f1-red)" }} />
+                  <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "var(--f1-red)" }} />
+                </span>
+              )}
+              <p role="status" aria-live="polite" className="mono text-[11.5px] font-bold tracking-[0.22em]" style={{ color: "var(--dim)" }}>
+                {status}
+              </p>
+              <span aria-hidden className="inline-block h-[3px] w-7" style={{ background: "var(--f1-red)" }} />
+            </div>
+          )}
 
           {/* the fixture: both handles squaring up around the VS badge */}
           <h1 className="display grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-6">
@@ -485,7 +504,7 @@ export function DuelView({ duel }: { duel: Duel }) {
                   style={{ background: resultAccent, transformOrigin: "center", animation: "underline-draw .55s .18s cubic-bezier(.16,1,.3,1) both" }}
                 />
 
-                <p className="mono mt-2 text-[12px] tracking-[0.14em]" style={{ color: "var(--dim)" }}>
+                <p className="mono mt-2 text-[13px] tracking-[0.14em]" style={{ color: "rgba(245,245,247,0.82)" }}>
                   {testSession
                     ? "SAME DRIVER, BOTH CARS. ALWAYS A DRAW"
                     : winner
@@ -545,11 +564,16 @@ export function DuelView({ duel }: { duel: Duel }) {
             animation: settled ? "rise-soft .55s cubic-bezier(.16,1,.3,1) both" : undefined,
           }}
         >
-          <div data-duel-receipts data-export-exclude className="mt-8 w-full border-t pt-4" style={{ borderColor: "var(--line)" }}>
-            <div className="flex items-baseline justify-between">
+          <div data-duel-receipts data-export-exclude className="mt-8 w-full rounded-[14px] border px-4 pb-1.5 pt-4 sm:px-5" style={{ borderColor: "var(--line)", background: "rgba(255,255,255,0.02)" }}>
+            {/* plate header — the two liveries flank the call, like the
+                fixture strip above; the receipts sit in one framed card
+                instead of an open table on the page ground */}
+            <div className="flex items-center justify-center gap-2.5">
+              <span aria-hidden className="h-[2px] w-4 rounded-full" style={{ background: aColor }} />
               <p className="mono text-[11.5px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
                 RACE RECEIPTS · REAL COUNTS
               </p>
+              <span aria-hidden className="h-[2px] w-4 rounded-full" style={{ background: bColor }} />
             </div>
             {/* one fixed centre column for the header and every row, so the
                 left numbers, centre labels and right numbers never drift. */}

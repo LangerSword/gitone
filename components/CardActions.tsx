@@ -14,7 +14,7 @@ function copy(text: string) {
 // zone downloads with busy/done states, the caret menu adds Copy image, Copy
 // link, open/embed/JSON. Sharing is a single icon button; the duel is a
 // rolling fixture plate below. Three tiers, one radius.
-export function CardActions({ login, name, rtg }: { login: string; name?: string; rtg?: number }) {
+export function CardActions({ login, name, rtg, finishLabel }: { login: string; name?: string; rtg?: number; finishLabel?: string }) {
   const [copied, setCopied] = useState<string | null>(null);
 
   const flash = (k: string) => {
@@ -26,9 +26,11 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
   const pngUrl = `${origin}/${login}.png`;
   const linkUrl = typeof window !== "undefined" ? window.location.href : `${origin}/${login}`;
   const who = name ?? login;
+  // X copy: concrete numbers first (his RTG, his grade), then what the numbers
+  // are made of, then the CTA. The flag is the only emoji that earns its slot.
   const shareText = rtg
-    ? `🏎️ ${who} just scored ${rtg}/99 on gitone — GitHub, rated like an F1 driver. Scout yours →`
-    : `🏎️ ${who} on gitone — GitHub, rated like an F1 driver. Scout yours →`;
+    ? `🏁 ${who} rates ${rtg}/99 on gitone${finishLabel ? ` — ${finishLabel.toLowerCase()} of the github grid` : ""}. real commits, PRs and reviews, scored like an F1 season. scout yours →`
+    : `🏁 ${who} on gitone — a whole GitHub history, scored like an F1 season. scout yours →`;
   const intentUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(linkUrl)}`;
 
   return (

@@ -22,6 +22,7 @@ export const EXPORT_COPY: Record<ExportAction, { name: string; busy: string; don
 
 export function useImageActions({
   getCaptureNode,
+  posterUrl,
   captureBackgroundColor,
   captureExclude,
   filename,
@@ -32,7 +33,11 @@ export function useImageActions({
   idleLabel,
 }: {
   /** Finds the live DOM node to capture (the card / the duel result graphic). */
-  getCaptureNode: () => HTMLElement | null;
+  getCaptureNode?: () => HTMLElement | null;
+  /** Composed share graphic served by the app (e.g. /api/battle-image/…).
+   *  When set, download/copy/share use that poster instead of a DOM capture —
+   *  the export IS the unfurl, not a page dump. */
+  posterUrl?: string;
   /** Background painted behind the capture (the duel graphic sits on the page ground). */
   captureBackgroundColor?: string;
   /** Selector stripped from the capture clone (e.g. the action row itself). */
@@ -66,10 +71,17 @@ export function useImageActions({
     if (doneTimer.current) clearTimeout(doneTimer.current);
   }, []);
 
-  // Capture the live card/graphic at 3× (print resolution) — fonts awaited,
-  // images decoded, off-screen clone. Returns a real PNG Blob.
+  // The export blob: the composed poster when one is wired (the battle result
+  // is a designed graphic, same one the unfurls serve), else the live card at
+  // 3x via html-to-image. Both are real PNG blobs the browser can save/copy.
   const captureImage = (): Promise<Blob> => {
-    const node = getCaptureNode();
+    if (posterUrl) {
+      return fetch(posterUrl).then(async (r) => {
+        if (!r.ok) throw new Error(`poster request failed (${r.status})`);
+        return r.blob();
+      });
+    }
+    const node = getCaptureNode?.();
     if (!node) return Promise.reject(new Error("no card found on the page"));
     return captureNode(
       node,
