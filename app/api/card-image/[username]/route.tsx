@@ -34,11 +34,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   // budget (Cloudflare 1102) before the CDN ever caches a byte, so a cold
   // embed link 503s and may even get the error cached. Serving the cached
   // PNG first makes embeds a once-a-day render instead of every cold hit.
+  let debug = "no-redis";
   if (redis) {
     const hit = await redis.get(cacheKey).catch(() => null);
     if (hit) {
-      return new Response(Buffer.from(hit, "base64"), { headers: PNG_HEADERS });
+      return new Response(Buffer.from(hit, "base64"), { headers: { ...PNG_HEADERS, "x-cardpng": "kv-hit" } });
     }
+    debug = "miss";
   }
 
   try {
@@ -64,8 +66,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
     // when the response returns, so the KV write must complete before we hand
     // the bytes back — otherwise nothing is ever cached and every hit pays
     // the render again (and cold renders are what trip the CPU limit).
-    if (redis) await redis.set(cacheKey, png.toString("base64"), "EX", PNG_TTL).catch(() => {});
-    return new Response(png, { headers: PNG_HEADERS });
+    if (redis) {
+      await redis.set(cacheKey, png.toString("base64"), "EX", PNG_TTL).catch(() => {});
+      // read-back: proves whether the put actually landed in this runtime
+      const stored = await redis.get(cacheKey).catch(() => null);
+      debug = stored ? "stored" : "put-failed";
+    }
+    return new Response(png, { headers: { ...PNG_HEADERS, "x-cardpng": debug } });
   } catch {
     return await renderFallbackImage(username);
   }
