@@ -38,7 +38,7 @@ export async function generateMetadata({
   const s = card.stats;
   return {
     title: `${card.name} · RTG ${card.rtg}`,
-    description: `${card.name} on the github grid: EXP ${s.exp} · RAC ${s.rac} · AWA ${s.awa} · PAC ${s.pac}. ${card.constructor.name}, ${card.finishLabel.toLowerCase()}.`,
+    description: `🏎️ ${card.name} is rated ${card.rtg}/99 on gitone — ${card.finishLabel.toLowerCase()} of the GitHub grid. PAC ${s.pac} · RAC ${s.rac} · AWA ${s.awa} · EXP ${s.exp}. Scout yours →`,
     alternates: { canonical: `/${card.login}` },
   };
 }

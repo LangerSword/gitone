@@ -17,7 +17,7 @@ export async function generateMetadata({
   const { username, opponent } = await params;
   return {
     title: `${username} vs ${opponent}`,
-    description: `Head-to-head on the github grid: ${username} against ${opponent}, sector by sector.`,
+    description: `🏁 ${username} vs ${opponent} on gitone — a GitHub scout duel, sector by sector. Who wins the grid?`,
   };
 }
 

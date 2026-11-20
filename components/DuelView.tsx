@@ -9,7 +9,8 @@ import { resolvedRows } from "@/lib/reveal";
 import { useDuelReveal } from "@/hooks/useDuelReveal";
 import { DriverCard26 } from "@/components/DriverCard26";
 import { BattleActions } from "@/components/BattleActions";
-import { rgba } from "@/components/finishTheme";
+import { resolveCardTheme, rgba } from "@/components/finishTheme";
+import { GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
 
 /* The versus broadcast, gitfut-style: a phased reveal driven by the pure
    sequencer in lib/reveal. Walkout (both cars enter from their sides) →
@@ -23,6 +24,19 @@ import { rgba } from "@/components/finishTheme";
    left/right edges. The two cars hug a real centre column that carries the
    live scoreline (no dead gutter), and every butterfly sector row grows from
    a FIXED centre label on a shared 0–99 scale with identical tracks. */
+
+// Each side's colour comes from the CARD TYPE (tier material), not a flat
+// livery — a GOAT reads platinum, a champion gold, an in-form purple, a rookie
+// gunmetal — so the whole page is themed to who is actually fighting.
+function tierColor(card: Card): string {
+  if (card.founder?.accent) return card.founder.accent;
+  const goat =
+    GOAT_LOGINS.includes(card.login.toLowerCase()) ||
+    card.login.toLowerCase() === GOAT_LOGIN ||
+    (card.number === 1 && card.rtg >= 97);
+  if (goat) return "#dfe5ee"; // platinum GOAT crest
+  return resolveCardTheme(card).accent;
+}
 
 // A scoreboard digit that pops as a sector goes to one side.
 function ScoreDigit({ value, accent }: { value: number; accent: string }) {
@@ -299,8 +313,8 @@ function Corner({
 
 export function DuelView({ duel }: { duel: Duel }) {
   const { challenger, opponent, rows, score, winner, onCountback, testSession } = duel;
-  const aColor = challenger.constructor.color;
-  const bColor = opponent.constructor.color;
+  const aColor = tierColor(challenger);
+  const bColor = tierColor(opponent);
 
   const { phase, skip } = useDuelReveal(rows.length);
   const settled = phase.kind === "settled";
@@ -324,8 +338,8 @@ export function DuelView({ duel }: { duel: Duel }) {
   const status = stamped ? "SCOUT DUEL" : shown === 0 ? "LIGHTS OUT" : "LIVE";
 
   const shareText = winnerCard
-    ? `${cardDisplayName(winnerCard.name)} takes the gitone battle ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`
-    : `Dead heat on the gitone grid: ${score.challenger}-${score.opponent} on sectors. GitHub, rated like a driver.`;
+    ? `🏁 ${cardDisplayName(winnerCard.name)} takes the gitone scout duel ${score.challenger}–${score.opponent} on sectors. Who wins your matchup? →`
+    : `🏁 Dead heat on the gitone grid: ${score.challenger}–${score.opponent} on sectors. Who wins your matchup? →`;
 
   // Both fixture names share one size — the longer login sets it, shrinking
   // smoothly for long handles so neither side shoves the VS badge off centre.
@@ -565,14 +579,16 @@ export function DuelView({ duel }: { duel: Duel }) {
             </div>
           </div>
 
-          <div className="mx-auto mt-8 w-full max-w-[440px]">
+          {/* data-export-exclude: the action row never appears in the captured
+              result graphic (the download button can't share itself). */}
+          <div data-export-exclude className="mx-auto mt-8 w-full max-w-[440px]">
             <BattleActions username={challenger.login} opponent={opponent.login} text={shareText} />
           </div>
 
-          <p className="mono mt-6 text-center text-[11.5px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--dim)" }}>
+          <p data-export-exclude className="mono mt-6 text-center text-[11.5px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--dim)" }}>
             EXP EXPERIENCE · RAC RACECRAFT · AWA AWARENESS · PAC PACE · BOTH 90+ READS PURPLE · RTG BREAKS A LEVEL SCORELINE
           </p>
-          <p className="mono mt-1.5 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
+          <p data-export-exclude className="mono mt-1.5 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
             EACH SIDE KEEPS ITS LIVERY COLOUR · <span style={{ color: "var(--green)" }}>GREEN +N</span> = CHALLENGER TAKES THE SECTOR
           </p>
         </div>

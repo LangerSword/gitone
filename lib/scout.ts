@@ -8,13 +8,14 @@ import { fetchProfile, type GithubError } from "./github/client";
 import { signalsFromPayload } from "./github/signals";
 import type { Card } from "./racing/types";
 
-// Read-through Redis cache for built cards — the single path every surface
+// Read-through cache for built cards — the single path every surface
 // (the /<user> page, the JSON API, the embed image) uses to turn a username
-// into a Card. A profile is fetched from GitHub + scored at most once per
-// TTL; repeat views and README-embed regenerations are then served from
-// Redis instead of each spending a handful of GitHub GraphQL calls.
+// into a Card. Backed by Cloudflare KV on Workers and Redis on Node/VPS
+// (lib/redis). A profile is fetched from GitHub + scored at most once per
+// TTL; repeat views and README-embed regenerations are then served from the
+// cache instead of each spending a handful of GitHub GraphQL calls.
 //
-// Best-effort throughout: a missing REDIS_URL, a cache miss, an outage or a
+// Best-effort throughout: a missing cache config, a cache miss, an outage or a
 // parse error all fall through to a live fetch — the cache only ever changes
 // speed, never behaviour. Only successful builds are stored; scout errors
 // (notfound / ratelimit / …) propagate unchanged and are never cached.

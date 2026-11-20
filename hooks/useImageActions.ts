@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { toBlob } from "html-to-image";
+import { captureNode } from "@/lib/capture";
 
 // The export gestures behind the split Download button, shared by the card
-// and battle actions. gitone renders its PNGs server-side (the .png rewrite
-// routes), so "capture" here is a fetch of the image route — the busy state
-// covers the render time, and the done state confirms the save/copy landed.
+// and battle actions. gitfut-style: the PNG is rendered IN THE BROWSER from
+// the live DOM (html-to-image at 3× on an off-screen clone), so downloads work
+// on Cloudflare Workers — no server image route involved. The busy state
+// covers the capture, and the done state confirms the save/copy landed.
 export type ExportAction = "download" | "copy" | "link";
 
 // Feedback copy per action — shown on the split button itself (the menu
@@ -18,7 +21,9 @@ export const EXPORT_COPY: Record<ExportAction, { name: string; busy: string; don
 };
 
 export function useImageActions({
-  imageUrl,
+  getCaptureNode,
+  captureBackgroundColor,
+  captureExclude,
   filename,
   linkUrl,
   shareText,
@@ -26,8 +31,12 @@ export function useImageActions({
   intentUrl,
   idleLabel,
 }: {
-  /** The server-rendered PNG (e.g. /<user>.png or /<a>/vs/<b>.png). */
-  imageUrl: string;
+  /** Finds the live DOM node to capture (the card / the duel result graphic). */
+  getCaptureNode: () => HTMLElement | null;
+  /** Background painted behind the capture (the duel graphic sits on the page ground). */
+  captureBackgroundColor?: string;
+  /** Selector stripped from the capture clone (e.g. the action row itself). */
+  captureExclude?: string;
   filename: string;
   /** Absolute page URL written by Copy link / handed to the share sheet. */
   linkUrl: string;
@@ -57,12 +66,24 @@ export function useImageActions({
     if (doneTimer.current) clearTimeout(doneTimer.current);
   }, []);
 
-  const fetchImage = async (): Promise<Blob> => {
-    const res = await fetch(imageUrl, { headers: { Accept: "image/png" } });
-    if (!res.ok) throw new Error(`image route returned ${res.status}`);
-    const blob = await res.blob();
-    if (!blob.type.startsWith("image/")) throw new Error("image route returned no PNG");
-    return blob;
+  // Capture the live card/graphic at 3× (print resolution) — fonts awaited,
+  // images decoded, off-screen clone. Returns a real PNG Blob.
+  const captureImage = (): Promise<Blob> => {
+    const node = getCaptureNode();
+    if (!node) return Promise.reject(new Error("no card found on the page"));
+    return captureNode(
+      node,
+      async (n) => {
+        const blob = await toBlob(n, {
+          pixelRatio: 3,
+          cacheBust: true,
+          backgroundColor: captureBackgroundColor,
+        });
+        if (!blob) throw new Error("capture returned no image");
+        return blob;
+      },
+      { exclude: captureExclude },
+    );
   };
 
   const track = async (id: ExportAction, run: () => Promise<void>) => {
@@ -85,7 +106,7 @@ export function useImageActions({
 
   const download = () =>
     track("download", async () => {
-      const blob = await fetchImage();
+      const blob = await captureImage();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -101,9 +122,9 @@ export function useImageActions({
         throw new Error("this browser can't copy images");
       }
       // Hand clipboard.write a Promise<Blob> synchronously inside the click's
-      // user activation — awaiting the slow server render first would let the
+      // user activation — awaiting the slow 3× capture first would let the
       // activation lapse (NotAllowedError). The browser awaits the blob itself.
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": fetchImage() })]);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": captureImage() })]);
     });
 
   const copyLink = () =>
@@ -112,7 +133,7 @@ export function useImageActions({
       await navigator.clipboard.writeText(linkUrl);
     });
 
-  // Native share sheet (mobile): attach the rendered PNG when the platform
+  // Native share sheet (mobile): attach the captured PNG when the platform
   // can share files, otherwise fall back to text+url. A failed share opens
   // the X intent; a user dismissal (AbortError) does nothing.
   const nativeShare = async () => {
@@ -120,7 +141,7 @@ export function useImageActions({
       const payload: ShareData = { title: shareTitle ?? "gitone", text: shareText, url: linkUrl };
       if (typeof navigator.canShare === "function") {
         try {
-          const blob = await fetchImage();
+          const blob = await captureImage();
           const file = new File([blob], filename, { type: "image/png" });
           if (navigator.canShare({ files: [file] })) payload.files = [file];
         } catch {

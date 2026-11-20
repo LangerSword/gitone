@@ -14,5 +14,11 @@
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://gitone.langersword.in"
   },
+  // Native cache for lib/redis.ts on Workers: card cache, GitHub token
+  // health and the scout counter. Create/rotate with
+  // `npx wrangler kv namespace create GITONE_KV`.
+  "kv_namespaces": [
+    { "binding": "GITONE_KV", "id": "8d67e9c706f64ec397ea485d4fb30942" }
+  ],
   "observability": { "enabled": true }
 }

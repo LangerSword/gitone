@@ -72,7 +72,7 @@ export function TeamPicker({ login, current }: { login: string; current: string 
       </button>
       {open && (
         <div
-          className="menu-pop absolute bottom-full right-0 mb-2 w-[290px] p-1.5"
+          className="menu-pop absolute bottom-full right-0 mb-2 w-[290px] max-sm:fixed max-sm:inset-x-4 max-sm:bottom-4 max-sm:mb-0 max-sm:w-auto p-1.5"
           style={{ maxHeight: 340, overflowY: "auto" }}
         >
           <div className="mono mb-1 px-2 pt-1 text-[11px] tracking-[0.16em]" style={{ color: "var(--faint)" }}>
