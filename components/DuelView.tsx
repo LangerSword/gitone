@@ -330,8 +330,8 @@ export function DuelView({ duel }: { duel: Duel }) {
   const focus: DuelSide | null = stamped ? winner : null;
   const winnerCard: Card | null =
     winner === "challenger" ? challenger : winner === "opponent" ? opponent : null;
-  const resultAccent = winnerCard ? winnerCard.constructor.color : "var(--f1-red)";
-  const headlineHex = winnerCard ? winnerCard.constructor.color : "#f5f5f7";
+  const resultAccent = winnerCard ? tierColor(winnerCard) : "var(--f1-red)";
+  const headlineHex = winnerCard ? tierColor(winnerCard) : "#f5f5f7";
 
   // The fixture eyebrow names the broadcast, never the result — only the flag
   // banner below says CHEQUERED FLAG, so the headline is never duplicated.
@@ -543,7 +543,7 @@ export function DuelView({ duel }: { duel: Duel }) {
             animation: settled ? "rise-soft .55s cubic-bezier(.16,1,.3,1) both" : undefined,
           }}
         >
-          <div data-duel-receipts className="mt-8 w-full border-t pt-4" style={{ borderColor: "var(--line)" }}>
+          <div data-duel-receipts data-export-exclude className="mt-8 w-full border-t pt-4" style={{ borderColor: "var(--line)" }}>
             <div className="flex items-baseline justify-between">
               <p className="mono text-[11.5px] font-bold tracking-[0.2em]" style={{ color: "var(--dim)" }}>
                 RACE RECEIPTS · REAL COUNTS

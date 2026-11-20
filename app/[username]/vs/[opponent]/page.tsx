@@ -15,9 +15,11 @@ export async function generateMetadata({
   params: Promise<{ username: string; opponent: string }>;
 }): Promise<Metadata> {
   const { username, opponent } = await params;
+  const description = `🏁 ${username} vs ${opponent} on gitone — a GitHub scout duel, sector by sector. Who wins the grid?`;
   return {
     title: `${username} vs ${opponent}`,
-    description: `🏁 ${username} vs ${opponent} on gitone — a GitHub scout duel, sector by sector. Who wins the grid?`,
+    description,
+    openGraph: { title: `${username} vs ${opponent} · gitone`, description },
   };
 }
 

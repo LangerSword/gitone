@@ -20,17 +20,23 @@ import type { Card } from "./racing/types";
 // speed, never behaviour. Only successful builds are stored; scout errors
 // (notfound / ratelimit / …) propagate unchanged and are never cached.
 
-const CACHE_VERSION = "v4"; // v4: GOAT 98 / rival ceiling 95
-const CARD_TTL_SECONDS = 120 * 60;
+const CACHE_VERSION = "v5"; // v5: stale-while-revalidate entries
+const CARD_TTL_SECONDS = 120 * 60; // "fresh" window; older entries are served stale
+const CACHE_HARD_TTL = 7 * 24 * 60 * 60; // keep stale entries 7d so every view is instant
 
 const normalizeLogin = (username: string) => username.trim().replace(/^@/, "").toLowerCase();
 const keyFor = (login: string) => `gitone:card:${CACHE_VERSION}:${login}`;
+interface CacheEntry { card: Card; ts: number }
 
-async function readCache(login: string): Promise<Card | null> {
+async function readCache(login: string): Promise<CacheEntry | null> {
   if (!redis) return null;
   try {
     const raw = await redis.get(keyFor(login));
-    return raw ? (JSON.parse(raw) as Card) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.card && typeof parsed.ts === "number") return parsed as CacheEntry;
+    // tolerate a legacy plain-Card entry: treat it as fully stale
+    return { card: parsed as Card, ts: 0 };
   } catch (e) {
     console.error("[scout] cache read failed:", (e as Error).message);
     return null;
@@ -40,7 +46,7 @@ async function readCache(login: string): Promise<Card | null> {
 async function writeCache(login: string, card: Card): Promise<void> {
   if (!redis) return;
   try {
-    await redis.set(keyFor(login), JSON.stringify(card), "EX", CARD_TTL_SECONDS);
+    await redis.set(keyFor(login), JSON.stringify({ card, ts: Date.now() } satisfies CacheEntry), "EX", CACHE_HARD_TTL);
   } catch (e) {
     console.error("[scout] cache write failed:", (e as Error).message);
   }
@@ -70,8 +76,20 @@ async function buildFresh(username: string, login: string): Promise<Card> {
 export async function scoutCard(username: string): Promise<Card> {
   const login = normalizeLogin(username);
 
-  const cached = await readCache(login);
-  if (cached) return cached;
+  const entry = await readCache(login);
+  if (entry) {
+    const fresh = Date.now() - entry.ts < CARD_TTL_SECONDS * 1000;
+    // Stale entry: return it INSTANTLY and refresh behind the response (best
+    // effort — on Workers the un-awaited promise may be cut off, but the view
+    // is still fast and the next request retries the refresh). Fresh: just
+    // return it. Either way a cached viewer never waits on GitHub.
+    if (!fresh && !inflight.has(login)) {
+      const pending = buildFresh(username, login).finally(() => inflight.delete(login));
+      inflight.set(login, pending);
+      pending.catch(() => {});
+    }
+    return entry.card;
+  }
 
   const existing = inflight.get(login);
   if (existing) return existing;

@@ -36,10 +36,12 @@ export async function generateMetadata({
   if ("error" in res) return { title: username };
   const { card } = res;
   const s = card.stats;
+  const description = `🏎️ ${card.name} is rated ${card.rtg}/99 on gitone — ${card.finishLabel.toLowerCase()} of the GitHub grid. PAC ${s.pac} · RAC ${s.rac} · AWA ${s.awa} · EXP ${s.exp}. Scout yours →`;
   return {
     title: `${card.name} · RTG ${card.rtg}`,
-    description: `🏎️ ${card.name} is rated ${card.rtg}/99 on gitone — ${card.finishLabel.toLowerCase()} of the GitHub grid. PAC ${s.pac} · RAC ${s.rac} · AWA ${s.awa} · EXP ${s.exp}. Scout yours →`,
+    description,
     alternates: { canonical: `/${card.login}` },
+    openGraph: { title: `${card.name} · RTG ${card.rtg} · gitone`, description },
   };
 }
 
