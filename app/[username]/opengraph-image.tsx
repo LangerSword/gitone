@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { loadCard } from "@/lib/scout";
 import { renderCardPng, cardFrame } from "@/lib/og/renderCard26";
 import { loadCardFonts } from "@/lib/og/card";
+import { cachedPng } from "@/lib/og/pngCache";
 import { STATS, STAT_LABELS } from "@/lib/racing/constants";
 
 export const runtime = "nodejs";
@@ -13,8 +14,16 @@ const BG = "#0b0d10";
 // Social unfurl for the scout report: the live card on the left, the
 // headline numbers on the right. The card is a clean rounded rectangle now,
 // so no corner masks are needed.
+//
+// The composite is CPU-heavy (card render + outer pass); a cold render can
+// bust the Workers CPU budget and hand X/Discord a 503, which they cache as
+// "no preview". KV-cache the PNG — repeats never render again.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
+  return cachedPng(`og:v1:${username.toLowerCase()}`, () => buildOg(username));
+}
+
+async function buildOg(username: string): Promise<Response> {
   const res = await loadCard(username);
   const fonts = await loadCardFonts();
   if ("error" in res) {
@@ -86,3 +95,6 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
     { ...size, fonts },
   );
 }
+
+// re-export so Next's file convention keeps picking up the route's headers
+export const contentType = "image/png";
