@@ -108,20 +108,20 @@ export const cardFrame = (w: number) => ({ W: w + cardPad(w) * 2, H: cardH(w) + 
 // (components/DriverCard26.tsx) uses, so the Workers unfurl wears the right
 // metal and ink without any sharp tinting.
 const TIER_PLATES: Record<Finish, { bg: string; ink: string }> = {
-  rookie: { bg: "/cards/carbon.png", ink: "#e8eaef" },
-  points: { bg: "/cards/steel.png", ink: "#2a2d33" },
-  podium: { bg: "/cards/bronze.png", ink: "#3a2413" },
-  winner: { bg: "/cards/gold.png", ink: "#46390c" },
-  in_form: { bg: "/cards/sector.png", ink: "#ecd9ff" },
-  champion: { bg: "/cards/iridescent.png", ink: "#3a2f10" },
-  founder: { bg: "/cards/f1-gold.png", ink: INK },
+  rookie: { bg: "/cards/carbon.webp", ink: "#e8eaef" },
+  points: { bg: "/cards/steel.webp", ink: "#2a2d33" },
+  podium: { bg: "/cards/bronze.webp", ink: "#3a2413" },
+  winner: { bg: "/cards/gold.webp", ink: "#46390c" },
+  in_form: { bg: "/cards/sector.webp", ink: "#ecd9ff" },
+  champion: { bg: "/cards/iridescent.webp", ink: "#3a2f10" },
+  founder: { bg: "/cards/f1-gold.webp", ink: INK },
 };
 
 function pickPlate(card: Card): { bg: string; ink: string } {
   if (card.finish === "founder" || card.founder) return TIER_PLATES.founder;
   const login = card.login.toLowerCase();
   const goat = GOAT_LOGINS.includes(login) || login === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97);
-  if (goat) return { bg: "/cards/platinum.png", ink: "#1a1d22" };
+  if (goat) return { bg: "/cards/platinum.webp", ink: "#1a1d22" };
   return TIER_PLATES[card.finish] ?? TIER_PLATES.podium;
 }
 
@@ -151,11 +151,25 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
             <img src={plateSrc} alt="" width={w} height={H} style={{ position: "absolute", left: 0, top: 0, width: w, height: H, objectFit: "fill" }} />
           )}
           {assets.avatar && (
-            <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", display: "flex", opacity: 0.92 }}>
+            <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", display: "flex" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={assets.avatar} alt="" width={Math.round(w * 0.68)} height={Math.round(H * 0.5)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%" }} />
-              {/* feather approximation: fade the portrait's edges toward the ground */}
-              <div style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", display: "flex", backgroundImage: "radial-gradient(70% 82% at 52% 40%, rgba(0,0,0,0) 54%, rgba(13,14,18,0.55) 88%)" }} />
+              <img
+                src={assets.avatar}
+                alt=""
+                width={Math.round(w * 0.68)}
+                height={Math.round(H * 0.5)}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center 22%",
+                  // Feather the portrait into the plate with a radial alpha mask
+                  // (Satori supports mask-image) instead of a dark vignette, so
+                  // the pfp reads as seated in the metal, not a pasted rectangle.
+                  WebkitMaskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
+                  maskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
+                }}
+              />
             </div>
           )}
           {textTree(card, assets, w, plate.ink)}

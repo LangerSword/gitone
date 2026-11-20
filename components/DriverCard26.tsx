@@ -15,7 +15,7 @@ import { flagUrl } from "@/lib/flagUrl";
    keeps the bespoke F1 26 gold crest + a living holographic sweep. Scales via
    1cqw. */
 
-const FOUNDER_PLATE = "/cards/f1-gold.png";
+const FOUNDER_PLATE = "/cards/f1-gold.webp";
 const FOUNDER_INK = "#33290f";
 const WIDE = "var(--font-din-bold), 'DINPro Condensed', sans-serif";
 const MED = "var(--font-din-medium), 'DINPro Condensed', sans-serif";
@@ -24,14 +24,14 @@ const MED = "var(--font-din-medium), 'DINPro Condensed', sans-serif";
 // to the F1 grid. Each plate brings its own cut, grain, ornament and border;
 // the ink is chosen to read on that metal.
 const PLATES: Record<string, { bg: string; ink: string }> = {
-  rookie: { bg: "/cards/carbon.png", ink: "#e8eaef" },
-  points: { bg: "/cards/steel.png", ink: "#2a2d33" },
-  podium: { bg: "/cards/bronze.png", ink: "#3a2413" },
-  winner: { bg: "/cards/gold.png", ink: "#46390c" },
-  in_form: { bg: "/cards/sector.png", ink: "#ecd9ff" },
-  champion: { bg: "/cards/iridescent.png", ink: "#3a2f10" },
+  rookie: { bg: "/cards/carbon.webp", ink: "#e8eaef" },
+  points: { bg: "/cards/steel.webp", ink: "#2a2d33" },
+  podium: { bg: "/cards/bronze.webp", ink: "#3a2413" },
+  winner: { bg: "/cards/gold.webp", ink: "#46390c" },
+  in_form: { bg: "/cards/sector.webp", ink: "#ecd9ff" },
+  champion: { bg: "/cards/iridescent.webp", ink: "#3a2f10" },
 };
-const GOAT_PLATE = { bg: "/cards/platinum.png", ink: "#1a1d22" };
+const GOAT_PLATE = { bg: "/cards/platinum.webp", ink: "#1a1d22" };
 
 function nameLines(name: string) {
   const display = name.trim().toUpperCase().replace(/\.$/, "");
