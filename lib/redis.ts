@@ -1,14 +1,19 @@
 import "server-only";
-import Redis from "ioredis";
+import type RedisType from "ioredis";
 
 // One shared connection, stashed on globalThis so dev HMR doesn't leak sockets.
 declare global {
-  var __gitoneRedis: Redis | null | undefined;
+  var __gitoneRedis: RedisType | null | undefined;
 }
 
-function create(): Redis | null {
+async function create(): Promise<RedisType | null> {
   const url = process.env.REDIS_URL;
   if (!url) return null;
+  // ioredis is Node-only (TCP sockets). Import it lazily so edge/Workers
+  // bundles never pull in node:net — on Workers REDIS_URL is unset, so this
+  // branch never runs and Redis stays disabled (the app scouts GitHub direct).
+  // No library swap: Node/VPS deployments with REDIS_URL still use ioredis.
+  const { default: Redis } = await import("ioredis");
   const client = new Redis(url, {
     // Self-signed dev/VPS certs: TLS encryption stays ON, only chain
     // verification is skipped (traffic remains encrypted end to end).
@@ -21,5 +26,5 @@ function create(): Redis | null {
   return client;
 }
 
-export const redis: Redis | null =
-  globalThis.__gitoneRedis !== undefined ? globalThis.__gitoneRedis : (globalThis.__gitoneRedis = create());
+export const redis: RedisType | null =
+  globalThis.__gitoneRedis !== undefined ? globalThis.__gitoneRedis : (globalThis.__gitoneRedis = await create());
