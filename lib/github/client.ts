@@ -146,6 +146,7 @@ async function gql<T>(
         headers: {
           Authorization: `Bearer ${tok.token}`,
           "Content-Type": "application/json",
+          "User-Agent": "gitone-scout/1.0",
         },
         body: JSON.stringify({ query, variables: { login } }),
         signal: ctrl.signal,
