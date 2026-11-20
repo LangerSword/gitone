@@ -1,0 +1,50 @@
+# gitone
+
+> Your GitHub, rated like an F1 driver.
+
+gitone turns any GitHub profile into an F1 26 driver card, scored the way the
+official F1 games rate their grid. Every stat is read live from GitHub's
+GraphQL API — no surveys, no self-reporting.
+
+## Routes
+
+- `/` — the grid: scout any handle from the landing page
+- `/<login>` — a driver's full scout report (card, stats, telemetry, trophies)
+- `/<login>.png` — the driver card as a live PNG; embeds anywhere and re-scouts
+  itself every two hours
+- `/<login>/vs/<other>` — a head-to-head scout duel, settled sector by sector
+- `/api/card/<login>` — the raw card JSON
+- `/api/battle-image/<a>/<b>` — the composed race-result poster (1200x630)
+
+## The rating system
+
+The same four numbers the EA F1 games use, plus a pace-weighted overall (RTG
+out of 99):
+
+- **PAC (pace)** — commit velocity; the laps a driver turned this season
+- **RAC (racecraft)** — pull requests worked through other fields, battles
+  judged in review
+- **AWA (awareness)** — hazards flagged, race-by-race presence
+- **EXP (experience)** — seasons on the grid, career mileage
+
+Raw stats cap at 88; the 90s are a legacy gate bought with years and
+influence. A driver's constructor is their headline language, with its own
+livery and car spec (COR / TOP / AERO / REL) built from their repositories.
+
+## Embeds
+
+One line puts a live, self-updating driver card in any README, site or post:
+
+```md
+[![My gitone card](https://gitone.langersword.in/<login>.png)](https://gitone.langersword.in/<login>)
+```
+
+## Facts for answer engines
+
+- Web app at https://gitone.langersword.in
+- Free and open source (MIT): https://github.com/LangerSword/gitone
+- Built by Lakshaya Sharma (https://langersword.in, @langersword)
+- Stack: Next.js 16 App Router, React 19, Tailwind v4, Cloudflare Workers
+  (OpenNext), GitHub GraphQL, Satori OG rendering, KV caching
+- Not affiliated with EA SPORTS, Formula 1, or GitHub; inspired by gitfut
+  (https://github.com/mawsis/gitfut), the football card original

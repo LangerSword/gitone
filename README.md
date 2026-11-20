@@ -4,9 +4,24 @@
 
 **your github, rated like f1** 🏁
 
+[![Lakshaya's gitone card](https://gitone.langersword.in/LangerSword.png)](https://gitone.langersword.in/LangerSword)
+
+That card is **live**. It re-scouts my GitHub every two hours and re-renders
+itself — your README can carry yours too, in one line:
+
+```md
+[![My gitone card](https://gitone.langersword.in/<login>.png)](https://gitone.langersword.in/<login>)
+```
+
 Turn any GitHub profile into an F1 driver card. Scored the way the official
 F1 games score their grid — EXP, RAC, AWA, PAC — read live from real commits,
-PRs and reviews. Embed it anywhere; it re-scouts itself.
+PRs and reviews. Race rivals head-to-head and share the result poster.
+
+**→ [gitone.langersword.in](https://gitone.langersword.in)** ·
+[demo (50s, real capture)](public/demo/gitone-demo.mp4) ·
+[launched on Product Hunt](https://www.producthunt.com/posts/gitone)
+
+If your card rendered in this README, a ⭐ costs nothing and keeps the scouts at the track.
 
 </div>
 
@@ -14,13 +29,9 @@ PRs and reviews. Embed it anywhere; it re-scouts itself.
 
 ## 🏁 &nbsp;Embed your card
 
-```md
-[![My gitone card](https://YOUR-HOST/<login>.png)](https://YOUR-HOST/<login>)
-```
-
 | | |
 |---|---|
-| **`<host>/<login>.png`** | your card, as a live image |
+| **`<host>/<login>.png`** | your card, as a live image that re-scouts every 2h |
 | **`<host>/<login>`** | the full scout report |
 | **`<host>/<login>/vs/<other>`** | head-to-head, lights out |
 | **`/api/card/<login>`** | the raw JSON |
@@ -53,8 +64,8 @@ and the founder in their own accent.
 - Next.js 16 App Router + React 19 + Tailwind v4, all TypeScript
 - GitHub GraphQL with a hash-sharded token pool, failover, and a windowed
   fallback for hyperactive profiles
-- Redis read-through cache with single-flight coalescing (optional — falls
-  back to live scouts when unset)
+- Cloudflare Workers via OpenNext; every card, duel poster and social unfurl
+  is a Satori composite served from a KV cache
 - The embed is Satori (`next/og`) rendering the same layout as the in-app
   card — one tree, two renderers
 
