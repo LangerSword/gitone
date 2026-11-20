@@ -1,4 +1,5 @@
 import { scoutCard } from "@/lib/scout";
+import { redis } from "@/lib/redis";
 import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
 import { renderCardImage, renderFallbackImage } from "@/lib/og/renderCard26";
@@ -9,15 +10,41 @@ export const runtime = "nodejs";
 // Rendered on demand to match the in-app DriverCard, cached hard at the CDN.
 // Embeds can pin a flag: <user>.png?country=nl (the rewrite keeps the query).
 // A failed scout (no such user) or a render error falls back to a branded hint.
+
+// Bump when the card treatment changes so stale cached PNGs are ignored
+// instead of served past their CDN copies.
+const RENDER_V = "v2";
+const PNG_TTL = 60 * 60 * 24;
+
+// Matches renderCard26's own response headers so the KV-cached bytes and a
+// fresh render hand the CDN the exact same caching contract.
+const PNG_HEADERS = {
+  "Content-Type": "image/png",
+  "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+};
+
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
   // Let embeds pin a flag — a valid override wins, else the GitHub-derived one.
   const override = new URL(req.url).searchParams.get("country");
   const teamCode = new URL(req.url).searchParams.get("team");
+  const cacheKey = `cardpng:${RENDER_V}:${username.toLowerCase()}:${override ?? ""}:${teamCode ?? ""}`;
+
+  // KV-cached render: a cold Satori composite on Workers can bust the CPU
+  // budget (Cloudflare 1102) before the CDN ever caches a byte, so a cold
+  // embed link 503s and may even get the error cached. Serving the cached
+  // PNG first makes embeds a once-a-day render instead of every cold hit.
+  if (redis) {
+    const hit = await redis.get(cacheKey).catch(() => null);
+    if (hit) {
+      return new Response(Buffer.from(hit, "base64"), { headers: PNG_HEADERS });
+    }
+  }
+
   try {
     const card = await scoutCard(username);
     const team = pickTeam(teamCode);
-    return await renderCardImage({
+    const res = await renderCardImage({
       ...card,
       country: pickFlag(override, card.country),
       ...(team
@@ -32,6 +59,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
           }
         : {}),
     });
+    const png = Buffer.from(await res.arrayBuffer());
+    // Best-effort fill; the facade swallows cache errors, and a failed put
+    // just means the next hit renders again.
+    if (redis) redis.set(cacheKey, png.toString("base64"), "EX", PNG_TTL).catch(() => {});
+    return new Response(png, { headers: PNG_HEADERS });
   } catch {
     return await renderFallbackImage(username);
   }

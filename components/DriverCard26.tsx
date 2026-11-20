@@ -44,7 +44,7 @@ function avatarFor(url: string): string {
 }
 
 const FEATHER = "radial-gradient(ellipse 70% 82% at 52% 40%, #000 54%, transparent 82%)";
-const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 18%)";
+const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 10%)";
 const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
@@ -62,16 +62,36 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
   const chip = goat ? "THE GOAT" : card.finishLabel;
 
   const portrait = (
-    <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", WebkitMaskImage: FEATHER, maskImage: FEATHER, filter: "drop-shadow(0 2cqw 4cqw rgba(40,30,10,0.35))" }}>
+    <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", WebkitMaskImage: FEATHER, maskImage: FEATHER, filter: "drop-shadow(0 2cqw 4cqw rgba(40,30,10,0.16))" }}>
       <div style={{ width: "100%", height: "100%", WebkitMaskImage: FADE_BOTTOM, maskImage: FADE_BOTTOM }}>
         <div style={{ position: "relative", width: "100%", height: "100%", WebkitMaskImage: FADE_TOP, maskImage: FADE_TOP }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={avatar} alt={card.name} width={640} height={640} loading={eager ? "eager" : "lazy"} decoding="async" fetchPriority={eager ? "high" : "auto"}
-            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%", filter: "saturate(1.12) contrast(1.06) brightness(1.03)" }} />
-          <div aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 72% 78% at 52% 40%, transparent 46%, ${rgba(livery, 0.24)} 80%, rgba(58,46,22,0.36) 96%)` }} />
+            style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 22%", filter: "saturate(1.12) contrast(1.06) brightness(1.09)" }} />
+          <div aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 72% 78% at 52% 40%, transparent 46%, ${rgba(livery, 0.16)} 80%, rgba(58,46,22,0.26) 96%)` }} />
         </div>
       </div>
     </div>
+  );
+
+  // The rim light: a warm backlight behind the portrait, same grammar as the
+  // duel page's stadium floods. Deterministic and subject-agnostic — it is
+  // what keeps a dark-avatar's silhouette (black hair, hoodies, night shots)
+  // from dissolving into a dark plate. The dark drop-shadow it replaced only
+  // deepened dark-on-dark; this separates it instead.
+  const rimLight = (
+    <div
+      aria-hidden
+      style={{
+        position: "absolute",
+        left: "22%",
+        top: "4%",
+        width: "76%",
+        height: "56%",
+        pointerEvents: "none",
+        background: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.15), transparent 72%)",
+      }}
+    />
   );
 
   return (
@@ -88,6 +108,10 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
       {!founder && (
         <div aria-hidden style={{ position: "absolute", inset: 0, background: livery, mixBlendMode: "color", opacity: 0.1, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }} />
       )}
+
+      {/* the rim light sits BEHIND the portrait (paint order), inside the
+          plate's alpha so it never spills past the crest */}
+      <div style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}>{rimLight}</div>
 
       {/* portrait masked into the plate's alpha, feathered, full colour */}
       <div style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}>{portrait}</div>

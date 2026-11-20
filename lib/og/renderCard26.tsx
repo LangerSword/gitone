@@ -151,6 +151,22 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
             <img src={plateSrc} alt="" width={w} height={H} style={{ position: "absolute", left: 0, top: 0, width: w, height: H, objectFit: "fill" }} />
           )}
           {assets.avatar && (
+            /* the rim light behind the portrait — keeps dark silhouettes (black
+               hair, night shots) from dissolving into dark plates. Satori has
+               no z-index: document order is paint order, and this div precedes
+               the portrait layer below. */
+            <div
+              style={{
+                position: "absolute",
+                left: "22%",
+                top: "4%",
+                width: "76%",
+                height: "56%",
+                backgroundImage: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.15), transparent 72%)",
+              }}
+            />
+          )}
+          {assets.avatar && (
             <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", display: "flex" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -220,12 +236,22 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
     const aw = Math.round(w * 0.68);
     const ah = Math.round(H * 0.5);
     const avatarBuf = Buffer.from(assets.avatar.split(",")[1], "base64");
-    const crop = await sharp(avatarBuf).resize(aw, ah, { fit: "cover", position: "top" }).png().toBuffer();
+    // brightness lift matches the DOM's filter (1.09) so the Node PNG and the
+    // in-app card agree on treatment.
+    const crop = await sharp(avatarBuf).modulate({ brightness: 1.09 }).resize(aw, ah, { fit: "cover", position: "top" }).png().toBuffer();
+    // the rim light: warm backlight composited onto the plate BEFORE the
+    // portrait (paint order), keeping dark silhouettes off dark plates.
+    const gw = Math.round(w * 0.76);
+    const gh = Math.round(H * 0.56);
+    const glow = Buffer.from(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${gw}" height="${gh}"><defs><radialGradient id="r" cx="52%" cy="46%" rx="50%" ry="60%"><stop offset="0%" stop-color="rgb(255,240,204)" stop-opacity="0.15"/><stop offset="72%" stop-color="rgb(255,240,204)" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#r)"/></svg>`,
+    );
+    plate = await sharp(plate).composite([{ input: glow, left: Math.round(w * 0.22), top: Math.round(H * 0.04) }]).png().toBuffer();
     const radial = Buffer.from(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><radialGradient id="g" cx="50%" cy="40%" r="58%"><stop offset="46%" stop-color="#fff" stop-opacity="1"/><stop offset="80%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`,
     );
     const topFade = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="20%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#t)"/></svg>`,
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="12%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#t)"/></svg>`,
     );
     const botFade = Buffer.from(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="70%" stop-color="#fff" stop-opacity="1"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#b)"/></svg>`,
