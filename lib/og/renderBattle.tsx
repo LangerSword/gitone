@@ -31,7 +31,11 @@ function Checkers({ y }: { y: number }) {
 }
 
 export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
-  const cardW = 286;
+  // Cards sit high and tight to the sides; the centre column carries ONLY the
+  // live scoreboard (score / SECTORS / VS); the winner call + sub + URL run
+  // full-width BELOW the cards. Cramming all six centre elements into the
+  // gap between the cards is what made the first cut feel pinched.
+  const cardW = 240;
   const frame = cardFrame(cardW);
   const [fonts, aPng, bPng] = await Promise.all([
     loadCardFonts(),
@@ -55,8 +59,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
       ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
       : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`;
 
-  const cardTop = Math.round((H - frame.H) / 2);
-  const leftX = 118;
+  const cardTop = Math.round((630 - frame.H) / 2) - 56;
+  const leftX = 96;
   const rightX = W - leftX - frame.W;
 
   return new ImageResponse(
@@ -91,20 +95,21 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           <img src={bSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
         </div>
 
-        {/* the scoreline between them */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 64 }}>
-          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 92, lineHeight: 1, color: "#c1121f" }}>
+        {/* the scoreline between them — scoreboard only, the result call
+            lives in the full-width band below the cards */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 88 }}>
+          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 88, lineHeight: 1, color: "#c1121f" }}>
             {score.challenger}-{score.opponent}
           </div>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 20, letterSpacing: 6, color: "#9b9bab", marginTop: 8 }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 20, letterSpacing: 6, color: "#9b9bab", marginTop: 10 }}>
             SECTORS
           </div>
-          <div style={{ display: "flex", width: 58, height: 58, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 16, fontFamily: "Titillium", fontWeight: 800, fontSize: 26, color: "#f5f5f7" }}>
+          <div style={{ display: "flex", width: 64, height: 64, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 22, fontFamily: "Titillium", fontWeight: 800, fontSize: 27, color: "#f5f5f7" }}>
             VS
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 30 }}>
           {/* the winner wears championship gold — the trophy read, same as the
               live banner; a dead heat stays in the timing-screen white */}
           <div
@@ -112,7 +117,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
               display: "flex",
               fontFamily: "Titillium",
               fontWeight: 800,
-              fontSize: 52,
+              fontSize: 54,
               lineHeight: 1,
               letterSpacing: 1,
               color: winnerCard ? "#f5d67b" : "#f5f5f7",
@@ -121,13 +126,14 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           >
             {headline}
           </div>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 22, letterSpacing: 4, color: "#c9c9d4", marginTop: 11 }}>
-            {sub}
-          </div>
-          {/* every shared frame carries the address — a poster without the
-              product URL is a dead end */}
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f", marginTop: 12 }}>
-            gitone.langersword.in
+          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 12 }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 4, color: "#c9c9d4" }}>
+              {sub}
+            </span>
+            {/* the address rides WITH the result call — no floating footer */}
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f" }}>
+              gitone.langersword.in
+            </span>
           </div>
         </div>
       </div>
