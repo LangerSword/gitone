@@ -60,9 +60,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
         : {}),
     });
     const png = Buffer.from(await res.arrayBuffer());
-    // Best-effort fill; the facade swallows cache errors, and a failed put
-    // just means the next hit renders again.
-    if (redis) redis.set(cacheKey, png.toString("base64"), "EX", PNG_TTL).catch(() => {});
+    // Awaited, not fire-and-forget: on Workers an un-awaited promise is cut
+    // when the response returns, so the KV write must complete before we hand
+    // the bytes back — otherwise nothing is ever cached and every hit pays
+    // the render again (and cold renders are what trip the CPU limit).
+    if (redis) await redis.set(cacheKey, png.toString("base64"), "EX", PNG_TTL).catch(() => {});
     return new Response(png, { headers: PNG_HEADERS });
   } catch {
     return await renderFallbackImage(username);
