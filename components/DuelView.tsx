@@ -34,7 +34,7 @@ function tierColor(card: Card): string {
     GOAT_LOGINS.includes(card.login.toLowerCase()) ||
     card.login.toLowerCase() === GOAT_LOGIN ||
     (card.number === 1 && card.rtg >= 97);
-  if (goat) return "#dfe5ee"; // platinum GOAT crest
+  if (goat) return "#e6dcc4"; // warm platinum GOAT crest (not cool blue)
   return resolveCardTheme(card).accent;
 }
 
@@ -330,8 +330,10 @@ export function DuelView({ duel }: { duel: Duel }) {
   const focus: DuelSide | null = stamped ? winner : null;
   const winnerCard: Card | null =
     winner === "challenger" ? challenger : winner === "opponent" ? opponent : null;
-  const resultAccent = winnerCard ? tierColor(winnerCard) : "var(--f1-red)";
-  const headlineHex = winnerCard ? tierColor(winnerCard) : "#f5f5f7";
+  // The winner banner is the trophy moment — always championship gold (a warm,
+  // celebratory read) regardless of the winner's cool tier, with a clean shimmer.
+  const resultAccent = winnerCard ? "#f5d67b" : "var(--f1-red)";
+  const headlineHex = winnerCard ? "#f5d67b" : "#f5f5f7";
 
   // The fixture eyebrow names the broadcast, never the result — only the flag
   // banner below says CHEQUERED FLAG, so the headline is never duplicated.
