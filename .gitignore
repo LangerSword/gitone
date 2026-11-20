@@ -9,3 +9,5 @@ next-env.d.ts
 verify-shots/
 .open-next/
 .wrangler/
+prod-*.png
+battle-v2.png
