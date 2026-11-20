@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Download, Link2 } from "lucide-react";
+import { SplitDownload } from "./SplitDownload";
 
 function XMark() {
   return (
@@ -11,42 +10,36 @@ function XMark() {
   );
 }
 
-// Share the battle: download the race-result PNG, post it to X, or copy the
-// fixture link. Same control grammar as the card actions.
+// Share the battle: the split button downloads the race-result PNG (busy →
+// done states) with Copy image / Copy link in its caret menu; X is a single
+// icon target. Same control grammar as the card actions.
 export function BattleActions({ username, opponent, text }: { username: string; opponent: string; text: string }) {
-  const [copied, setCopied] = useState(false);
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const url = `${origin}/${username}/vs/${opponent}`;
+  const intentUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
 
-  const shareX = () =>
-    window.open(
-      `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-
-  const copyLink = () => {
-    navigator.clipboard?.writeText(url).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1400);
-  };
+  const shareX = () => window.open(intentUrl, "_blank", "noopener,noreferrer");
 
   return (
-    <div className="flex items-stretch gap-2">
-      <a
-        href={`/${username}/vs/${opponent}.png?dl=1`}
-        download={`${username}-vs-${opponent}-gitone.png`}
-        className="btn btn-primary flex-1"
+    <div className="flex items-start gap-2">
+      <button
+        type="button"
+        onClick={shareX}
+        aria-label="Share battle on X"
+        title="Share on X"
+        className="btn btn-icon h-[50px] w-[50px] flex-none"
       >
-        <Download size={18} strokeWidth={2.4} aria-hidden />
-        Download result
-      </a>
-      <button type="button" onClick={shareX} aria-label="Share battle on X" title="Share on X" className="btn btn-icon h-[50px] w-[50px]">
         <XMark />
       </button>
-      <button type="button" onClick={copyLink} aria-label="Copy battle link" title="Copy link" className="btn btn-icon h-[50px] w-[50px]">
-        {copied ? <Check size={17} aria-hidden /> : <Link2 size={17} aria-hidden />}
-      </button>
+      <SplitDownload
+        label="Download result"
+        imageUrl={`/${username}/vs/${opponent}.png`}
+        filename={`${username}-vs-${opponent}-gitone.png`}
+        linkUrl={url}
+        shareText={text}
+        shareTitle={`${username} vs ${opponent} · gitone`}
+        intentUrl={intentUrl}
+      />
     </div>
   );
 }

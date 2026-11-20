@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, Code2, Copy, Download, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { Check, Code2, Copy, ExternalLink } from "lucide-react";
 import { DuelPlate } from "./DuelPlate";
+import { SplitDownload } from "./SplitDownload";
 
 function copy(text: string) {
   navigator.clipboard?.writeText(text).catch(() => {});
@@ -16,76 +17,56 @@ function XMark() {
   );
 }
 
-// One primary split button carries the whole "get the image" family
-// (download / open / embed / JSON); sharing is a single icon button; the
-// duel is a rolling fixture plate below. Three tiers, one radius.
+// One primary split button carries the whole "get the image" family: the main
+// zone downloads with busy/done states, the caret menu adds Copy image, Copy
+// link, open/embed/JSON. Sharing is a single icon button; the duel is a
+// rolling fixture plate below. Three tiers, one radius.
 export function CardActions({ login, name, rtg }: { login: string; name?: string; rtg?: number }) {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
-  const root = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (e: MouseEvent) => {
-      if (!root.current?.contains(e.target as Node)) setMenuOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
-    document.addEventListener("mousedown", close);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", close);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [menuOpen]);
 
   const flash = (k: string) => {
     setCopied(k);
     setTimeout(() => setCopied((c) => (c === k ? null : c)), 1400);
-    setTimeout(() => setMenuOpen(false), 650);
   };
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const pngUrl = `${origin}/${login}.png`;
+  const linkUrl = typeof window !== "undefined" ? window.location.href : `${origin}/${login}`;
   const shareText = `${name ?? login} scored ${rtg ?? "a card"} on gitone. GitHub, rated like a driver.`;
-  const shareX = () => {
-    const url = typeof window !== "undefined" ? window.location.href : `${origin}/${login}`;
-    window.open(
-      `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`,
-      "_blank",
-      "noopener,noreferrer",
-    );
-  };
+  const intentUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(linkUrl)}`;
+  const shareX = () => window.open(intentUrl, "_blank", "noopener,noreferrer");
 
   return (
     <div className="space-y-3">
-      <div className="flex items-stretch gap-2">
-        <button type="button" onClick={shareX} aria-label="Share on X" title="Share on X" className="btn btn-icon h-[50px] w-[50px]">
+      <div className="flex items-start gap-2">
+        <button
+          type="button"
+          onClick={shareX}
+          aria-label="Share on X"
+          title="Share on X"
+          className="btn btn-icon h-[50px] w-[50px] flex-none"
+        >
           <XMark />
         </button>
 
-        <div ref={root} className="relative flex flex-1">
-          <a
-            href={`/${login}.png?dl=1`}
-            download={`${login}-gitone.png`}
-            className="btn btn-primary flex-1 rounded-r-none"
-          >
-            <Download size={18} strokeWidth={2.4} aria-hidden />
-            Download card
-          </a>
-          <button
-            type="button"
-            onClick={() => setMenuOpen((o) => !o)}
-            aria-expanded={menuOpen}
-            aria-haspopup="menu"
-            aria-label="More card formats"
-            className="btn btn-primary w-[46px] flex-none rounded-l-none px-0"
-            style={{ boxShadow: "inset 1px 0 0 rgba(0, 0, 0,.3), 0 8px 22px -8px rgba(193, 18, 31,.45)" }}
-          >
-            <ChevronDown size={18} strokeWidth={2.6} aria-hidden />
-          </button>
-
-          {menuOpen && (
-            <div role="menu" className="menu-pop absolute right-0 top-full z-30 mt-2 w-[236px] p-1.5">
-              <a href={`/${login}.png`} target="_blank" rel="noreferrer" role="menuitem" className="menu-item" onClick={() => setMenuOpen(false)}>
+        <SplitDownload
+          label="Download card"
+          imageUrl={`/${login}.png`}
+          filename={`${login}-gitone.png`}
+          linkUrl={linkUrl}
+          shareText={shareText}
+          shareTitle={`${name ?? login} · gitone`}
+          intentUrl={intentUrl}
+          extraItems={(close) => (
+            <>
+              <a
+                href={pngUrl}
+                target="_blank"
+                rel="noreferrer"
+                role="menuitem"
+                className="menu-item"
+                onClick={close}
+              >
                 <ExternalLink size={15} aria-hidden /> Open PNG in a tab
               </a>
               <button
@@ -93,8 +74,9 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
                 role="menuitem"
                 className="menu-item"
                 onClick={() => {
-                  copy(`[![My gitone card](${origin}/${login}.png)](${origin}/${login})`);
+                  copy(`[![My gitone card](${pngUrl})](${origin}/${login})`);
                   flash("embed");
+                  setTimeout(close, 650);
                 }}
               >
                 {copied === "embed" ? <Check size={15} aria-hidden /> : <Copy size={15} aria-hidden />}
@@ -107,14 +89,15 @@ export function CardActions({ login, name, rtg }: { login: string; name?: string
                 onClick={() => {
                   copy(`${origin}/api/card/${login}`);
                   flash("json");
+                  setTimeout(close, 650);
                 }}
               >
                 {copied === "json" ? <Check size={15} aria-hidden /> : <Code2 size={15} aria-hidden />}
                 {copied === "json" ? "Copied" : "Copy JSON API URL"}
               </button>
-            </div>
+            </>
           )}
-        </div>
+        />
       </div>
 
       <DuelPlate login={login} />

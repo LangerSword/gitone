@@ -1,0 +1,152 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+// The export gestures behind the split Download button, shared by the card
+// and battle actions. gitone renders its PNGs server-side (the .png rewrite
+// routes), so "capture" here is a fetch of the image route — the busy state
+// covers the render time, and the done state confirms the save/copy landed.
+export type ExportAction = "download" | "copy" | "link";
+
+// Feedback copy per action — shown on the split button itself (the menu
+// closes as soon as an item is picked, so the button carries the whole
+// "Saving… → Saved" story for everything in it).
+export const EXPORT_COPY: Record<ExportAction, { name: string; busy: string; done: string }> = {
+  download: { name: "Download", busy: "Saving…", done: "Saved" },
+  copy: { name: "Copy image", busy: "Copying…", done: "Copied" },
+  link: { name: "Copy link", busy: "…", done: "Link copied" },
+};
+
+export function useImageActions({
+  imageUrl,
+  filename,
+  linkUrl,
+  shareText,
+  shareTitle,
+  intentUrl,
+  idleLabel,
+}: {
+  /** The server-rendered PNG (e.g. /<user>.png or /<a>/vs/<b>.png). */
+  imageUrl: string;
+  filename: string;
+  /** Absolute page URL written by Copy link / handed to the share sheet. */
+  linkUrl: string;
+  shareText?: string;
+  shareTitle?: string;
+  /** X intent opened when a native share fails or is dismissed by the OS. */
+  intentUrl?: string;
+  idleLabel: string;
+}) {
+  const [busy, setBusy] = useState<ExportAction | null>(null);
+  const [done, setDone] = useState<ExportAction | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Default FALSE: desktop (no Web Share) must never flash the CTA — the SSR
+  // HTML and first paint simply don't contain it. Supported platforms reveal
+  // it right after hydration (same trick as gitfut's useShareActions).
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  const doneTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (typeof navigator === "undefined" || typeof navigator.share !== "function") return;
+    const t = setTimeout(() => setCanNativeShare(true), 0);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => () => {
+    if (doneTimer.current) clearTimeout(doneTimer.current);
+  }, []);
+
+  const fetchImage = async (): Promise<Blob> => {
+    const res = await fetch(imageUrl, { headers: { Accept: "image/png" } });
+    if (!res.ok) throw new Error(`image route returned ${res.status}`);
+    const blob = await res.blob();
+    if (!blob.type.startsWith("image/")) throw new Error("image route returned no PNG");
+    return blob;
+  };
+
+  const track = async (id: ExportAction, run: () => Promise<void>) => {
+    if (busy) return;
+    setBusy(id);
+    setError(null);
+    setMenuOpen(false);
+    try {
+      await run();
+      setDone(id);
+      if (doneTimer.current) clearTimeout(doneTimer.current);
+      doneTimer.current = setTimeout(() => setDone(null), 1600);
+    } catch (e) {
+      console.error(`[gitone] ${id} failed:`, e);
+      setError(`${EXPORT_COPY[id].name} failed — ${e instanceof Error ? e.message : String(e)}`);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const download = () =>
+    track("download", async () => {
+      const blob = await fetchImage();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      // give the download a beat to start before the blob URL is released
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    });
+
+  const copyImage = () =>
+    track("copy", async () => {
+      if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) {
+        throw new Error("this browser can't copy images");
+      }
+      // Hand clipboard.write a Promise<Blob> synchronously inside the click's
+      // user activation — awaiting the slow server render first would let the
+      // activation lapse (NotAllowedError). The browser awaits the blob itself.
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": fetchImage() })]);
+    });
+
+  const copyLink = () =>
+    track("link", async () => {
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard unavailable");
+      await navigator.clipboard.writeText(linkUrl);
+    });
+
+  // Native share sheet (mobile): attach the rendered PNG when the platform
+  // can share files, otherwise fall back to text+url. A failed share opens
+  // the X intent; a user dismissal (AbortError) does nothing.
+  const nativeShare = async () => {
+    try {
+      const payload: ShareData = { title: shareTitle ?? "gitone", text: shareText, url: linkUrl };
+      if (typeof navigator.canShare === "function") {
+        try {
+          const blob = await fetchImage();
+          const file = new File([blob], filename, { type: "image/png" });
+          if (navigator.canShare({ files: [file] })) payload.files = [file];
+        } catch {
+          // share text+url without the image
+        }
+      }
+      await navigator.share(payload);
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") return;
+      if (intentUrl) window.open(intentUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const mainLabel = busy ? EXPORT_COPY[busy].busy : done ? EXPORT_COPY[done].done : idleLabel;
+
+  return {
+    busy,
+    done,
+    error,
+    menuOpen,
+    setMenuOpen,
+    download,
+    copyImage,
+    copyLink,
+    canNativeShare,
+    nativeShare,
+    mainLabel,
+  };
+}

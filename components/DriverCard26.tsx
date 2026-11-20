@@ -1,4 +1,3 @@
-import { useId } from "react";
 import type { CardPreview, StatKey } from "@/lib/racing/types";
 import { STATS, STAT_LABELS, GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
 import { rgba } from "./finishTheme";
@@ -34,20 +33,6 @@ const PLATES: Record<string, { bg: string; ink: string }> = {
 };
 const GOAT_PLATE = { bg: "/cards/platinum.png", ink: "#1a1d22" };
 
-// The founder's original struck-metal crest, traced from the baked art: a
-// smooth domed top, full-width straight sides, a heel swept to a centre point.
-// Used only to clip the founder's holographic sweep (clip-path, never
-// mask-image + screen, which composites black in Chromium).
-const FOUNDER_PATH = "M 212,2 L 324,2 C 400,8 470,40 512,86 C 528,100 536,108 536,118 L 536,692 C 530,752 400,806 268,818 C 136,806 6,752 0,692 L 0,118 C 0,108 8,100 24,86 C 66,40 136,8 212,2 Z";
-
-function norm(d: string): string {
-  return d.replace(/([MLCQSTZ])([^MLCQSTZ]*)/gi, (_m, cmd: string, args: string) => {
-    if (/z/i.test(cmd)) return "Z";
-    const nums = args.trim().split(/[\s,]+/).filter(Boolean).map(Number);
-    return cmd + nums.map((n, i) => (i % 2 === 0 ? n / 540 : n / 820).toFixed(4)).join(" ");
-  });
-}
-
 function nameLines(name: string) {
   const display = name.trim().toUpperCase().replace(/\.$/, "");
   const parts = display.split(/\s+/).filter(Boolean);
@@ -63,7 +48,6 @@ const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 18%)";
 const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
-  const gid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const livery = card.constructor.color;
   const flag = flagUrl(card.country, 80);
   const { first, last } = nameLines(card.name);
@@ -75,7 +59,6 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
   const ink = plate.ink;
   const label = rgba(ink, 0.68);
   const plateMask = `url("${plate.bg}")`;
-  const clipId = `clip-${gid}`;
   const chip = goat ? "THE GOAT" : card.finishLabel;
 
   const portrait = (
@@ -95,16 +78,6 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
     <div data-card="f1-26"
       style={{ width: "100%", containerType: "inline-size", position: "relative", aspectRatio: "540 / 820", userSelect: "none", WebkitUserSelect: "none" }}
     >
-      {founder && (
-        <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-          <defs>
-            <clipPath id={clipId} clipPathUnits="objectBoundingBox">
-              <path d={norm(FOUNDER_PATH)} />
-            </clipPath>
-          </defs>
-        </svg>
-      )}
-
       {/* the baked plate — its alpha carries the crest silhouette and all the
           struck-metal detail (grain, emboss, engraving, bevel border) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -119,9 +92,14 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
       {/* portrait masked into the plate's alpha, feathered, full colour */}
       <div style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%" }}>{portrait}</div>
 
-      {/* the founder 1/1 gets a living holographic sweep over the gold */}
+      {/* the founder 1/1 gets a living holographic sweep over the gold. The
+          mask lives on the parent and the screen-blend gradient on the child,
+          so it clips to the EXACT plate alpha (no spill) without triggering the
+          mask+background+screen black-composite bug. */}
       {founder && (
-        <div aria-hidden className="holo-sweep" style={{ position: "absolute", inset: 0, clipPath: `url(#${clipId})`, backgroundImage: "linear-gradient(115deg, transparent 42%, rgba(255,250,230,0.28) 50%, rgba(255,244,214,0.16) 54%, transparent 62%)", backgroundSize: "250% 250%", mixBlendMode: "screen", pointerEvents: "none" }} />
+        <div aria-hidden style={{ position: "absolute", inset: 0, WebkitMaskImage: plateMask, maskImage: plateMask, WebkitMaskSize: "100% 100%", maskSize: "100% 100%", pointerEvents: "none" }}>
+          <div className="holo-sweep" style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(115deg, transparent 42%, rgba(255,250,230,0.28) 50%, rgba(255,244,214,0.16) 54%, transparent 62%)", backgroundSize: "250% 250%", mixBlendMode: "screen" }} />
+        </div>
       )}
 
       {/* left identity column */}

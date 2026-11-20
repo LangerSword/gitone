@@ -69,7 +69,9 @@ function Scoreline({
           className="h-full"
           style={{ width: `${pctA}%`, background: aColor, transition: "width .7s cubic-bezier(.16,1,.3,1)" }}
         />
-        <div className="h-full flex-1" style={{ background: bColor, opacity: 0.5 }} />
+        {/* both halves wear their own livery at (near) full strength — the
+            split reads by width, never by one side going grey */}
+        <div className="h-full flex-1" style={{ background: rgba(bColor, 0.9) }} />
       </div>
     </div>
   );
@@ -96,18 +98,22 @@ function SectorRow({
 }) {
   const delta = row.challenger - row.opponent;
 
+  // Colour rule: a value ALWAYS wears its own side's livery — purple only
+  // when it rides the 90+ fastest sector. Winning is shown by the glow + dot,
+  // losing by a slight recession, never by switching to a different hue.
   const value = (side: DuelSide) => {
     const won = row.winner === side;
     const lost = row.winner !== null && !won;
     const accent = side === "challenger" ? aColor : bColor;
     const hot = row[side] >= 90;
-    const ink = hot ? "var(--purple)" : won ? accent : lost ? "var(--faint)" : "var(--dim)";
+    const ink = hot ? "var(--purple)" : accent;
     return (
       <span className={`${VALUE_SLOT} ${side === "challenger" ? "" : "flex-row-reverse"}`}>
         <span
           className="mono w-8 text-[15px] font-extrabold"
           style={{
             color: ink,
+            opacity: lost ? 0.72 : 1,
             textAlign: side === "challenger" ? "right" : "left",
             textShadow: won ? `0 0 14px ${rgba(hot ? "#b36bff" : accent, 0.65)}` : undefined,
           }}
@@ -158,7 +164,9 @@ function SectorRow({
           style={{
             width: `${resolved ? row[side] : 0}%`,
             marginLeft: side === "challenger" ? "auto" : undefined,
-            background: lost ? rgba(accent, 0.45) : won ? accent : "rgba(255,255,255,0.2)",
+            // every resolved bar wears its side's livery: full strength for
+            // the winner, dimmed for the loser, mid for a level sector.
+            background: won ? accent : rgba(accent, lost ? 0.45 : 0.7),
             boxShadow: won ? `0 0 16px ${rgba(accent, 0.7)}, 0 0 5px ${rgba(accent, 0.5)}` : undefined,
             transition: "width .6s cubic-bezier(.16,1,.3,1), background .3s ease",
           }}
@@ -198,7 +206,10 @@ function SectorRow({
           style={{
             opacity: resolved ? 1 : 0,
             transition: "opacity .3s ease",
-            color: delta === 0 ? "var(--faint)" : delta > 0 ? "var(--green)" : "var(--faint)",
+            // one neutral treatment for the whole centre column: green when
+            // the challenger takes the sector, faint otherwise — it never
+            // competes with the two livery colours.
+            color: delta > 0 ? "var(--green)" : "var(--faint)",
           }}
         >
           {delta === 0 ? "LEVEL" : `${delta > 0 ? "+" : ""}${delta}`}
@@ -266,7 +277,9 @@ function Corner({
         {stamped && (won || lost) && (
           <span
             className="mono absolute -top-2 right-2 z-10 px-1.5 py-0.5 text-[10px] font-extrabold tracking-[0.14em]"
-            style={won ? { background: "var(--green)", color: "#06180d", boxShadow: "0 4px 12px rgba(0,0,0,.5)" } : { background: "rgba(255,255,255,0.12)", color: "var(--dim)", border: "1px solid var(--line)" }}
+            // P1 wears the winner's own livery (with its contrast ink), so the
+            // badge reinforces the side colour instead of adding a new one.
+            style={won ? { background: card.constructor.color, color: card.constructor.ink, boxShadow: "0 4px 12px rgba(0,0,0,.5)" } : { background: "rgba(255,255,255,0.12)", color: "var(--dim)", border: "1px solid var(--line)" }}
           >
             {won ? "P1" : "P2"}
           </span>
@@ -558,6 +571,9 @@ export function DuelView({ duel }: { duel: Duel }) {
 
           <p className="mono mt-6 text-center text-[11.5px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--dim)" }}>
             EXP EXPERIENCE · RAC RACECRAFT · AWA AWARENESS · PAC PACE · BOTH 90+ READS PURPLE · RTG BREAKS A LEVEL SCORELINE
+          </p>
+          <p className="mono mt-1.5 text-center text-[11px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--faint)" }}>
+            EACH SIDE KEEPS ITS LIVERY COLOUR · <span style={{ color: "var(--green)" }}>GREEN +N</span> = CHALLENGER TAKES THE SECTOR
           </p>
         </div>
       </div>
