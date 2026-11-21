@@ -279,17 +279,35 @@ function Corner({
       <div
         className="relative w-full max-w-[200px]"
         style={{
-          // The walkout owns the transform until the flag (CSS animations
-          // out-prioritise inline transforms); it ends at identity, so
-          // dropping it at the flag hands over seamlessly to the focus scale.
-          animation: stamped
-            ? undefined
-            : `${side === "challenger" ? "walkout-left" : "walkout-right"} 1s cubic-bezier(.16,1,.3,1) both`,
-          transform: won ? "scale(1.06)" : lost ? "scale(0.97)" : undefined,
-          transition: "transform .7s cubic-bezier(.16,1,.3,1), filter .7s ease",
-          filter: won ? `drop-shadow(0 16px 40px ${card.constructor.color}55)` : undefined,
+          // The plates carry a near-black baked ground, and on the greyish
+          // page they read as pasted slabs. Each corner now floods its own
+          // livery behind the car (the same stadium-light grammar the page
+          // uses globally, localised) and casts a standing shadow — the card
+          // becomes an object under its team's floodlight, not a rectangle.
+          filter: `drop-shadow(0 14px 26px rgba(0,0,0,.55))${won ? ` drop-shadow(0 16px 40px ${card.constructor.color}55)` : ""}`,
+          transition: "opacity .7s ease, filter .7s ease, transform .7s cubic-bezier(.16,1,.3,1)",
         }}
       >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute"
+          style={{
+            inset: "-16% -12%",
+            background: `radial-gradient(closest-side, ${rgba(card.constructor.color, 0.16)}, transparent 74%)`,
+          }}
+        />
+        <div
+          style={{
+            // The walkout owns the transform until the flag (CSS animations
+            // out-prioritise inline transforms); it ends at identity, so
+            // dropping it at the flag hands over seamlessly to the focus scale.
+            animation: stamped
+              ? undefined
+              : `${side === "challenger" ? "walkout-left" : "walkout-right"} 1s cubic-bezier(.16,1,.3,1) both`,
+            transform: won ? "scale(1.06)" : lost ? "scale(0.97)" : undefined,
+            position: "relative",
+          }}
+        >
         <Link
           href={`/${card.login}`}
           className="block transition-transform duration-300 hover:-translate-y-2"
@@ -307,6 +325,7 @@ function Corner({
             {won ? "P1" : "P2"}
           </span>
         )}
+        </div>
       </div>
       <div className="text-center">
         <div className="text-[14px] font-bold leading-tight" style={{ color: "var(--ink)" }}>
