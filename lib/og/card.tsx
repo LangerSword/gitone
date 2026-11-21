@@ -75,6 +75,36 @@ export async function publicAssetDataUri(path: string): Promise<string | null> {
 
 let fontsPromise: Promise<OgFont[]> | null = null;
 
+// Lean face set for the poster / unfurl compositions that never render a full
+// card (battle poster, root og): one display weight + two mono weights. The
+// full card set parses ~1MB of face data per cold isolate — the poster's
+// render only ever paints these three, and font parsing is the dominant CPU
+// cost on a 10ms free-plan budget.
+let posterFontsPromise: Promise<OgFont[]> | null = null;
+
+export function loadPosterFonts(): Promise<OgFont[]> {
+  if (!posterFontsPromise) {
+    posterFontsPromise = (async () => {
+      const [bc800, mono700, mono800] = await Promise.all([
+        fontBytes("BarlowCondensed-ExtraBold.ttf"),
+        fontBytes("JetBrainsMono-Bold.ttf"),
+        fontBytes("JetBrainsMono-ExtraBold.ttf"),
+      ]);
+      const faces: OgFont[] = [
+        { name: "Titillium", data: bc800, weight: 800, style: "normal" },
+        { name: "Titillium", data: bc800, weight: 900, style: "normal" },
+        { name: "JBMono", data: mono700, weight: 700, style: "normal" },
+        { name: "JBMono", data: mono800, weight: 800, style: "normal" },
+      ];
+      return faces;
+    })().catch((e) => {
+      posterFontsPromise = null;
+      throw e;
+    });
+  }
+  return posterFontsPromise;
+}
+
 // Cached per server instance: the faces never change at runtime, and a Worker
 // isolate handles many requests. A failed load resets the cache so the next
 // request retries instead of replaying the rejection forever.

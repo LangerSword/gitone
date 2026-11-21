@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { loadCardFonts, publicAssetDataUri } from "./card";
+import { loadPosterFonts, publicAssetDataUri } from "./card";
 import { loadCardAssets } from "./renderCard";
 import { pickPlate } from "./renderCard26";
 import { computeDuel } from "@/lib/duel";
@@ -114,7 +114,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
   const pa = pickPlate(a);
   const pb = pickPlate(b);
   const [fonts, aAssets, bAssets, aPlate, bPlate] = await Promise.all([
-    loadCardFonts(),
+    loadPosterFonts(),
     loadCardAssets(a),
     loadCardAssets(b),
     publicAssetDataUri(pa.bg.replace(/^\/cards\//, "cards/og400/").replace(/\.webp$/, ".png")),
@@ -198,7 +198,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
 }
 
 export async function renderBattleFallback(a: string, b: string): Promise<Response> {
-  const fonts = await loadCardFonts();
+  const fonts = await loadPosterFonts();
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#15151e", color: "#f5f5f7", fontFamily: "Titillium" }}>
