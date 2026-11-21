@@ -10,11 +10,12 @@ export const runtime = "nodejs";
 // Satori render is what trips the Workers CPU limit (CF 1102).
 export async function GET(_req: Request, { params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
-  return cachedPng(`poster:v5:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
+  return cachedPng(`poster:v6:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
     try {
       const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
       return await renderBattleImage(a, b);
-    } catch {
+    } catch (e) {
+      console.error('[poster] render failed:', e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
       return await renderBattleFallback(username, opponent);
     }
   });

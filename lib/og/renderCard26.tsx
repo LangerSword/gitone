@@ -117,7 +117,7 @@ const TIER_PLATES: Record<Finish, { bg: string; ink: string }> = {
   founder: { bg: "/cards/f1-gold.webp", ink: INK },
 };
 
-function pickPlate(card: Card): { bg: string; ink: string } {
+export function pickPlate(card: Card): { bg: string; ink: string } {
   if (card.finish === "founder" || card.founder) return TIER_PLATES.founder;
   const login = card.login.toLowerCase();
   const goat = GOAT_LOGINS.includes(login) || login === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97);
