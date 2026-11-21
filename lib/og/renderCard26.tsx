@@ -155,7 +155,11 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
 
   const image = new ImageResponse(
     (
-      <div style={{ width: W, height: Hc, display: "flex", position: "relative", background: "#0d0e12", borderRadius: Math.round(W * 0.03) }}>
+      <div style={{ width: W, height: Hc, display: "flex", position: "relative" }}>
+        {/* transparent frame — the card is a CUTOUT: the plate silhouette
+            carries its own alpha, and wherever it's composited (README, OG
+            canvas, versus poster) that surface shows through. No baked
+            ground rectangle. */}
         <div style={{ position: "absolute", left: pad, top: pad, width: w, height: H, display: "flex" }}>
           {plateSrc && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -279,20 +283,19 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   // 5. the engraved type layer
   const textPng = Buffer.from(await new ImageResponse(textTree(card, assets, w), { width: w, height: H, fonts }).arrayBuffer());
 
-  // 6. frame the crest on a dark ground for the unfurl
+  // 6. frame the crest on a TRANSPARENT ground — the card is a cutout: the
+  //    plate silhouette carries its own alpha, so the README/OG/poster
+  //    surface shows through everywhere the card isn't.
   const pad = Math.round(w * 0.07);
   const W = w + pad * 2;
   const Hc = H + pad * 2;
-  let out = await sharp({ create: { width: W, height: Hc, channels: 4, background: "#0d0e12" } })
+  const out = await sharp({ create: { width: W, height: Hc, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([
       { input: plate, left: pad, top: pad },
       { input: textPng, left: pad, top: pad },
     ])
     .png()
     .toBuffer();
-  const cut = Math.round(W * 0.03);
-  const round = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><rect width="${W}" height="${Hc}" rx="${cut}" ry="${cut}" fill="#fff"/></svg>`);
-  out = await sharp(out).composite([{ input: round, blend: "dest-in" }]).png().toBuffer();
 
   return out;
 }
