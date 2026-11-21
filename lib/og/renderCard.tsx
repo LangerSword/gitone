@@ -36,7 +36,7 @@ const AVATAR_FALLBACK =
     '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320"><circle cx="160" cy="128" r="62" fill="rgba(255,255,255,0.18)"/><rect x="58" y="206" width="204" height="150" rx="80" fill="rgba(255,255,255,0.18)"/></svg>',
   );
 
-async function fetchDataUri(url: string, timeoutMs = 4000): Promise<string | null> {
+export async function fetchDataUri(url: string, timeoutMs = 4000): Promise<string | null> {
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);

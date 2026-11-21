@@ -13,7 +13,7 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
-  return cachedPng(`poster:v7:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
+  return cachedPng(`poster:v8:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
     try {
       const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
       return await renderBattleImage(a, b);

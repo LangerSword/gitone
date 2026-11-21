@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { loadPosterFonts, publicAssetDataUri } from "./card";
-import { loadCardAssets } from "./renderCard";
+import { fetchDataUri } from "./renderCard";
 import { pickPlate } from "./renderCard26";
 import { computeDuel } from "@/lib/duel";
 import { cardDisplayName } from "@/lib/text";
@@ -35,7 +35,7 @@ function Checkers({ y }: { y: number }) {
 
 // One driver's side, layered directly: plate, rim light, portrait, and a
 // name strip in the card's own grammar — no inner composite.
-function DriverSide({ card, plateSrc, assets, left }: { card: Card; plateSrc: string | null; assets: Awaited<ReturnType<typeof loadCardAssets>>; left: number }) {
+function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: string | null; avatar: string | null; left: number }) {
   const CW = 246;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
@@ -57,11 +57,11 @@ function DriverSide({ card, plateSrc, assets, left }: { card: Card; plateSrc: st
           backgroundImage: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.16), transparent 72%)",
         }}
       />
-      {assets.avatar && (
+      {avatar && (
         <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "48%", height: "50%", display: "flex" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={assets.avatar}
+            src={avatar}
             alt=""
             width={Math.round(CW * 0.48)}
             height={Math.round(CH * 0.5)}
@@ -113,12 +113,15 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
 
   const pa = pickPlate(a);
   const pb = pickPlate(b);
-  const [fonts, aAssets, bAssets, aPlate, bPlate] = await Promise.all([
+  const [fonts, aAvatar, bAvatar, aPlate, bPlate] = await Promise.all([
     loadPosterFonts(),
-    loadCardAssets(a),
-    loadCardAssets(b),
-    publicAssetDataUri(pa.bg.replace(/^\/cards\//, "cards/og400/").replace(/\.webp$/, ".png")),
-    publicAssetDataUri(pb.bg.replace(/^\/cards\//, "cards/og400/").replace(/\.webp$/, ".png")),
+    // lean: the poster paints only the avatar (~118px) — fetch it at s=160
+    // instead of the s=960 full-card source, and skip the flag/logo entirely.
+    // Avatar decode was the single biggest CPU item in a cold composite.
+    fetchDataUri(a.avatarUrl.replace(/([?&])s=\d+/, "$1s=160")),
+    fetchDataUri(b.avatarUrl.replace(/([?&])s=\d+/, "$1s=160")),
+    publicAssetDataUri(pa.bg.replace(/^\/cards\//, "cards/og280/").replace(/\.webp$/, ".png")),
+    publicAssetDataUri(pb.bg.replace(/^\/cards\//, "cards/og280/").replace(/\.webp$/, ".png")),
   ]);
 
   const sideW = 246;
@@ -147,8 +150,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           GITONE · RACE RESULT
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} assets={aAssets} left={leftX} />
-        <DriverSide card={b} plateSrc={bPlate} assets={bAssets} left={rightX} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} />
 
         {/* the scoreline between them — scoreboard only, the result call
             lives in the full-width band below */}
