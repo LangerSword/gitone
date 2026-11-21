@@ -72,46 +72,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* the scout spec — crawlable, server-rendered. The modal keeps the
-          editorial presentation; this band gives search + answer engines the
-          actual definitions to quote. No new aesthetic: one quiet band. */}
-      <section className="relative z-10 mx-auto w-full max-w-[1240px] flex-none px-5 pb-14 pt-10 sm:px-8">
-        <div className="mx-auto max-w-[860px] border-t pt-8" style={{ borderColor: "var(--line)" }}>
-          <div className="flex items-center gap-2.5">
-            <span aria-hidden className="inline-block h-[2px] w-7" style={{ background: "var(--f1-red)" }} />
-            <h2 className="mono text-[10.5px] font-bold tracking-[0.26em]" style={{ color: "var(--dim)" }}>
-              HOW THE SCOUTING WORKS
-            </h2>
-          </div>
-          <p className="mt-4 max-w-[560px] text-[15px] leading-[1.55]" style={{ color: "var(--dim)" }}>
-            Every gitone driver card is rated the way the official F1 games rate their grid — four numbers plus a pace-weighted overall, read live from GitHub&apos;s GraphQL API. No surveys, no self-reporting: commits are laps, pull requests are wheel-to-wheel battles, code reviews are racecraft.
-          </p>
-
-          <div className="mt-7 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-            {(
-              [
-                ["PAC · pace", "Commit velocity — the laps a driver turned this season."],
-                ["RAC · racecraft", "Pull requests worked through other fields, battles judged in review."],
-                ["AWA · awareness", "Hazards flagged and race-by-race presence across the season."],
-                ["EXP · experience", "Seasons on the grid and career mileage."],
-              ] as const
-            ).map(([label, line]) => (
-              <div key={label}>
-                <div className="mono text-[11px] font-bold tracking-[0.18em]" style={{ color: "var(--ink)" }}>
-                  {label}
-                </div>
-                <p className="mt-1.5 max-w-[380px] text-[13.5px] leading-[1.5]" style={{ color: "var(--dim)" }}>
-                  {line}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-7 max-w-[560px] text-[13.5px] leading-[1.55]" style={{ color: "var(--faint)" }}>
-            RTG is the pace-weighted headline out of 99; raw stats cap at 88 and the 90s are a legacy gate bought with years and influence. Every card is embeddable as a live PNG — <span className="mono" style={{ color: "var(--dim)" }}>gitone.langersword.in/&lt;login&gt;.png</span> re-scouts itself every two hours.
-          </p>
-        </div>
-      </section>
 
       <div aria-hidden className="checker relative z-10 h-[10px] w-full opacity-40" />
       <div className="relative z-10 flex-none">
