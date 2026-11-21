@@ -74,12 +74,23 @@ export function useImageActions({
   // The export blob: the composed poster when one is wired (the battle result
   // is a designed graphic, same one the unfurls serve), else the live card at
   // 3x via html-to-image. Both are real PNG blobs the browser can save/copy.
+  // Poster fetches retry on 503: a cold composite on the Workers free plan
+  // can bust the ~10ms CPU cap, and the retry often lands once the isolate is
+  // warm — the successful attempt KV-caches the result forever.
   const captureImage = (): Promise<Blob> => {
     if (posterUrl) {
-      return fetch(posterUrl).then(async (r) => {
-        if (!r.ok) throw new Error(`poster request failed (${r.status})`);
+      const attempt = async (n: number): Promise<Blob> => {
+        const r = await fetch(posterUrl).catch(() => null);
+        if (!r || !r.ok) {
+          if (n < 3) {
+            await new Promise((res) => setTimeout(res, 2200));
+            return attempt(n + 1);
+          }
+          throw new Error(`poster request failed (${r ? r.status : "network"})`);
+        }
         return r.blob();
-      });
+      };
+      return attempt(0);
     }
     const node = getCaptureNode?.();
     if (!node) return Promise.reject(new Error("no card found on the page"));
