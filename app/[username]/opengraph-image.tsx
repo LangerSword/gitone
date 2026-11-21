@@ -20,7 +20,7 @@ const BG = "#0b0d10";
 // "no preview". KV-cache the PNG — repeats never render again.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v3:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v4:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {
@@ -38,7 +38,7 @@ async function buildOg(username: string): Promise<Response> {
   }
 
   const card = res.card;
-  const cardW = 340;
+  const cardW = 380;
   const frame = cardFrame(cardW);
   const cardPng = await renderCardPng(card, cardW);
   const cardSrc = `data:image/png;base64,${cardPng.toString("base64")}`;
@@ -59,11 +59,11 @@ async function buildOg(username: string): Promise<Response> {
           }}
         />
 
-        <div style={{ position: "absolute", left: 92, top, display: "flex" }}>
+        <div style={{ position: "absolute", left: 72, top, display: "flex" }}>
           <img src={cardSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
         </div>
 
-        <div style={{ position: "absolute", left: 560, top: 96, width: 560, display: "flex", flexDirection: "column" }}>
+        <div style={{ position: "absolute", left: 540, top: 96, width: 600, display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 18, fontWeight: 700, letterSpacing: 5, color: "#6a7079" }}>
             GITONE · SCOUT REPORT
           </div>
