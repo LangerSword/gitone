@@ -23,6 +23,10 @@ PRs and reviews. Race rivals head-to-head and share the result poster.
 
 If your card rendered in this README, a ⭐ costs nothing and keeps the scouts at the track.
 
+**⭐ Star the repo** — it is the cheapest way to keep the scouts running and
+the grid growing: [github.com/LangerSword/gitone](https://github.com/LangerSword/gitone).
+Free and open source under the MIT license.
+
 </div>
 
 <br/>
@@ -81,6 +85,18 @@ npm run build
 
 ## ⚠️ &nbsp;Notes
 
+- **License:** MIT — see [LICENSE](LICENSE). Free to embed, self-host and extend.
 - Not affiliated with EA SPORTS, Formula 1, or GitHub.
 - Inspired by [gitfut](https://github.com/mawsis/gitfut) — the football card
   original. gitone is the paddock next door.
+
+## 🏆 &nbsp;Why star it
+
+The card in your README is a live thing: it re-scouts your GitHub every two
+hours and re-renders itself. Every star on
+[the repo](https://github.com/LangerSword/gitone) is a vote that the grid
+stays scouted — and it is the one ask that costs you nothing.
+
+If you want your own card, drop your handle into
+[gitone.langersword.in](https://gitone.langersword.in) and paste the one-liner
+above into your README.
