@@ -169,12 +169,12 @@ function SectorTable({ duel, aColor, bColor }: { duel: Duel; aColor: string; bCo
               {aWon && <div style={{ display: "flex", width: 4, height: 4, marginRight: 4, borderRadius: 999, background: aInk }} />}
               {row.challenger}
             </div>
-            <div style={{ display: "flex", flex: 1, height: 5, marginLeft: 8, justifyContent: "flex-end" }}>
-              <div style={{ display: "flex", width: `${row.challenger}%`, height: 5, background: aInk, opacity: aWon ? 1 : 0.6 }} />
+            <div style={{ display: "flex", flex: 1, height: 5, marginLeft: 8, justifyContent: "flex-end", background: "rgba(240,232,216,0.09)" }}>
+              <div style={{ display: "flex", width: `${row.challenger}%`, height: 5, background: aInk, opacity: aWon ? 1 : 0.85 }} />
             </div>
-            <div style={{ display: "flex", width: 74, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#9b9bab" }}>{row.label}</div>
-            <div style={{ display: "flex", flex: 1, height: 5, marginRight: 8 }}>
-              <div style={{ display: "flex", width: `${row.opponent}%`, height: 5, background: bInk, opacity: bWon ? 1 : 0.6 }} />
+            <div style={{ display: "flex", width: 74, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#d6d0c2" }}>{row.label}</div>
+            <div style={{ display: "flex", flex: 1, height: 5, marginRight: 8, background: "rgba(240,232,216,0.09)" }}>
+              <div style={{ display: "flex", width: `${row.opponent}%`, height: 5, background: bInk, opacity: bWon ? 1 : 0.85 }} />
             </div>
             <div style={{ display: "flex", width: 44, alignItems: "center", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: bInk, opacity: aWon ? 0.72 : 1 }}>
               {row.opponent}
