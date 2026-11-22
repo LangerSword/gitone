@@ -4,10 +4,12 @@
 
 **your github, rated like f1** 🏁
 
-[![Lakshaya's gitone card](https://gitone.langersword.in/LangerSword.png)](https://gitone.langersword.in/LangerSword)
+<a href="https://gitone.langersword.in/torvalds">
+  <img src="https://gitone.langersword.in/torvalds.png" alt="Torvalds' gitone card" width="240" />
+</a>
 
-That card is **live**. It re-scouts my GitHub every two hours and re-renders
-itself — your README can carry yours too, in one line:
+That card is **live**. It re-scouts a real GitHub profile every two hours and
+re-renders itself — your README can carry yours too, in one line:
 
 ```md
 [![My gitone card](https://gitone.langersword.in/<login>.png)](https://gitone.langersword.in/<login>)
