@@ -5,7 +5,14 @@ import { pickPlate } from "./renderCard26";
 import { computeDuel } from "@/lib/duel";
 import { cardDisplayName } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
+import { GOAT_LOGIN, GOAT_LOGINS, STATS, STAT_LABELS } from "@/lib/racing/constants";
 import { cssBox, FEATHER, portraitForCard, type PortraitWindow } from "@/lib/racing/portrait";
+
+function withAlpha(hex: string, a: number) {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+}
 
 // The battle unfurl / download — a broadcast race-result graphic in ONE
 // Satori pass. The previous poster ran the card composite twice plus the
@@ -34,15 +41,18 @@ function Checkers({ y }: { y: number }) {
   );
 }
 
-// One driver's side, layered directly: plate, rim light, portrait, and a
-// name strip in the card's own grammar — no inner composite.
-function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: string | null; avatar: string | null; left: number }) {
+// One driver's side: plate, portrait and the FULL card grammar — rating,
+// number, chip, name and all six stats — in one Satori pass. The winner gets a
+// livery wash behind the crest so the result reads before the scoreline.
+function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
   const CW = 246;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
   const accent = card.constructor.color;
-  // Poster cards are narrower than the full card; keep the same safe aperture
-  // but cap its width and centre it inside the per-plate window.
+  const login = card.login.toLowerCase();
+  const founder = card.finish === "founder" || !!card.founder;
+  const goat = !founder && (GOAT_LOGINS.includes(login) || login === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97));
+  const chip = goat ? "THE GOAT" : card.finishLabel;
   const plateBox = portraitForCard(card);
   const pbox: PortraitWindow = {
     left: plateBox.left + (plateBox.width - 48) / 2,
@@ -50,8 +60,26 @@ function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: st
     width: 48,
     height: Math.min(plateBox.height, 44),
   };
+  const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 92, width: CW, height: CH, display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "absolute", left, top: 92, width: CW, height: CH, display: "flex" }}>
+      {winner && (
+        <div
+          style={{
+            position: "absolute",
+            left: -18,
+            top: -14,
+            width: CW + 36,
+            height: CH + 28,
+            backgroundImage: `radial-gradient(ellipse 58% 42% at 50% 42%, ${withAlpha(accent, 0.42)}, transparent 74%)`,
+          }}
+        />
+      )}
+      {winner && (
+        <div style={{ position: "absolute", left: 30, top: -24, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#f5d67b", color: "#15151e", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
+          WINNER
+        </div>
+      )}
       {plateSrc && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={plateSrc} alt="" width={CW} height={CH} style={{ position: "absolute", left: 0, top: 0, width: CW, height: CH, objectFit: "fill" }} />
@@ -80,28 +108,43 @@ function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: st
               height: "100%",
               objectFit: "cover",
               objectPosition: "center 22%",
-              // feather the portrait into the plate, same grammar as the card
               WebkitMaskImage: FEATHER,
               maskImage: FEATHER,
             }}
           />
         </div>
       )}
-      {/* the name strip */}
-      <div style={{ position: "absolute", left: 0, bottom: 36, width: CW, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 22, fontWeight: 800, letterSpacing: 2, color: accent }}>
-          {card.rtg}
-        </div>
-        <div style={{ display: "flex", marginTop: 3, fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 2, color: "#a2a7ae" }}>
-          {card.finishLabel} · #{String(card.number).padStart(2, "0")}
-        </div>
-        <div style={{ display: "flex", marginTop: 5, fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 17 : 20, lineHeight: 1, color: "#f5f5f7", textAlign: "center", maxWidth: CW - 20 }}>
-          {name}
-        </div>
-        <div style={{ display: "flex", marginTop: 4, fontFamily: "JBMono", fontSize: 10, letterSpacing: 2, color: "#6a7079" }}>
-          {card.constructor.name.toUpperCase()}
-        </div>
+      {/* rating + number + finish chip, engraved in the plate's own ink */}
+      <div style={{ position: "absolute", left: "13%", top: "8%", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.7) }}>RTG</div>
+        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 42, lineHeight: 1, color: ink }}>{card.rtg}</div>
       </div>
+      <div style={{ position: "absolute", left: "13%", top: "27%", display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.7) }}>NO.</div>
+        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 15, lineHeight: 1, color: ink }}>{String(card.number).padStart(2, "0")}</div>
+      </div>
+      <div style={{ position: "absolute", left: "13%", top: "39%", display: "flex", padding: "2px 5px", border: `1px solid ${withAlpha(ink, 0.45)}`, fontFamily: "JBMono", fontSize: 8, fontWeight: 800, letterSpacing: 1, color: ink }}>
+        {chip}
+      </div>
+      {/* identity */}
+      <div style={{ position: "absolute", left: "8%", width: "84%", top: "55%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 16 : 19, lineHeight: 1, color: ink, textAlign: "center", maxWidth: CW - 20 }}>{name}</div>
+        <div style={{ display: "flex", marginTop: 4, fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.72) }}>{card.constructor.name.toUpperCase()}</div>
+      </div>
+      {/* the full six-stat rail, 3x2 — the poster no longer drops four stats */}
+      <div style={{ position: "absolute", left: "10%", width: "80%", top: "70%", display: "flex", flexDirection: "column" }}>
+        {[STATS.slice(0, 3), STATS.slice(3)].map((row, r) => (
+          <div key={r} style={{ display: "flex", height: 28, borderTop: r === 0 ? "none" : `1px solid ${withAlpha(ink, 0.3)}` }}>
+            {row.map((k, i) => (
+              <div key={k} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderLeft: i === 0 ? "none" : `1px solid ${withAlpha(ink, 0.3)}` }}>
+                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 7, fontWeight: 700, letterSpacing: 1, color: withAlpha(ink, 0.7) }}>{STAT_LABELS[k]}</div>
+                <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 16, lineHeight: 1, color: ink }}>{card.stats[k]}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div style={{ position: "absolute", left: 0, width: CW, top: "88%", display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 7, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.75) }}>GITONE · @{card.login}</div>
     </div>
   );
 }
@@ -148,6 +191,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           flexDirection: "column",
           backgroundColor: "#15151e",
           backgroundImage:
+            `radial-gradient(420px 340px at 14% 44%, ${withAlpha(a.constructor.color, 0.20)}, transparent 72%), ` +
+            `radial-gradient(420px 340px at 86% 44%, ${withAlpha(b.constructor.color, 0.20)}, transparent 72%), ` +
             "radial-gradient(760px 360px at 50% -12%, rgba(193,18,31,0.20), transparent 62%), radial-gradient(900px 240px at 50% 108%, rgba(255,255,255,0.05), transparent 70%)",
           position: "relative",
           fontFamily: "Titillium",
@@ -160,8 +205,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           GITONE · RACE RESULT
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
 
         {/* the scoreline between them — scoreboard only, the result call
             lives in the full-width band below */}

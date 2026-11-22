@@ -246,20 +246,19 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   const sharp = (await import("sharp")).default;
   const w = width;
   const H = cardH(w);
-  const livery = card.constructor.color;
   const founder = card.finish === "founder";
   const pbox = portraitForCard(card);
 
-  // 1. the baked metal plate, resized to the card box (its alpha = the crest)
-  const metalPath = join(process.cwd(), "public", "cards", "f1-gold.webp");
+  // 1. the baked plate for THIS tier, resized to the card box (its alpha =
+  //    the crest). The old sharp path used one gold plate and tinted it, so
+  //    every finish shared the same plain blue/gold metal; the DOM and the
+  //    Workers twin both wear the real plate art.
+  const tierPlate = pickPlate(card).bg.replace(/^\/cards\//, "");
+  const metalPath = join(process.cwd(), "public", "cards", tierPlate);
   const metalPng = await sharp(await readFile(metalPath)).resize(w, H, { fit: "fill" }).png().toBuffer();
   let plate = metalPng;
 
-  // 2. anodise to the team livery — tint preserves the metal's luminosity (the
-  //    brushed grain stays), shifting only the hue, like the DOM's colour blend.
-  if (!founder) {
-    plate = await sharp(metalPng).tint(livery).png().toBuffer();
-  }
+  // 2. the tier plate already carries its own metal and ink — no livery tint.
 
   // 3. feather the portrait and seat it into the plate
   if (assets.avatar) {
