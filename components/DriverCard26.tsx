@@ -2,6 +2,7 @@ import type { CardPreview, StatKey } from "@/lib/racing/types";
 import { STATS, STAT_LABELS, GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
 import { rgba } from "./finishTheme";
 import { flagUrl } from "@/lib/flagUrl";
+import { cssBox, FADE_BOTTOM, FADE_TOP, FEATHER, portraitFor } from "@/lib/racing/portrait";
 
 /* The F1 26 driver card, built the way gitfut builds its collectibles: the
    ENTIRE face is a baked plate of struck-metal art (its alpha carries the
@@ -43,9 +44,6 @@ function avatarFor(url: string): string {
   return url.replace(/([?&])s=\d+/, "$1s=640");
 }
 
-const FEATHER = "radial-gradient(ellipse 70% 82% at 52% 40%, #000 54%, transparent 82%)";
-const FADE_TOP = "linear-gradient(to bottom, transparent 0%, #000 10%)";
-const FADE_BOTTOM = "linear-gradient(to bottom, #000 76%, transparent 100%)";
 
 export function DriverCard26({ card, eager = false }: { card: CardPreview; eager?: boolean }) {
   const livery = card.constructor.color;
@@ -60,9 +58,13 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
   const label = rgba(ink, 0.68);
   const plateMask = `url("${plate.bg}")`;
   const chip = goat ? "THE GOAT" : card.finishLabel;
+  // Each plate cuts a different crest/inner frame — the aperture rides the
+  // plate that is actually painted, never a one-size-fits-all rectangle.
+  const portraitBox = portraitFor(card.finish, { founder, goat });
+  const box = cssBox(portraitBox);
 
   const portrait = (
-    <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", WebkitMaskImage: FEATHER, maskImage: FEATHER, filter: "drop-shadow(0 2cqw 4cqw rgba(40,30,10,0.16))" }}>
+    <div style={{ position: "absolute", ...box, WebkitMaskImage: FEATHER, maskImage: FEATHER, filter: "drop-shadow(0 2cqw 4cqw rgba(40,30,10,0.16))" }}>
       <div style={{ width: "100%", height: "100%", WebkitMaskImage: FADE_BOTTOM, maskImage: FADE_BOTTOM }}>
         <div style={{ position: "relative", width: "100%", height: "100%", WebkitMaskImage: FADE_TOP, maskImage: FADE_TOP }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -84,10 +86,10 @@ export function DriverCard26({ card, eager = false }: { card: CardPreview; eager
       aria-hidden
       style={{
         position: "absolute",
-        left: "22%",
-        top: "4%",
-        width: "76%",
-        height: "56%",
+        left: `${portraitBox.left - 4}%`,
+        top: `${portraitBox.top - 3}%`,
+        width: `${portraitBox.width + 8}%`,
+        height: `${portraitBox.height + 6}%`,
         pointerEvents: "none",
         background: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.15), transparent 72%)",
       }}

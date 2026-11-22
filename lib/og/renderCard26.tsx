@@ -2,6 +2,14 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { GOAT_LOGIN, GOAT_LOGINS, STATS, STAT_LABELS } from "@/lib/racing/constants";
+import {
+  FEATHER,
+  cssBox,
+  fadeBottomSvg,
+  fadeTopSvg,
+  featherSvg,
+  portraitForCard,
+} from "@/lib/racing/portrait";
 import { flagUrl } from "@/lib/flagUrl";
 import type { Card, Finish } from "@/lib/racing/types";
 import { isWorkersRuntime, loadCardFonts, publicAssetDataUri } from "./card";
@@ -131,6 +139,7 @@ export function pickPlate(card: Card): { bg: string; ink: string } {
 // pre-tinted tier plate) and the engraved type. No sharp, no fs.
 async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
   const plate = pickPlate(card);
+  const pbox = portraitForCard(card);
   // width-appropriate plates: a cold composite must fit the Workers CPU
   // budget, and rasterising an 820px PNG for a 340px card is what pushed the
   // double-pass user OG over it (deterministic CF 1102s). Small renders load
@@ -173,22 +182,22 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
             <div
               style={{
                 position: "absolute",
-                left: "22%",
-                top: "4%",
-                width: "76%",
-                height: "56%",
+                left: `${pbox.left - 4}%`,
+                top: `${pbox.top - 3}%`,
+                width: `${pbox.width + 8}%`,
+                height: `${pbox.height + 6}%`,
                 backgroundImage: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.15), transparent 72%)",
               }}
             />
           )}
           {assets.avatar && (
-            <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "68%", height: "50%", display: "flex" }}>
+            <div style={{ position: "absolute", ...cssBox(pbox), display: "flex" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={assets.avatar}
                 alt=""
-                width={Math.round(w * 0.68)}
-                height={Math.round(H * 0.5)}
+                width={Math.round((pbox.width / 100) * w)}
+                height={Math.round((pbox.height / 100) * H)}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -197,8 +206,10 @@ async function renderCardPngSatori(card: Card, width: number): Promise<Buffer> {
                   // Feather the portrait into the plate with a radial alpha mask
                   // (Satori supports mask-image) instead of a dark vignette, so
                   // the pfp reads as seated in the metal, not a pasted rectangle.
-                  WebkitMaskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
-                  maskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
+                  // The gradient reaches zero INSIDE the aperture on all four
+                  // edges — no photo halo can reach the frame.
+                  WebkitMaskImage: FEATHER,
+                  maskImage: FEATHER,
                 }}
               />
             </div>
@@ -234,6 +245,7 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   const H = cardH(w);
   const livery = card.constructor.color;
   const founder = card.finish === "founder";
+  const pbox = portraitForCard(card);
 
   // 1. the baked metal plate, resized to the card box (its alpha = the crest)
   const metalPath = join(process.cwd(), "public", "cards", "f1-gold.webp");
@@ -248,33 +260,33 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
 
   // 3. feather the portrait and seat it into the plate
   if (assets.avatar) {
-    const aw = Math.round(w * 0.68);
-    const ah = Math.round(H * 0.5);
+    const aw = Math.round((pbox.width / 100) * w);
+    const ah = Math.round((pbox.height / 100) * H);
     const avatarBuf = Buffer.from(assets.avatar.split(",")[1], "base64");
     // brightness lift matches the DOM's filter (1.09) so the Node PNG and the
     // in-app card agree on treatment.
     const crop = await sharp(avatarBuf).modulate({ brightness: 1.09 }).resize(aw, ah, { fit: "cover", position: "top" }).png().toBuffer();
     // the rim light: warm backlight composited onto the plate BEFORE the
     // portrait (paint order), keeping dark silhouettes off dark plates.
-    const gw = Math.round(w * 0.76);
-    const gh = Math.round(H * 0.56);
+    const gw = Math.round(((pbox.width + 8) / 100) * w);
+    const gh = Math.round(((pbox.height + 6) / 100) * H);
     const glow = Buffer.from(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${gw}" height="${gh}"><defs><radialGradient id="r" cx="52%" cy="46%" rx="50%" ry="60%"><stop offset="0%" stop-color="rgb(255,240,204)" stop-opacity="0.15"/><stop offset="72%" stop-color="rgb(255,240,204)" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#r)"/></svg>`,
     );
-    plate = await sharp(plate).composite([{ input: glow, left: Math.round(w * 0.22), top: Math.round(H * 0.04) }]).png().toBuffer();
-    const radial = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><radialGradient id="g" cx="50%" cy="40%" r="58%"><stop offset="46%" stop-color="#fff" stop-opacity="1"/><stop offset="80%" stop-color="#fff" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`,
-    );
-    const topFade = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="12%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#t)"/></svg>`,
-    );
-    const botFade = Buffer.from(
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${aw}" height="${ah}"><defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="70%" stop-color="#fff" stop-opacity="1"/><stop offset="100%" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#b)"/></svg>`,
-    );
+    plate = await sharp(plate)
+      .composite([{ input: glow, left: Math.round(((pbox.left - 4) / 100) * w), top: Math.round(((pbox.top - 3) / 100) * H) }])
+      .png()
+      .toBuffer();
+    const radial = Buffer.from(featherSvg(aw, ah));
+    const topFade = Buffer.from(fadeTopSvg(aw, ah));
+    const botFade = Buffer.from(fadeBottomSvg(aw, ah));
     let f = await sharp(crop).composite([{ input: radial, blend: "dest-in" }]).png().toBuffer();
     f = await sharp(f).composite([{ input: topFade, blend: "dest-in" }]).png().toBuffer();
     const feathered = await sharp(f).composite([{ input: botFade, blend: "dest-in" }]).png().toBuffer();
-    plate = await sharp(plate).composite([{ input: feathered, left: Math.round(w * 0.26), top: Math.round(H * 0.065) }]).png().toBuffer();
+    plate = await sharp(plate)
+      .composite([{ input: feathered, left: Math.round((pbox.left / 100) * w), top: Math.round((pbox.top / 100) * H) }])
+      .png()
+      .toBuffer();
   }
 
   // 4. re-cut the crest silhouette so neither the tint nor the portrait spills past it

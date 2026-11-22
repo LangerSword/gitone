@@ -5,6 +5,7 @@ import { pickPlate } from "./renderCard26";
 import { computeDuel } from "@/lib/duel";
 import { cardDisplayName } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
+import { cssBox, FEATHER, portraitForCard, type PortraitWindow } from "@/lib/racing/portrait";
 
 // The battle unfurl / download — a broadcast race-result graphic in ONE
 // Satori pass. The previous poster ran the card composite twice plus the
@@ -40,6 +41,15 @@ function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: st
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
   const accent = card.constructor.color;
+  // Poster cards are narrower than the full card; keep the same safe aperture
+  // but cap its width and centre it inside the per-plate window.
+  const plateBox = portraitForCard(card);
+  const pbox: PortraitWindow = {
+    left: plateBox.left + (plateBox.width - 48) / 2,
+    top: plateBox.top,
+    width: 48,
+    height: Math.min(plateBox.height, 44),
+  };
   return (
     <div style={{ position: "absolute", left, top: 92, width: CW, height: CH, display: "flex", flexDirection: "column" }}>
       {plateSrc && (
@@ -50,29 +60,29 @@ function DriverSide({ card, plateSrc, avatar, left }: { card: Card; plateSrc: st
       <div
         style={{
           position: "absolute",
-          left: "16%",
-          top: "6%",
-          width: "68%",
-          height: "54%",
+          left: `${pbox.left - 4}%`,
+          top: `${pbox.top - 3}%`,
+          width: `${pbox.width + 8}%`,
+          height: `${pbox.height + 6}%`,
           backgroundImage: "radial-gradient(ellipse 50% 60% at 52% 42%, rgba(255,240,204,0.16), transparent 72%)",
         }}
       />
       {avatar && (
-        <div style={{ position: "absolute", left: "26%", top: "6.5%", width: "48%", height: "50%", display: "flex" }}>
+        <div style={{ position: "absolute", ...cssBox(pbox), display: "flex" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={avatar}
             alt=""
-            width={Math.round(CW * 0.48)}
-            height={Math.round(CH * 0.5)}
+            width={Math.round(CW * (pbox.width / 100))}
+            height={Math.round(CH * (pbox.height / 100))}
             style={{
               width: "100%",
               height: "100%",
               objectFit: "cover",
               objectPosition: "center 22%",
               // feather the portrait into the plate, same grammar as the card
-              WebkitMaskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
-              maskImage: "radial-gradient(ellipse 72% 80% at 50% 42%, #000 52%, transparent 84%)",
+              WebkitMaskImage: FEATHER,
+              maskImage: FEATHER,
             }}
           />
         </div>
