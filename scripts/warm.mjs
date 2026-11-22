@@ -104,12 +104,23 @@ function pushPng(login, png) {
 }
 
 async function warm(login) {
-  const res = await fetch(`${LOCAL}/${login}.png`, { signal: AbortSignal.timeout(120_000) });
-  if (!res.ok) return { login, ok: false, status: res.status };
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
-  pushPng(login, buf);
-  return { login, ok: true, bytes: buf.length };
+  // Transient GitHub/local-server failures are common in a long batch; one
+  // retry clears most of them (measured: 15/80 failed on the first pass, all
+  // rendered cleanly on a second).
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const res = await fetch(`${LOCAL}/${login}.png`, { signal: AbortSignal.timeout(120_000) });
+      if (!res.ok) return { login, ok: false, status: res.status };
+      const buf = Buffer.from(await res.arrayBuffer());
+      if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
+      pushPng(login, buf);
+      return { login, ok: true, bytes: buf.length };
+    } catch (e) {
+      if (attempt === 1) return { login, ok: false, status: e.message };
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+  }
+  return { login, ok: false, status: "unreachable" };
 }
 
 const started = await ensureLocalServer();
