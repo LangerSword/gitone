@@ -20,7 +20,7 @@ const BG = "#0b0d10";
 // "no preview". KV-cache the PNG — repeats never render again.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v4:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v5:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {

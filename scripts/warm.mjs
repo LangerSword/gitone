@@ -86,10 +86,10 @@ function scoutedLogins() {
   const cards = new Set(
     keys.filter((n) => n.startsWith("gitone:card:")).map((n) => n.split(":").pop().toLowerCase()),
   );
-  // Only the plain embed counts as cached: `cardpng:v4:<login>::`. A pinned
+  // Only the plain embed counts as cached: `cardpng:v5:<login>::`. A pinned
   // variant (`:in:`, `::mercedes`) is a different render and must not satisfy
   // the plain key, or the warmer skips a handle that still serves a fallback.
-  const plain = /^cardpng:v4:([^:]+)::$/;
+  const plain = /^cardpng:v5:([^:]+)::$/;
   const pngs = new Set(
     keys.filter((n) => plain.test(n)).map((n) => n.match(plain)[1].toLowerCase()),
   );
@@ -101,7 +101,7 @@ function pushPng(login, png) {
   const file = join(dir, "v");
   // KV holds the PNG base64-encoded; the reader decodes with Buffer.from(, "base64").
   writeFileSync(file, png.toString("base64"));
-  const key = `cardpng:v4:${login.toLowerCase()}::`;
+  const key = `cardpng:v5:${login.toLowerCase()}::`;
   try {
     wrangler(["kv", "key", "put", "--namespace-id", NS, "--remote", "--path", file, key]);
   } finally {
