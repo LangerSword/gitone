@@ -16,7 +16,7 @@ export function SiteFooter() {
         </a>
         <span
           dangerouslySetInnerHTML={{
-            __html: '<a href="https://toolindex.net/?ref=badge" target="_blank" rel="nofollow noopener"><img src="https://toolindex.net/badges/listed-on-toolindex-dark.svg" alt="Listed on Tool Index" width="200" height="54"></a>',
+            __html: '<a href="https://toolindex.net/tools/gitone?ref=badge" target="_blank" rel="nofollow noopener">\n  <img src="https://toolindex.net/badge/gitone/small.svg?theme=dark" alt="gitone - Listed on Tool Index" width="130" height="30" />\n</a>',
           }}
         />
       </div>
