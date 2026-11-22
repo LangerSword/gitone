@@ -54,6 +54,9 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
   const label = hexAlpha(ink, 0.68);
   const flag = assets.flag ?? flagUrl(card.country, 80);
   const founder = card.finish === "founder" || !!card.founder;
+  const login = card.login.toLowerCase();
+  const goat = !founder && (GOAT_LOGINS.includes(login) || login === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97));
+  const chip = goat ? "THE GOAT" : card.finishLabel;
 
   return (
     <div style={{ width: w, height: H, display: "flex", position: "relative", color: ink }}>
@@ -74,7 +77,7 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
       )}
       {/* finish chip */}
       <div style={{ position: "absolute", left: "13%", top: "44%", display: "flex", padding: `${cqw(0.5)}px ${cqw(1.1)}px`, border: `1px solid ${hexAlpha(ink, 0.4)}` }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.7), fontWeight: 800, letterSpacing: cqw(0.32), color: ink }}>{card.finishLabel}</div>
+        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.7), fontWeight: 800, letterSpacing: cqw(0.32), color: ink }}>{chip}</div>
       </div>
       {/* name */}
       <div style={{ position: "absolute", left: "10%", width: "80%", top: "58%", display: "flex", flexDirection: "column", alignItems: "center" }}>
