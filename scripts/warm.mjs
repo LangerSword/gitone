@@ -27,7 +27,7 @@ import { join } from "node:path";
 
 const REPO = "/home/lakshaya/projects/gitone";
 const NS = "8d67e9c706f64ec397ea485d4fb30942";
-const BUCKET = "gitone-pngs";
+const BUCKET = "gitone-pngs-v2";
 const STATE = join(REPO, "scripts", ".warm-state.json");
 const LOCAL_PORT = process.env.WARM_PORT || "3001";
 const LOCAL = `http://127.0.0.1:${LOCAL_PORT}`;
@@ -128,7 +128,7 @@ async function warm(login) {
   // rendered cleanly on a second).
   for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      const res = await fetch(`${LOCAL}/${login}.png`, { signal: AbortSignal.timeout(120_000) });
+      const res = await fetch(`${LOCAL}/${login}.png?force=1`, { signal: AbortSignal.timeout(120_000) });
       if (!res.ok) return { login, ok: false, status: res.status };
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };

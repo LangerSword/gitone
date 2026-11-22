@@ -24,7 +24,7 @@
   // KV's daily operation budget was the binding constraint. KV keeps only
   // small rows (scouted cards, token health, scout counter).
   "r2_buckets": [
-    { "binding": "GITONE_PNGS", "bucket_name": "gitone-pngs" }
+    { "binding": "GITONE_PNGS", "bucket_name": "gitone-pngs-v2" }
   ],
   "observability": { "enabled": true }
 }

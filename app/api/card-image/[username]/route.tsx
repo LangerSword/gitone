@@ -17,42 +17,48 @@ export const runtime = "nodejs";
 // So the cold path never renders. It serves the branded fallback immediately
 // (~0.2s, survivable) and the real card is filled in by the off-path warmer
 // (scripts/warm.mjs), which renders on a machine with no CPU cap and writes the
-// PNG to KV. The edge cache then serves it for a day.
+// PNG to R2. The edge cache then serves it for a day.
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
+  const query = new URL(req.url).searchParams;
   // Let embeds pin a flag — a valid override wins, else the GitHub-derived one.
-  const override = new URL(req.url).searchParams.get("country");
-  const teamCode = new URL(req.url).searchParams.get("team");
+  const override = query.get("country");
+  const teamCode = query.get("team");
   // Pinned variants (README flags / team liveries) cache under their own key
   // so they never evict the plain embed.
   const lower = username.toLowerCase();
   const cacheKey = `cardpng:v6:${lower}:${override ?? ""}:${teamCode ?? ""}`;
 
+  const render = async () => {
+    try {
+      const card = await scoutCard(username);
+      const team = pickTeam(teamCode);
+      return await renderCardImage({
+        ...card,
+        country: pickFlag(override, card.country),
+        ...(team
+          ? {
+              constructor: {
+                language: null,
+                name: team.name,
+                code: team.code,
+                color: team.color,
+                ink: team.ink,
+              },
+            }
+          : {}),
+      });
+    } catch {
+      return await renderFallbackImage(username);
+    }
+  };
+
+  // The warmer always wants the real render, never a cache/fallback short-circuit.
+  if (query.has("force")) return render();
+
   return cachedPng(
     cacheKey,
-    async () => {
-      try {
-        const card = await scoutCard(username);
-        const team = pickTeam(teamCode);
-        return await renderCardImage({
-          ...card,
-          country: pickFlag(override, card.country),
-          ...(team
-            ? {
-                constructor: {
-                  language: null,
-                  name: team.name,
-                  code: team.code,
-                  color: team.color,
-                  ink: team.ink,
-                },
-              }
-            : {}),
-        });
-      } catch {
-        return await renderFallbackImage(username);
-      }
-    },
+    render,
     PNG_HEADERS,
     // Cold miss: never render on the request path, pinned variants included —
     // they cost the same ~2s and fail the same way. The fallback is a real
