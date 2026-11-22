@@ -11,6 +11,12 @@ export const alt = "gitone driver card";
 
 const BG = "#0b0d10";
 
+function tint(hex: string, a: number) {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+}
+
 // Social unfurl for the scout report: the live card on the left, the
 // headline numbers on the right. The card is a clean rounded rectangle now,
 // so no corner masks are needed.
@@ -20,7 +26,7 @@ const BG = "#0b0d10";
 // "no preview". KV-cache the PNG — repeats never render again.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v6:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v7:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {
@@ -56,6 +62,18 @@ async function buildOg(username: string): Promise<Response> {
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
             backgroundSize: "60px 60px",
+          }}
+        />
+
+        <div
+          style={{
+            position: "absolute",
+            left: 20,
+            top: 10,
+            width: 560,
+            height: 600,
+            display: "flex",
+            backgroundImage: `radial-gradient(ellipse 62% 54% at 42% 48%, ${tint(card.constructor.color, 0.26)}, transparent 74%)`,
           }}
         />
 

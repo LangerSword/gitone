@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { loadPosterFonts, publicAssetDataUri } from "./card";
 import { fetchDataUri } from "./renderCard";
 import { pickPlate } from "./renderCard26";
-import { computeDuel } from "@/lib/duel";
+import { computeDuel, type Duel } from "@/lib/duel";
 import { cardDisplayName } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
 import { GOAT_LOGIN, GOAT_LOGINS, STATS, STAT_LABELS } from "@/lib/racing/constants";
@@ -45,7 +45,7 @@ function Checkers({ y }: { y: number }) {
 // number, chip, name and all six stats — in one Satori pass. The winner gets a
 // livery wash behind the crest so the result reads before the scoreline.
 function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
-  const CW = 246;
+  const CW = 224;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
   const accent = card.constructor.color;
@@ -62,7 +62,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 92, width: CW, height: CH, display: "flex" }}>
+    <div style={{ position: "absolute", left, top: 54, width: CW, height: CH, display: "flex" }}>
       {winner && (
         <div
           style={{
@@ -76,7 +76,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
         />
       )}
       {winner && (
-        <div style={{ position: "absolute", left: 30, top: -24, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#f5d67b", color: "#15151e", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
+        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#f5d67b", color: "#15151e", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
           WINNER
         </div>
       )}
@@ -149,6 +149,41 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   );
 }
 
+// The sector table carries the site's butterfly bars into the shared poster:
+// six rows, each value in its own side's livery, winner marked by a dot and a
+// brighter bar. Shared 0-99 scale, label fixed in the middle.
+function SectorTable({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
+  return (
+    <div style={{ position: "absolute", left: 90, top: 402, width: 1020, display: "flex", flexDirection: "column" }}>
+      {duel.rows.map((row) => {
+        const aWon = row.winner === "challenger";
+        const bWon = row.winner === "opponent";
+        const aInk = row.challenger >= 90 ? "#b46bff" : aColor;
+        const bInk = row.opponent >= 90 ? "#b46bff" : bColor;
+        return (
+          <div key={row.key} style={{ display: "flex", width: "100%", height: 23, alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.06)", background: aWon ? withAlpha(aColor, 0.06) : bWon ? withAlpha(bColor, 0.06) : "transparent" }}>
+            <div style={{ display: "flex", width: 44, alignItems: "center", justifyContent: "flex-end", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: aInk, opacity: bWon ? 0.72 : 1 }}>
+              {aWon && <div style={{ display: "flex", width: 4, height: 4, marginRight: 4, borderRadius: 999, background: aInk }} />}
+              {row.challenger}
+            </div>
+            <div style={{ display: "flex", flex: 1, height: 5, marginLeft: 8, justifyContent: "flex-end" }}>
+              <div style={{ display: "flex", width: `${row.challenger}%`, height: 5, background: aInk, opacity: aWon ? 1 : 0.6 }} />
+            </div>
+            <div style={{ display: "flex", width: 74, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#9b9bab" }}>{row.label}</div>
+            <div style={{ display: "flex", flex: 1, height: 5, marginRight: 8 }}>
+              <div style={{ display: "flex", width: `${row.opponent}%`, height: 5, background: bInk, opacity: bWon ? 1 : 0.6 }} />
+            </div>
+            <div style={{ display: "flex", width: 44, alignItems: "center", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: bInk, opacity: aWon ? 0.72 : 1 }}>
+              {row.opponent}
+              {bWon && <div style={{ display: "flex", width: 4, height: 4, marginLeft: 4, borderRadius: 999, background: bInk }} />}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
   const duel = computeDuel(a, b);
   const { score, winner, onCountback, testSession } = duel;
@@ -177,8 +212,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
     publicAssetDataUri(pb.bg.replace(/^\/cards\//, "cards/og280/").replace(/\.webp$/, ".png")),
   ]);
 
-  const sideW = 246;
-  const leftX = 64;
+  const sideW = 224;
+  const leftX = 48;
   const rightX = W - leftX - sideW;
 
   return new ImageResponse(
@@ -201,36 +236,35 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
         <Checkers y={0} />
         <Checkers y={H - 16} />
 
-        <div style={{ display: "flex", justifyContent: "center", marginTop: 34, fontFamily: "JBMono", fontSize: 24, letterSpacing: 8, color: "#c9c9d4" }}>
+        <div style={{ position: "absolute", left: 0, top: 14, width: W, display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 18, letterSpacing: 8, color: "#c9c9d4" }}>
           GITONE · RACE RESULT
         </div>
 
         <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
         <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
 
-        {/* the scoreline between them — scoreboard only, the result call
-            lives in the full-width band below */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 150 }}>
-          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 92, lineHeight: 1, color: "#c1121f" }}>
+        {/* the scoreline between the two full cards */}
+        <div style={{ position: "absolute", left: W / 2 - 100, top: 130, width: 200, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 68, lineHeight: 1, color: "#c1121f" }}>
             {score.challenger}-{score.opponent}
           </div>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 20, letterSpacing: 6, color: "#9b9bab", marginTop: 10 }}>
-            SECTORS
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 14, letterSpacing: 5, color: "#9b9bab", marginTop: 8 }}>
+            SECTORS WON
           </div>
-          <div style={{ display: "flex", width: 64, height: 64, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 24, fontFamily: "Titillium", fontWeight: 800, fontSize: 27, color: "#f5f5f7" }}>
+          <div style={{ display: "flex", width: 52, height: 52, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 18, fontFamily: "Titillium", fontWeight: 800, fontSize: 23, color: "#f5f5f7" }}>
             VS
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "auto", marginBottom: 28 }}>
-          {/* the winner wears championship gold — the trophy read, same as the
-              live banner; a dead heat stays in the timing-screen white */}
+        <SectorTable duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} />
+
+        <div style={{ position: "absolute", left: 0, bottom: 18, width: W, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div
             style={{
               display: "flex",
               fontFamily: "Titillium",
               fontWeight: 800,
-              fontSize: 54,
+              fontSize: 42,
               lineHeight: 1,
               letterSpacing: 1,
               color: winnerCard ? "#f5d67b" : "#f5f5f7",
@@ -239,12 +273,11 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           >
             {headline}
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 12 }}>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 4, color: "#c9c9d4" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 8 }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#c9c9d4" }}>
               {sub}
             </span>
-            {/* the address rides WITH the result call — no floating footer */}
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 21, letterSpacing: 3, color: "#c1121f" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#c1121f" }}>
               gitone.langersword.in
             </span>
           </div>

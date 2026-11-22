@@ -21,7 +21,7 @@
  * is closed) and wrangler auth with R2 object write.
  */
 import { execFileSync, spawn } from "node:child_process";
-import { writeFileSync, mkdtempSync } from "node:fs";
+import { writeFileSync, readFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -81,12 +81,11 @@ async function ensureLocalServer() {
   throw new Error("local server did not come up");
 }
 
-function warmed() {
-  try {
-    return new Set(JSON.parse(readFileSync(STATE, "utf8")));
-  } catch {
-    return new Set();
-  }
+let warmedSet;
+try {
+  warmedSet = new Set(JSON.parse(readFileSync(STATE, "utf8")));
+} catch {
+  warmedSet = new Set();
 }
 
 function scoutedLogins() {
@@ -99,8 +98,7 @@ function scoutedLogins() {
   const cards = new Set(
     keys.filter((n) => n.startsWith("gitone:card:")).map((n) => n.split(":").pop().toLowerCase()),
   );
-  const done = warmed();
-  return [...cards].filter((c) => !done.has(c)).sort();
+  return [...cards].filter((c) => !warmedSet.has(c)).sort();
 }
 
 function pushPng(login, png) {
@@ -114,9 +112,8 @@ function pushPng(login, png) {
       "--content-type", "image/png",
       "--cache-control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
     ]);
-    const done = warmed();
-    done.add(login.toLowerCase());
-    writeFileSync(STATE, JSON.stringify([...done].sort()));
+    warmedSet.add(login.toLowerCase());
+    writeFileSync(STATE, JSON.stringify([...warmedSet].sort()));
   } finally {
     execFileSync("rm", ["-rf", dir]);
   }
