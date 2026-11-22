@@ -226,6 +226,11 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
       >
         <Checkers y={0} />
         <Checkers y={H - 16} />
+        {/* faint track grammar: horizontal speed rules and one timing arc */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div key={i} style={{ position: "absolute", left: 0, top: 104 + i * 92, width: W, height: 1, display: "flex", background: "rgba(240,232,216,0.025)" }} />
+        ))}
+        <div style={{ position: "absolute", left: 170, top: 128, width: 860, height: 330, display: "flex", borderRadius: 999, border: "1px solid rgba(214,133,74,0.05)" }} />
 
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (

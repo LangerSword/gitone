@@ -246,6 +246,7 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   const sharp = (await import("sharp")).default;
   const w = width;
   const H = cardH(w);
+  const livery = card.constructor.color;
   const pbox = portraitForCard(card);
 
   // 1. the baked plate for THIS tier, resized to the card box (its alpha =
@@ -302,8 +303,15 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   const pad = Math.round(w * 0.07);
   const W = w + pad * 2;
   const Hc = H + pad * 2;
+  // A restrained livery floodlight around the object — the download reads as
+  // a lit card on a dark surface, not a flat cutout. Alpha reaches zero before
+  // the frame edge, so the PNG keeps its clean transparent surround.
+  const glow = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><defs><radialGradient id="l" cx="50%" cy="46%" r="96%"><stop offset="18%" stop-color="${livery}" stop-opacity="0.5"/><stop offset="100%" stop-color="${livery}" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#l)"/></svg>`,
+  );
   const out = await sharp({ create: { width: W, height: Hc, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([
+      { input: glow, blend: "over" },
       { input: plate, left: pad, top: pad },
       { input: textPng, left: pad, top: pad },
     ])
