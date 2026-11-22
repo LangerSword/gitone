@@ -86,7 +86,13 @@ function scoutedLogins() {
   const cards = new Set(
     keys.filter((n) => n.startsWith("gitone:card:")).map((n) => n.split(":").pop().toLowerCase()),
   );
-  const pngs = new Set(keys.filter((n) => n.startsWith("cardpng:")).map((n) => n.split(":")[2]));
+  // Only the plain embed counts as cached: `cardpng:v4:<login>::`. A pinned
+  // variant (`:in:`, `::mercedes`) is a different render and must not satisfy
+  // the plain key, or the warmer skips a handle that still serves a fallback.
+  const plain = /^cardpng:v4:([^:]+)::$/;
+  const pngs = new Set(
+    keys.filter((n) => plain.test(n)).map((n) => n.match(plain)[1].toLowerCase()),
+  );
   return [...cards].filter((c) => !pngs.has(c)).sort();
 }
 
