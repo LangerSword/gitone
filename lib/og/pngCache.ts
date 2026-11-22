@@ -46,6 +46,7 @@ export async function cachedPng(
   key: string,
   render: () => Promise<Response>,
   headers: Record<string, string> = PNG_HEADERS,
+  onMiss?: () => Promise<Response>,
 ): Promise<Response> {
   const cache = edgeCache();
   const url = cacheUrl(key);
@@ -70,6 +71,15 @@ export async function cachedPng(
   } else if (!cache) {
     // No cache backend at all (local dev): stream straight through.
     return render();
+  }
+
+  // Cold miss. The caller decides whether a full render is safe to attempt
+  // here; a full Satori composite costs ~2s of CPU, which the Workers free
+  // plan's 10ms budget kills outright (Cloudflare 1102 -> 503). Passing
+  // onMiss keeps the request cheap and the visitor served.
+  if (onMiss) {
+    const res = await onMiss();
+    return new Response(res.body, { status: res.status, headers: { ...res.headers, "x-og-cache": "miss-fallback" } });
   }
 
   let res: Response;
