@@ -12,9 +12,10 @@ import type { YearBreakdown } from "@/lib/racing/types";
 // Lifetime contributions need one contributionsCollection window per calendar
 // year (each window must span ≤1yr). GitHub's resolver times out (~10s) if too
 // many windows share a request, so we fetch the profile in one fast query,
-// then the years in small parallel batches with a retry — and tolerate a
-// dropped batch (the figure is only used log-scaled, so a missing year barely
-// moves it).
+// then the years in small parallel batches. A year GitHub drops from the
+// aliased batch is rebuilt from sequential date windows instead of being
+// omitted, so the lifetime total and seasons-on-the-grid never quietly
+// undercount an overactive profile.
 //
 // GitHub also rejects contributionsCollection outright (RESOURCE_LIMITS_EXCEEDED)
 // when the window holds too many contribution events. Only hyperactive
@@ -381,6 +382,99 @@ ${aliases}
     }`;
 }
 
+const emptyYearContrib = (): YearContrib => ({
+  totalCommitContributions: 0,
+  totalIssueContributions: 0,
+  totalPullRequestContributions: 0,
+  totalPullRequestReviewContributions: 0,
+  restrictedContributionsCount: 0,
+});
+
+const addYearContrib = (a: YearContrib, b: YearContrib): YearContrib => ({
+  totalCommitContributions: a.totalCommitContributions + b.totalCommitContributions,
+  totalIssueContributions: a.totalIssueContributions + b.totalIssueContributions,
+  totalPullRequestContributions: a.totalPullRequestContributions + b.totalPullRequestContributions,
+  totalPullRequestReviewContributions: a.totalPullRequestReviewContributions + b.totalPullRequestReviewContributions,
+  restrictedContributionsCount: a.restrictedContributionsCount + b.restrictedContributionsCount,
+});
+
+function yearWindowQuery(fromIso: string, toIso: string): string {
+  return `
+    query YearWindow($login: String!) {
+      user(login: $login) {
+        y: contributionsCollection(from: "${fromIso}", to: "${toIso}") {
+          totalCommitContributions
+          totalIssueContributions
+          totalPullRequestContributions
+          totalPullRequestReviewContributions
+          restrictedContributionsCount
+        }
+      }
+    }`;
+}
+
+// A calendar year GitHub drops from the aliased batch is rebuilt from four
+// sequential quarter windows; a quarter that still trips the resource budget
+// is halved once more before it is zeroed. Never omit a heavy year silently:
+// a missing year silently understates both the lifetime total and the
+// seasons-on-the-grid signal.
+async function fetchYearWindow(
+  login: string,
+  tok: PoolToken,
+  year: number,
+  currentYear: number,
+  nowIso: string,
+): Promise<YearBreakdown> {
+  const startMs = Date.UTC(year, 0, 1);
+  const endMs = Date.parse(
+    year === currentYear ? nowIso : `${year}-12-31T23:59:59Z`,
+  );
+  const quarterMs = (endMs - startMs) / 4;
+
+  const fetchSlice = async (
+    from: Date,
+    to: Date,
+    splitsLeft: number,
+  ): Promise<YearContrib> => {
+    try {
+      const { user } = await gql<{ y: YearContrib | null }>(
+        yearWindowQuery(from.toISOString(), to.toISOString()),
+        login,
+        tok,
+        0,
+      );
+      return user?.y ?? emptyYearContrib();
+    } catch (e) {
+      const err = e as GithubError;
+      if (err.type !== "resource" && !err.fallbackable) throw e;
+      if (splitsLeft === 0) return emptyYearContrib();
+      const mid = new Date((from.getTime() + to.getTime()) / 2);
+      const left = await fetchSlice(from, mid, splitsLeft - 1);
+      const right = await fetchSlice(
+        new Date(mid.getTime() + 1),
+        to,
+        splitsLeft - 1,
+      );
+      return addYearContrib(left, right);
+    }
+  };
+
+  let total = emptyYearContrib();
+  for (let i = 0; i < 4; i++) {
+    const from = new Date(startMs + i * quarterMs + (i ? 1 : 0));
+    const to = new Date(startMs + (i + 1) * quarterMs);
+    total = addYearContrib(total, await fetchSlice(from, to, 1));
+  }
+  return {
+    year,
+    commits: total.totalCommitContributions,
+    prs: total.totalPullRequestContributions,
+    reviews: total.totalPullRequestReviewContributions,
+    issues: total.totalIssueContributions,
+    restricted: total.restrictedContributionsCount,
+  };
+}
+
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -411,18 +505,26 @@ async function fetchYears(
       0, // the year-by-year fallback below is safer than a blind retry
     );
     if (!user) return [];
-    return batch.flatMap((y) => {
+    const rows: YearBreakdown[] = [];
+    for (const y of batch) {
       const c = user[`y${y}`];
-      if (!c) return [];
-      return [{
-        year: y,
-        commits: c.totalCommitContributions,
-        prs: c.totalPullRequestContributions,
-        reviews: c.totalPullRequestReviewContributions,
-        issues: c.totalIssueContributions,
-        restricted: c.restrictedContributionsCount,
-      }];
-    });
+      if (c) {
+        rows.push({
+          year: y,
+          commits: c.totalCommitContributions,
+          prs: c.totalPullRequestContributions,
+          reviews: c.totalPullRequestReviewContributions,
+          issues: c.totalIssueContributions,
+          restricted: c.restrictedContributionsCount,
+        });
+      } else {
+        // GitHub drops over-budget years from the aliased batch — and may
+        // drop the single-year retry too. Rebuild from windows rather than
+        // shipping a card that quietly pretends the year never happened.
+        rows.push(await fetchYearWindow(login, tok, y, currentYear, nowIso));
+      }
+    }
+    return rows;
   };
 
   const rows = await Promise.all(
@@ -431,12 +533,17 @@ async function fetchYears(
         return await yearRows(batch);
       } catch {
         // Aliased years pool their resource cost, so one hyperactive year
-        // sinks its whole batch — retry each year alone and drop only the
-        // truly over-budget years.
-        const singles = await Promise.all(
-          batch.map((y) => yearRows([y]).catch(() => [] as YearBreakdown[])),
-        );
-        return singles.flat();
+        // sinks its whole batch — retry each year alone and rebuild only
+        // the truly over-budget ones from windows.
+        const singles: YearBreakdown[] = [];
+        for (const y of batch) {
+          try {
+            singles.push(...(await yearRows([y])));
+          } catch {
+            singles.push(await fetchYearWindow(login, tok, y, currentYear, nowIso));
+          }
+        }
+        return singles;
       }
     }),
   );
