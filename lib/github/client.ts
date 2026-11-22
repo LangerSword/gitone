@@ -33,6 +33,9 @@ export type GithubErrorType =
 export interface GithubError {
   type: GithubErrorType;
   message: string;
+  // True for a 5xx or request timeout: the cheap windowed rebuild can cure
+  // these, while a 404, bad token or GraphQL error cannot.
+  fallbackable?: boolean;
 }
 
 export interface RawRepo {
@@ -75,8 +78,8 @@ const LIFETIME_BATCH = 4;
 const MIN_CONTRIBUTED_LANG_COMMITS = 3;
 const REQUEST_TIMEOUT_MS = 8_000;
 
-const fail = (type: GithubErrorType, message: string): never => {
-  throw { type, message } satisfies GithubError;
+const fail = (type: GithubErrorType, message: string, fallbackable = false): never => {
+  throw { type, message, ...(fallbackable ? { fallbackable: true } : {}) } satisfies GithubError;
 };
 
 const delay = (ms = 250) => new Promise((r) => setTimeout(r, ms));
@@ -156,7 +159,7 @@ async function gql<T>(
         await delay();
         continue;
       }
-      return fail("network", "Couldn't reach GitHub — check your connection.");
+      return fail("network", "Couldn't reach GitHub — check your connection.", true);
     } finally {
       clearTimeout(timer);
     }
@@ -173,7 +176,7 @@ async function gql<T>(
         await delay();
         continue;
       }
-      return fail("network", `GitHub is unavailable (${res.status}).`);
+      return fail("network", `GitHub is unavailable (${res.status}).`, true);
     }
     if (!res.ok) return fail("network", `GitHub returned an error (${res.status}).`);
 
@@ -331,14 +334,15 @@ async function fetchRecentWindow(
     );
     return user?.recent ?? emptyRecent();
   } catch (e) {
-    if ((e as GithubError).type !== "resource") throw e;
+    const err = e as GithubError;
+    // Resource, 5xx or timeout on a wide window all mean one request has too
+    // much work. Halve and retry; zero the slice only at the floor.
+    if (err.type !== "resource" && !err.fallbackable) throw e;
     if (splitsLeft === 0) return emptyRecent(); // over budget at the floor — zeros beat no card
     const mid = new Date((from.getTime() + to.getTime()) / 2);
-    const halves = await Promise.all([
-      fetchRecentWindow(login, tok, from, mid, splitsLeft - 1),
-      fetchRecentWindow(login, tok, new Date(mid.getTime() + 1), to, splitsLeft - 1),
-    ]);
-    return combineRecent(halves);
+    const left = await fetchRecentWindow(login, tok, from, mid, splitsLeft - 1);
+    const right = await fetchRecentWindow(login, tok, new Date(mid.getTime() + 1), to, splitsLeft - 1);
+    return combineRecent([left, right]);
   }
 }
 
@@ -349,13 +353,17 @@ async function fetchProfileWindowed(
 ): Promise<UserNode | null> {
   const { user } = await gql<BasicsNode>(basicsQuery(), login, tok);
   if (!user) return null;
+  // Start the fallback at quarter-year slices; heavy profiles blow the 8s
+  // budget on half-year windows, then spend another 8s on each retry.
+  const sliceMs = RECENT_YEAR_MS / 4;
   const from = new Date(now.getTime() - RECENT_YEAR_MS);
-  const mid = new Date(now.getTime() - RECENT_YEAR_MS / 2);
-  const halves = await Promise.all([
-    fetchRecentWindow(login, tok, from, mid, RECENT_WINDOW_SPLITS),
-    fetchRecentWindow(login, tok, new Date(mid.getTime() + 1), now, RECENT_WINDOW_SPLITS),
-  ]);
-  return { ...user, recent: combineRecent(halves) };
+  const parts: RecentNode[] = [];
+  for (let i = 0; i < 4; i++) {
+    const start = new Date(from.getTime() + i * sliceMs + (i ? 1 : 0));
+    const end = new Date(from.getTime() + (i + 1) * sliceMs);
+    parts.push(await fetchRecentWindow(login, tok, start, end, RECENT_WINDOW_SPLITS));
+  }
+  return { ...user, recent: combineRecent(parts) };
 }
 
 function lifetimeQuery(years: number[], currentYear: number, nowIso: string): string {
@@ -400,6 +408,7 @@ async function fetchYears(
       lifetimeQuery(batch, currentYear, nowIso),
       login,
       tok,
+      0, // the year-by-year fallback below is safer than a blind retry
     );
     if (!user) return [];
     return batch.flatMap((y) => {
@@ -445,10 +454,13 @@ export async function fetchProfile(username: string, now = new Date()): Promise<
 
   const fetchUser = async (t: PoolToken): Promise<UserNode | null> => {
     try {
-      const { user } = await gql<UserNode>(profileQuery(), login, t);
+      const { user } = await gql<UserNode>(profileQuery(), login, t, 0);
       return user;
     } catch (e) {
-      if ((e as GithubError).type !== "resource") throw e;
+      const err = e as GithubError;
+      // A 5xx or 8s abort on the full-year query is the heavy-profile failure
+      // the cheap basics + windowed rebuild is designed to answer.
+      if (err.type !== "resource" && !err.fallbackable) throw e;
       return fetchProfileWindowed(login, t, now);
     }
   };
