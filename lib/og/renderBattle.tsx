@@ -76,7 +76,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
         />
       )}
       {winner && (
-        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#f5d67b", color: "#15151e", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
+        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#b3202c", color: "#f0e8d8", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
           WINNER
         </div>
       )}
@@ -154,14 +154,17 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
 // brighter bar. Shared 0-99 scale, label fixed in the middle.
 function SectorTable({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
   return (
-    <div style={{ position: "absolute", left: 90, top: 402, width: 1020, display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "absolute", left: 90, top: 404, width: 1020, display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", width: "100%", height: 16, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 4, color: "#96949b" }}>
+        SECTOR WINNERS
+      </div>
       {duel.rows.map((row) => {
         const aWon = row.winner === "challenger";
         const bWon = row.winner === "opponent";
         const aInk = row.challenger >= 90 ? "#b46bff" : aColor;
         const bInk = row.opponent >= 90 ? "#b46bff" : bColor;
         return (
-          <div key={row.key} style={{ display: "flex", width: "100%", height: 23, alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.06)", background: aWon ? withAlpha(aColor, 0.06) : bWon ? withAlpha(bColor, 0.06) : "transparent" }}>
+          <div key={row.key} style={{ display: "flex", width: "100%", height: 20, alignItems: "center", borderBottom: "1px solid rgba(240,232,216,0.07)", background: aWon ? withAlpha(aColor, 0.05) : bWon ? withAlpha(bColor, 0.05) : "transparent" }}>
             <div style={{ display: "flex", width: 44, alignItems: "center", justifyContent: "flex-end", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: aInk, opacity: bWon ? 0.72 : 1 }}>
               {aWon && <div style={{ display: "flex", width: 4, height: 4, marginRight: 4, borderRadius: 999, background: aInk }} />}
               {row.challenger}
@@ -224,11 +227,12 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#15151e",
+          backgroundColor: "#0d0f12",
           backgroundImage:
-            `radial-gradient(420px 340px at 14% 44%, ${withAlpha(a.constructor.color, 0.20)}, transparent 72%), ` +
-            `radial-gradient(420px 340px at 86% 44%, ${withAlpha(b.constructor.color, 0.20)}, transparent 72%), ` +
-            "radial-gradient(760px 360px at 50% -12%, rgba(193,18,31,0.20), transparent 62%), radial-gradient(900px 240px at 50% 108%, rgba(255,255,255,0.05), transparent 70%)",
+            `radial-gradient(420px 340px at 14% 44%, ${withAlpha(a.constructor.color, 0.16)}, transparent 72%), ` +
+            `radial-gradient(420px 340px at 86% 44%, ${withAlpha(b.constructor.color, 0.16)}, transparent 72%), ` +
+            "linear-gradient(115deg, rgba(240,232,216,0.02) 1px, transparent 1px), radial-gradient(760px 360px at 50% -12%, rgba(179,32,44,0.16), transparent 62%)",
+          backgroundSize: "auto, auto, 28px 28px, auto",
           position: "relative",
           fontFamily: "Titillium",
         }}
@@ -236,23 +240,26 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
         <Checkers y={0} />
         <Checkers y={H - 16} />
 
-        <div style={{ position: "absolute", left: 0, top: 14, width: W, display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 18, letterSpacing: 8, color: "#c9c9d4" }}>
-          GITONE · RACE RESULT
+        <div style={{ position: "absolute", left: 0, top: 14, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#b3202c" }} />
+          ))}
+          <div style={{ display: "flex", marginLeft: 14, fontFamily: "JBMono", fontSize: 17, fontWeight: 700, letterSpacing: 7, color: "#f0e8d8" }}>
+            GITONE · HEAD TO HEAD
+          </div>
         </div>
 
         <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
         <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
 
         {/* the scoreline between the two full cards */}
-        <div style={{ position: "absolute", left: W / 2 - 100, top: 130, width: 200, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 68, lineHeight: 1, color: "#c1121f" }}>
-            {score.challenger}-{score.opponent}
-          </div>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 14, letterSpacing: 5, color: "#9b9bab", marginTop: 8 }}>
-            SECTORS WON
-          </div>
-          <div style={{ display: "flex", width: 52, height: 52, borderRadius: 999, border: "2px solid rgba(193,18,31,0.5)", alignItems: "center", justifyContent: "center", marginTop: 18, fontFamily: "Titillium", fontWeight: 800, fontSize: 23, color: "#f5f5f7" }}>
-            VS
+        <div style={{ position: "absolute", left: W / 2 - 110, top: 112, width: 220, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 5, color: "#96949b" }}>SECTORS WON</div>
+          <div style={{ display: "flex", marginTop: 4, fontSize: 62, fontWeight: 900, lineHeight: 1, color: "#b3202c" }}>{score.challenger}-{score.opponent}</div>
+          <div style={{ display: "flex", position: "relative", marginTop: 30, height: 130, alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", left: 8, top: 10, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(179,32,44,0.28)" }}>VS</div>
+            <div style={{ position: "absolute", left: 4, top: 5, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.45)" }}>VS</div>
+            <div style={{ position: "absolute", left: 0, top: 0, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 10px 30px rgba(0,0,0,0.55)" }}>VS</div>
           </div>
         </div>
 
@@ -267,17 +274,17 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
               fontSize: 42,
               lineHeight: 1,
               letterSpacing: 1,
-              color: winnerCard ? "#f5d67b" : "#f5f5f7",
-              textShadow: winnerCard ? "0 0 34px rgba(245,214,123,0.35), 0 2px 0 rgba(0,0,0,.55)" : "0 2px 0 rgba(0,0,0,.55)",
+              color: "#f0e8d8",
+              textShadow: "0 6px 24px rgba(0,0,0,0.6)",
             }}
           >
             {headline}
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 8 }}>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#c9c9d4" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#96949b" }}>
               {sub}
             </span>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#c1121f" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#b3202c" }}>
               gitone.langersword.in
             </span>
           </div>

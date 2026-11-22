@@ -9,7 +9,10 @@ export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const alt = "gitone driver card";
 
-const BG = "#0b0d10";
+const FIELD = "#0d0f12";
+const INK = "#f0e8d8";
+const SIGNAL = "#b3202c";
+const MUTED = "#96949b";
 
 function tint(hex: string, a: number) {
   const h = hex.replace("#", "");
@@ -17,16 +20,13 @@ function tint(hex: string, a: number) {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 }
 
-// Social unfurl for the scout report: the live card on the left, the
-// headline numbers on the right. The card is a clean rounded rectangle now,
-// so no corner masks are needed.
-//
-// The composite is CPU-heavy (card render + outer pass); a cold render can
-// bust the Workers CPU budget and hand X/Discord a 503, which they cache as
-// "no preview". KV-cache the PNG — repeats never render again.
+// Broadcast-editorial unfurl: the full card seated in its own livery light on
+// the left, one confident typographic column on the right. The card owns all
+// six stats; the column shows only the three fastest sectors as evidence —
+// never a duplicated stat grid.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v7:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v8:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {
@@ -35,7 +35,7 @@ async function buildOg(username: string): Promise<Response> {
   if ("error" in res) {
     return new ImageResponse(
       (
-        <div style={{ width: 1200, height: 630, display: "flex", alignItems: "center", justifyContent: "center", background: BG, color: "#f2f3f0", fontFamily: "Titillium" }}>
+        <div style={{ width: 1200, height: 630, display: "flex", alignItems: "center", justifyContent: "center", background: FIELD, color: INK, fontFamily: "Titillium" }}>
           <div style={{ display: "flex", fontWeight: 900, fontSize: 88, letterSpacing: 6 }}>GITONE</div>
         </div>
       ),
@@ -49,63 +49,55 @@ async function buildOg(username: string): Promise<Response> {
   const cardPng = await renderCardPng(card, cardW);
   const cardSrc = `data:image/png;base64,${cardPng.toString("base64")}`;
   const top = Math.round((630 - frame.H) / 2);
+  const fastest = [...STATS].sort((a, b) => card.stats[b] - card.stats[a]).slice(0, 3);
+  const nameSize = card.name.length > 18 ? 54 : card.name.length > 12 ? 62 : 72;
+  const livery = card.constructor.color;
 
   return new ImageResponse(
     (
-      <div style={{ width: 1200, height: 630, display: "flex", position: "relative", background: BG }}>
-        {/* a measuring grid, faint */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
+      <div style={{ width: 1200, height: 630, display: "flex", position: "relative", background: FIELD, fontFamily: "Titillium" }}>
+        {/* faint broadcast scan texture */}
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "linear-gradient(115deg, rgba(240,232,216,0.022) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+        {/* livery floodlight + standing shadow seat the card as an object */}
+        <div style={{ position: "absolute", left: 0, top: 0, width: 620, height: 630, display: "flex", backgroundImage: `radial-gradient(ellipse 62% 68% at 34% 48%, ${tint(livery, 0.22)}, transparent 72%)` }} />
+        <div style={{ position: "absolute", left: 78, top: 30, width: 440, height: 590, display: "flex", backgroundImage: "radial-gradient(ellipse 46% 38% at 50% 62%, rgba(0,0,0,0.6), transparent 72%)" }} />
 
-        <div
-          style={{
-            position: "absolute",
-            left: 20,
-            top: 10,
-            width: 560,
-            height: 600,
-            display: "flex",
-            backgroundImage: `radial-gradient(ellipse 62% 54% at 42% 48%, ${tint(card.constructor.color, 0.26)}, transparent 74%)`,
-          }}
-        />
-
-        <div style={{ position: "absolute", left: 72, top, display: "flex" }}>
+        <div style={{ position: "absolute", left: 74, top, display: "flex" }}>
           <img src={cardSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />
         </div>
 
-        <div style={{ position: "absolute", left: 540, top: 96, width: 600, display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 18, fontWeight: 700, letterSpacing: 5, color: "#6a7079" }}>
-            GITONE · SCOUT REPORT
+        <div style={{ position: "absolute", left: 560, top: 96, width: 580, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} style={{ display: "flex", width: 8, height: 8, borderRadius: 999, background: SIGNAL }} />
+            ))}
+            <div style={{ display: "flex", marginLeft: 12, fontFamily: "JBMono", fontSize: 13, fontWeight: 700, letterSpacing: 5, color: MUTED }}>GITONE · SEASON 26</div>
           </div>
-          <div style={{ display: "flex", marginTop: 18, fontWeight: 900, fontSize: 58, lineHeight: 0.95, color: "#f2f3f0" }}>{card.name}</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 18 }}>
-            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 38, fontWeight: 800, color: card.constructor.color }}>{card.rtg}</div>
-            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, fontWeight: 700, letterSpacing: 3, color: "#a2a7ae" }}>
-              {card.finishLabel} · #{String(card.number).padStart(2, "0")} · {card.constructor.name.toUpperCase()}
+
+          <div style={{ display: "flex", marginTop: 30, fontSize: nameSize, fontWeight: 900, lineHeight: 0.95, letterSpacing: -1, color: INK }}>{card.name}</div>
+
+          <div style={{ display: "flex", marginTop: 26, alignItems: "baseline", gap: 16 }}>
+            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 54, fontWeight: 800, color: SIGNAL }}>{card.rtg}</div>
+            <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 2, color: MUTED }}>
+              {card.finishLabel.toUpperCase()} · NO.{String(card.number).padStart(2, "0")} · {card.constructor.name.toUpperCase()}
             </div>
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 18, marginTop: 42, borderTop: "1px solid rgba(255,255,255,0.12)", paddingTop: 22 }}>
-            {[STATS.slice(0, 3), STATS.slice(3)].map((row) => (
-              <div key={row[0]} style={{ display: "flex", gap: 1 }}>
-                {row.map((k) => (
-                  <div key={k} style={{ display: "flex", flex: 1, flexDirection: "column", gap: 6 }}>
-                    <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 14, fontWeight: 700, letterSpacing: 3, color: "#6a7079" }}>{STAT_LABELS[k]}</div>
-                    <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 36, fontWeight: 800, color: card.stats[k] >= 90 ? "#b46bff" : "#f2f3f0" }}>{card.stats[k]}</div>
-                  </div>
-                ))}
+
+          <div style={{ display: "flex", marginTop: 38, height: 1, background: "rgba(240,232,216,0.16)" }} />
+          <div style={{ display: "flex", marginTop: 12, fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 4, color: MUTED }}>
+            FASTEST SECTORS
+          </div>
+          <div style={{ display: "flex", marginTop: 14, gap: 18 }}>
+            {fastest.map((k) => (
+              <div key={k} style={{ display: "flex", flex: 1, flexDirection: "column", borderLeft: `2px solid ${tint(livery, 0.7)}`, paddingLeft: 14 }}>
+                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 11, letterSpacing: 2, color: MUTED }}>{STAT_LABELS[k]}</div>
+                <div style={{ display: "flex", marginTop: 6, fontFamily: "JBMono", fontSize: 34, fontWeight: 800, color: card.stats[k] >= 90 ? "#b46bff" : INK }}>{card.stats[k]}</div>
               </div>
             ))}
           </div>
-          <div style={{ display: "flex", marginTop: 44, fontFamily: "JBMono", fontSize: 15, letterSpacing: 2, color: "#6a7079" }}>
-            @{card.login} · github, rated like f1
+
+          <div style={{ display: "flex", marginTop: "auto", fontFamily: "JBMono", fontSize: 14, letterSpacing: 2, color: MUTED }}>
+            @{card.login} · gitone.langersword.in
           </div>
         </div>
       </div>
