@@ -31,6 +31,12 @@ function ProductHuntLogo({ size = 18 }: { size?: number }) {
 const PILL =
   "fixed right-[clamp(14px,3vw,22px)] z-40 flex h-[44px] items-center gap-[8px] rounded-full border bg-[rgba(21,21,30,0.92)] px-[16px] backdrop-blur-[6px] mono text-[11.5px] font-bold tracking-[0.14em] leading-none shadow-[0_8px_24px_-8px_rgba(0,0,0,.7)] transition-all duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[.98] max-[560px]:w-[44px] max-[560px]:justify-center max-[560px]:gap-0 max-[560px]:px-0";
 
+// Tool Index sits in the same stack, one pill below Product Hunt. Keep the
+// badge markup byte-exact for their checker — the wrapper only supplies the
+// pill chrome; the anchor/image attributes are untouched.
+const TOOL_INDEX_PILL =
+  "fixed right-[clamp(14px,3vw,22px)] z-40 flex h-[44px] items-center rounded-full border bg-[rgba(21,21,30,0.92)] px-[9px] backdrop-blur-[6px] shadow-[0_8px_24px_-8px_rgba(0,0,0,.7)] transition-all duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[.98] [&_a]:flex [&_a]:items-center [&_img]:block max-[560px]:h-[36px] max-[560px]:px-[6px] max-[560px]:[&_img]:w-[104px] max-[560px]:[&_img]:h-auto";
+
 export function SupportPills() {
   const hidden = useHideOnScroll();
   const gate: CSSProperties = {
@@ -70,6 +76,20 @@ export function SupportPills() {
         </span>
         <span className="max-[560px]:hidden">SUPPORT ON PRODUCT HUNT</span>
       </a>
+      <div
+        aria-label="gitone listed on Tool Index"
+        title="Listed on Tool Index"
+        className={`${TOOL_INDEX_PILL} bottom-[calc(clamp(14px,3vh,22px)_+_108px)]`}
+        style={{
+          ...gate,
+          transform: hidden ? "translateY(360%)" : undefined,
+          borderColor: "var(--line)",
+        }}
+        dangerouslySetInnerHTML={{
+          __html:
+            '<a href="https://toolindex.net/tools/gitone?ref=badge" target="_blank" rel="nofollow noopener">\n  <img src="https://toolindex.net/badge/gitone/small.svg?theme=dark" alt="gitone - Listed on Tool Index" width="130" height="30" />\n</a>',
+        }}
+      />
     </>
   );
 }

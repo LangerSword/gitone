@@ -14,11 +14,6 @@ export function SiteFooter() {
         >
           MADE BY LANGERSWORD
         </a>
-        <span
-          dangerouslySetInnerHTML={{
-            __html: '<a href="https://toolindex.net/tools/gitone?ref=badge" target="_blank" rel="nofollow noopener">\n  <img src="https://toolindex.net/badge/gitone/small.svg?theme=dark" alt="gitone - Listed on Tool Index" width="130" height="30" />\n</a>',
-          }}
-        />
       </div>
     </footer>
   );
