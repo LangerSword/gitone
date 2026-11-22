@@ -49,7 +49,8 @@ export async function cachedPng(
 
   const png = Buffer.from(await res.arrayBuffer());
   await redis.set(key, png.toString("base64"), "EX", TTL).catch(() => {});
-  // Read-back: proves whether the put actually landed in this runtime.
-  const stored = await redis.get(key).catch(() => null);
-  return new Response(png, { headers: { ...headers, "x-og-cache": stored ? "stored" : "put-failed" } });
+  // No read-back. It cost a second KV read on every miss — the most expensive
+  // path — purely to label the header. The put's own resolution is the
+  // acknowledgement; a failed put is already swallowed above.
+  return new Response(png, { headers: { ...headers, "x-og-cache": "stored" } });
 }

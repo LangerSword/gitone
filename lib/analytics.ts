@@ -19,7 +19,24 @@ export async function getScoutCount(): Promise<number | null> {
   }
 }
 
+// Batched counter. KV has no atomic increment, so `incr` is a read-modify-write
+// — two operations per scouted profile, on a free tier that allows 1,000
+// writes a day. Accumulate locally and flush one write per interval instead.
+const FLUSH_INTERVAL_MS = 60_000;
+let pending = 0;
+let lastFlush = 0;
+
 export function bumpScoutCount(): void {
-  if (!redis) return;
-  redis.incr(KEY).catch(() => {});
+  const client = redis;
+  if (!client) return;
+  pending += 1;
+  const now = Date.now();
+  if (now - lastFlush < FLUSH_INTERVAL_MS) return;
+  lastFlush = now;
+  const delta = pending;
+  pending = 0;
+  client
+    .get(KEY)
+    .then((raw) => client.set(KEY, String((Number(raw) || 0) + delta)))
+    .catch(() => {});
 }
