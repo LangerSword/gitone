@@ -44,7 +44,7 @@ function Checkers({ y }: { y: number }) {
 // One driver's side: plate, portrait and the FULL card grammar — rating,
 // number, chip, name and all six stats — in one Satori pass. The winner gets a
 // livery wash behind the crest so the result reads before the scoreline.
-function DriverSide({ card, plateSrc, avatar, left, winner, won }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean; won: string[] }) {
+function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
   const CW = 286;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
@@ -140,10 +140,38 @@ function DriverSide({ card, plateSrc, avatar, left, winner, won }: { card: Card;
         ))}
       </div>
       <div style={{ position: "absolute", left: 0, width: CW, top: "88%", display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 7, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.75) }}>GITONE · @{card.login}</div>
-      <div style={{ position: "absolute", left: 0, top: CH + 4, width: CW, display: "flex", justifyContent: "center" }}>
-        <div style={{ display: "flex", padding: "5px 14px", borderRadius: 999, border: `1px solid ${winner ? "rgba(214,133,74,0.5)" : "rgba(240,232,216,0.14)"}`, background: winner ? "rgba(214,133,74,0.10)" : "rgba(240,232,216,0.04)", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, letterSpacing: 1, color: winner ? "#f0e8d8" : "#9aa39c" }}>
-          {won.length ? won.join(" · ") : "NO SECTORS"}
-        </div>
+    </div>
+  );
+}
+
+// A scaled-down butterfly comparison: six sectors in one shallow band, so the
+// cards and the VS stay dominant while every sector winner is still visible.
+function SectorBoard({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
+  return (
+    <div style={{ position: "absolute", left: 48, top: 520, width: 1104, display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", width: "100%", height: 12, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTOR COMPARISON</div>
+      <div style={{ display: "flex", width: "100%", marginTop: 3 }}>
+        {duel.rows.map((row, i) => {
+          const aWon = row.winner === "challenger";
+          const bWon = row.winner === "opponent";
+          return (
+            <div key={row.key} style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", borderLeft: i === 0 ? "none" : "1px solid rgba(240,232,216,0.1)" }}>
+              <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 1, color: "#9aa39c" }}>{row.label}</div>
+              <div style={{ display: "flex", marginTop: 4, alignItems: "center", gap: 4 }}>
+                {aWon && <div style={{ display: "flex", width: 3, height: 3, borderRadius: 999, background: aColor }} />}
+                <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 10, fontWeight: 800, color: aWon ? aColor : "#9aa39c" }}>{row.challenger}</span>
+                <div style={{ display: "flex", width: 30, height: 3, justifyContent: "flex-end", background: "rgba(240,232,216,0.1)" }}>
+                  <div style={{ display: "flex", width: `${row.challenger}%`, height: 3, background: aColor, opacity: aWon ? 1 : 0.55 }} />
+                </div>
+                <div style={{ display: "flex", width: 30, height: 3, background: "rgba(240,232,216,0.1)" }}>
+                  <div style={{ display: "flex", width: `${row.opponent}%`, height: 3, background: bColor, opacity: bWon ? 1 : 0.55 }} />
+                </div>
+                <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 10, fontWeight: 800, color: bWon ? bColor : "#9aa39c" }}>{row.opponent}</span>
+                {bWon && <div style={{ display: "flex", width: 3, height: 3, borderRadius: 999, background: bColor }} />}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -158,9 +186,6 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
     : winner
       ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
       : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`;
-
-  const wonA = duel.rows.filter((r) => r.winner === "challenger").map((r) => r.label);
-  const wonB = duel.rows.filter((r) => r.winner === "opponent").map((r) => r.label);
 
   const pa = pickPlate(a);
   const pb = pickPlate(b);
@@ -209,11 +234,12 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} won={wonA} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} won={wonB} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
+        <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} />
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 150, top: 118, width: 300, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: W / 2 - 150, top: 140, width: 300, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ display: "flex", position: "relative", width: 300, height: 220, alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", left: 16, top: 16, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
             <div style={{ position: "absolute", left: 8, top: 8, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
