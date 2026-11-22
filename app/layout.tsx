@@ -62,6 +62,27 @@ export const metadata: Metadata = {
     description:
       "GitHub profiles as F1 26 driver cards: EXP, RAC, AWA, PAC scored live from real commits, PRs and reviews.",
     type: "website",
+    // A static file, not the dynamic /opengraph-image route. Link previews are
+    // fetched by crawlers (X, Slack, Telegram) that retry rarely and cache
+    // aggressively, so the image must never depend on a Worker render: that
+    // route composites a real card with Satori (~2s of CPU) and on a cold
+    // cache the crawler can lose the race and cache a text-only card instead —
+    // which X renders as a plain white panel.
+    images: [
+      {
+        url: "/og-root.png",
+        width: 1200,
+        height: 630,
+        alt: "gitone · your github, rated like f1",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "gitone · your github, rated like f1",
+    description:
+      "GitHub profiles as F1 26 driver cards: EXP, RAC, AWA, PAC scored live from real commits, PRs and reviews.",
+    images: ["/og-root.png"],
   },
   robots: { index: true, follow: true },
 };
