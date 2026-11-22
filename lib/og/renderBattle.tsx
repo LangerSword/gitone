@@ -33,8 +33,8 @@ function Checkers({ y }: { y: number }) {
     <div style={{ position: "absolute", left: 0, top: y, width: W, height: 16, display: "flex" }}>
       {Array.from({ length: 40 }).map((_, i) => (
         <div key={i} style={{ width: 30, height: 16, display: "flex", flexDirection: "column" }}>
-          <div style={{ width: 30, height: 8, background: i % 2 ? "#15151e" : "#f5f5f7", display: "flex" }} />
-          <div style={{ width: 30, height: 8, background: i % 2 ? "#f5f5f7" : "#15151e", display: "flex" }} />
+          <div style={{ width: 30, height: 8, background: i % 2 ? "#0e1417" : "#f0e8d8", display: "flex" }} />
+          <div style={{ width: 30, height: 8, background: i % 2 ? "#f0e8d8" : "#0e1417", display: "flex" }} />
         </div>
       ))}
     </div>
@@ -76,7 +76,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
         />
       )}
       {winner && (
-        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#b3202c", color: "#f0e8d8", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
+        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#d6854a", color: "#f0e8d8", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
           WINNER
         </div>
       )}
@@ -155,7 +155,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
 function SectorTable({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
   return (
     <div style={{ position: "absolute", left: 90, top: 404, width: 1020, display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", width: "100%", height: 16, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 4, color: "#96949b" }}>
+      <div style={{ display: "flex", width: "100%", height: 16, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 4, color: "#9aa39c" }}>
         SECTOR WINNERS
       </div>
       {duel.rows.map((row) => {
@@ -231,7 +231,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           backgroundImage:
             `radial-gradient(420px 340px at 14% 44%, ${withAlpha(a.constructor.color, 0.16)}, transparent 72%), ` +
             `radial-gradient(420px 340px at 86% 44%, ${withAlpha(b.constructor.color, 0.16)}, transparent 72%), ` +
-            "linear-gradient(115deg, rgba(240,232,216,0.02) 1px, transparent 1px), radial-gradient(760px 360px at 50% -12%, rgba(179,32,44,0.16), transparent 62%)",
+            "linear-gradient(115deg, rgba(240,232,216,0.02) 1px, transparent 1px), radial-gradient(760px 360px at 50% -12%, rgba(214,133,74,0.14), transparent 62%)",
           backgroundSize: "auto, auto, 28px 28px, auto",
           position: "relative",
           fontFamily: "Titillium",
@@ -242,7 +242,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
 
         <div style={{ position: "absolute", left: 0, top: 14, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#b3202c" }} />
+            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#d6854a" }} />
           ))}
           <div style={{ display: "flex", marginLeft: 14, fontFamily: "JBMono", fontSize: 17, fontWeight: 700, letterSpacing: 7, color: "#f0e8d8" }}>
             GITONE · HEAD TO HEAD
@@ -254,8 +254,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
 
         {/* the scoreline between the two full cards */}
         <div style={{ position: "absolute", left: W / 2 - 110, top: 112, width: 220, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 5, color: "#96949b" }}>SECTORS WON</div>
-          <div style={{ display: "flex", marginTop: 4, fontSize: 62, fontWeight: 900, lineHeight: 1, color: "#b3202c" }}>{score.challenger}-{score.opponent}</div>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 5, color: "#9aa39c" }}>SECTORS WON</div>
+          <div style={{ display: "flex", marginTop: 4, fontSize: 62, fontWeight: 900, lineHeight: 1, color: "#d6854a" }}>{score.challenger}-{score.opponent}</div>
           <div style={{ display: "flex", position: "relative", marginTop: 30, height: 130, alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", left: 8, top: 10, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(179,32,44,0.28)" }}>VS</div>
             <div style={{ position: "absolute", left: 4, top: 5, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.45)" }}>VS</div>
@@ -281,10 +281,10 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
             {headline}
           </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 8 }}>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#96949b" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#9aa39c" }}>
               {sub}
             </span>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#b3202c" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#d6854a" }}>
               gitone.langersword.in
             </span>
           </div>
@@ -299,10 +299,10 @@ export async function renderBattleFallback(a: string, b: string): Promise<Respon
   const fonts = await loadPosterFonts();
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#15151e", color: "#f5f5f7", fontFamily: "Titillium" }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 26, letterSpacing: 8, color: "#c9c9d4" }}>GITONE · RACE RESULT</div>
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0e1417", color: "#f0e8d8", fontFamily: "Titillium" }}>
+        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 26, letterSpacing: 8, color: "#9aa39c" }}>GITONE · RACE RESULT</div>
         <div style={{ display: "flex", fontWeight: 800, fontSize: 72, marginTop: 24 }}>@{a} vs @{b}</div>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 28, color: "#c1121f", marginTop: 20 }}>scout this battle at the grid</div>
+        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 28, color: "#d6854a", marginTop: 20 }}>scout this battle at the grid</div>
       </div>
     ),
     { width: W, height: H, fonts, headers: CACHE },
