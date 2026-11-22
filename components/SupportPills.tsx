@@ -56,8 +56,8 @@ export function SupportPills() {
         rel="noopener"
         aria-label="Buy me a coffee"
         title="Buy me a coffee"
-        className={`${PILL} bottom-[calc(clamp(14px,3vh,22px)_+_54px)] hover:border-[rgba(245,214,123,0.5)]`}
-        style={{ ...gate, borderColor: "var(--line)", color: "var(--dim)" }}
+        className={`${PILL} bottom-[calc(clamp(14px,3vh,22px)_+_108px)] hover:border-[rgba(245,214,123,0.5)]`}
+        style={{ ...gate, transform: hidden ? "translateY(360%)" : undefined, borderColor: "var(--line)", color: "var(--dim)" }}
       >
         <Coffee size={17} color="#f5d67b" aria-hidden className="shrink-0" />
         <span className="max-[560px]:hidden">BUY ME A COFFEE</span>
@@ -68,7 +68,7 @@ export function SupportPills() {
         rel="noopener"
         aria-label="Support gitone on Product Hunt"
         title="Support gitone on Product Hunt"
-        className={`${PILL} bottom-[clamp(14px,3vh,22px)] hover:border-[rgba(218,85,47,0.5)]`}
+        className={`${PILL} bottom-[calc(clamp(14px,3vh,22px)_+_54px)] hover:border-[rgba(218,85,47,0.5)]`}
         style={{ ...gate, transform: hidden ? "translateY(260%)" : undefined, borderColor: "var(--line)", color: "var(--dim)" }}
       >
         <span className="shrink-0" style={{ color: "#da552f" }}>
@@ -79,10 +79,10 @@ export function SupportPills() {
       <div
         aria-label="gitone listed on Tool Index"
         title="Listed on Tool Index"
-        className={`${TOOL_INDEX_PILL} bottom-[calc(clamp(14px,3vh,22px)_+_108px)]`}
+        className={`${TOOL_INDEX_PILL} bottom-[clamp(14px,3vh,22px)]`}
         style={{
           ...gate,
-          transform: hidden ? "translateY(360%)" : undefined,
+          transform: hidden ? "translateY(160%)" : undefined,
           borderColor: "var(--line)",
         }}
         dangerouslySetInnerHTML={{
