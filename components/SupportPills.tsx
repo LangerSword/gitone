@@ -14,8 +14,19 @@ function ProductHuntLogo({ size = 18 }: { size?: number }) {
   );
 }
 
-// The floating support pair, fixed bottom-right: Buy Me a Coffee above,
-// Product Hunt below — the same treatment gitfut uses, in gitone's chrome.
+// Tool Index's mark — the same "T" from their badge, redrawn in the pill's
+// own muted ink so the stack stays quiet instead of shouting in green.
+function ToolIndexLogo({ size = 17 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden>
+      <rect width="16" height="16" rx="4" fill="rgba(255,255,255,0.10)" />
+      <path d="M4.5 4.8h7M8 4.8v7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// The floating support trio, fixed bottom-right: Buy Me a Coffee, Product Hunt,
+// then Tool Index — the same treatment gitfut uses, in gitone's chrome.
 // Gold is the championship/support accent (never the racing red, which stays
 // a semantic action colour); PH keeps its own orange, imported as a brand
 // identity the way each constructor keeps its livery. Collapses to icon-only
@@ -30,12 +41,6 @@ function ProductHuntLogo({ size = 18 }: { size?: number }) {
 // entrance and eat the hover lift.
 const PILL =
   "fixed right-[clamp(14px,3vw,22px)] z-40 flex h-[44px] items-center gap-[8px] rounded-full border bg-[rgba(21,21,30,0.92)] px-[16px] backdrop-blur-[6px] mono text-[11.5px] font-bold tracking-[0.14em] leading-none shadow-[0_8px_24px_-8px_rgba(0,0,0,.7)] transition-all duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[.98] max-[560px]:w-[44px] max-[560px]:justify-center max-[560px]:gap-0 max-[560px]:px-0";
-
-// Tool Index sits in the same stack, one pill below Product Hunt. Keep the
-// badge markup byte-exact for their checker — the wrapper only supplies the
-// pill chrome; the anchor/image attributes are untouched.
-const TOOL_INDEX_PILL =
-  "fixed right-[clamp(14px,3vw,22px)] z-40 flex h-[44px] items-center rounded-full border bg-[rgba(21,21,30,0.92)] px-[9px] backdrop-blur-[6px] shadow-[0_8px_24px_-8px_rgba(0,0,0,.7)] transition-all duration-200 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[.98] [&_a]:flex [&_a]:items-center [&_img]:block max-[560px]:h-[36px] max-[560px]:px-[6px] max-[560px]:[&_img]:w-[104px] max-[560px]:[&_img]:h-auto";
 
 export function SupportPills() {
   const hidden = useHideOnScroll();
@@ -76,20 +81,20 @@ export function SupportPills() {
         </span>
         <span className="max-[560px]:hidden">SUPPORT ON PRODUCT HUNT</span>
       </a>
-      <div
+      <a
+        href="https://toolindex.net/tools/gitone?ref=badge"
+        target="_blank"
+        rel="nofollow noopener"
         aria-label="gitone listed on Tool Index"
         title="Listed on Tool Index"
-        className={`${TOOL_INDEX_PILL} bottom-[clamp(14px,3vh,22px)]`}
-        style={{
-          ...gate,
-          transform: hidden ? "translateY(160%)" : undefined,
-          borderColor: "var(--line)",
-        }}
-        dangerouslySetInnerHTML={{
-          __html:
-            '<a href="https://toolindex.net/tools/gitone?ref=badge" target="_blank" rel="nofollow noopener">\n  <img src="https://toolindex.net/badge/gitone/small.svg?theme=dark" alt="gitone - Listed on Tool Index" width="130" height="30" />\n</a>',
-        }}
-      />
+        className={`${PILL} bottom-[clamp(14px,3vh,22px)] hover:border-[rgba(110,231,183,0.45)]`}
+        style={{ ...gate, borderColor: "var(--line)", color: "var(--dim)" }}
+      >
+        <span className="shrink-0">
+          <ToolIndexLogo size={17} />
+        </span>
+        <span className="max-[560px]:hidden">LISTED ON TOOL INDEX</span>
+      </a>
     </>
   );
 }
