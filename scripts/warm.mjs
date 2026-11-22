@@ -68,7 +68,7 @@ async function ensureLocalServer() {
     cwd: REPO,
     detached: true,
     stdio: "ignore",
-    env: { ...process.env, NODE_ENV: "production" },
+    env: { ...process.env, NODE_ENV: "production", GITONE_FORCE_RENDER: "1" },
   });
   child.unref();
   for (let i = 0; i < 40; i += 1) {

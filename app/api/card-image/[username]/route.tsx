@@ -54,7 +54,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   };
 
   // The warmer always wants the real render, never a cache/fallback short-circuit.
-  if (query.has("force")) return render();
+  if (process.env.GITONE_FORCE_RENDER === "1" && query.has("force")) return render();
 
   return cachedPng(
     cacheKey,

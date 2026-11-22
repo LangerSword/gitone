@@ -6,11 +6,11 @@ export const runtime = "nodejs";
 
 // Embeddable battle image: gitone/<a>/vs/<b>.png (via the next.config rewrite).
 // A broadcast race-result graphic for sharing and downloading the duel.
-// KV-cached — the download button and the crawlers both hit this, and a cold
+// R2-cached — the download button and the crawlers both hit this, and a cold
 // Satori render is what trips the Workers CPU limit (CF 1102).
-export async function GET(_req: Request, { params }: { params: Promise<{ username: string; opponent: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
-  return cachedPng(`poster:v13:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
+  const render = async () => {
     try {
       const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
       return await renderBattleImage(a, b);
@@ -18,5 +18,9 @@ export async function GET(_req: Request, { params }: { params: Promise<{ usernam
       console.error('[poster] render failed:', e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
       return await renderBattleFallback(username, opponent);
     }
-  });
+  };
+  // Warmers and design verification always want the real render.
+  if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) return render();
+
+  return cachedPng(`poster:v16:${username.toLowerCase()}/${opponent.toLowerCase()}`, render);
 }

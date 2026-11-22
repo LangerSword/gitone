@@ -44,8 +44,8 @@ function Checkers({ y }: { y: number }) {
 // One driver's side: plate, portrait and the FULL card grammar — rating,
 // number, chip, name and all six stats — in one Satori pass. The winner gets a
 // livery wash behind the crest so the result reads before the scoreline.
-function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
-  const CW = 224;
+function DriverSide({ card, plateSrc, avatar, left, winner, won }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean; won: string[] }) {
+  const CW = 286;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
   const accent = card.constructor.color;
@@ -62,7 +62,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 54, width: CW, height: CH, display: "flex" }}>
+    <div style={{ position: "absolute", left, top: 76, width: CW, height: CH, display: "flex" }}>
       {winner && (
         <div
           style={{
@@ -74,11 +74,6 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
             backgroundImage: `radial-gradient(ellipse 58% 42% at 50% 42%, ${withAlpha(accent, 0.42)}, transparent 74%)`,
           }}
         />
-      )}
-      {winner && (
-        <div style={{ position: "absolute", left: 30, top: -12, width: CW - 60, display: "flex", justifyContent: "center", padding: "4px 0", background: "#d6854a", color: "#f0e8d8", fontFamily: "JBMono", fontSize: 9, fontWeight: 800, letterSpacing: 2 }}>
-          WINNER
-        </div>
       )}
       {plateSrc && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -117,7 +112,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
       {/* rating + number + finish chip, engraved in the plate's own ink */}
       <div style={{ position: "absolute", left: "13%", top: "8%", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.7) }}>RTG</div>
-        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 42, lineHeight: 1, color: ink }}>{card.rtg}</div>
+        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 46, lineHeight: 1, color: ink }}>{card.rtg}</div>
       </div>
       <div style={{ position: "absolute", left: "13%", top: "27%", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.7) }}>NO.</div>
@@ -128,7 +123,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
       </div>
       {/* identity */}
       <div style={{ position: "absolute", left: "8%", width: "84%", top: "55%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 16 : 19, lineHeight: 1, color: ink, textAlign: "center", maxWidth: CW - 20 }}>{name}</div>
+        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 18 : 21, lineHeight: 1, color: ink, textAlign: "center", maxWidth: CW - 20 }}>{name}</div>
         <div style={{ display: "flex", marginTop: 4, fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.72) }}>{card.constructor.name.toUpperCase()}</div>
       </div>
       {/* the full six-stat rail, 3x2 — the poster no longer drops four stats */}
@@ -137,52 +132,19 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
           <div key={r} style={{ display: "flex", height: 28, borderTop: r === 0 ? "none" : `1px solid ${withAlpha(ink, 0.3)}` }}>
             {row.map((k, i) => (
               <div key={k} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderLeft: i === 0 ? "none" : `1px solid ${withAlpha(ink, 0.3)}` }}>
-                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 7, fontWeight: 700, letterSpacing: 1, color: withAlpha(ink, 0.7) }}>{STAT_LABELS[k]}</div>
-                <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 16, lineHeight: 1, color: ink }}>{card.stats[k]}</div>
+                <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 1, color: withAlpha(ink, 0.7) }}>{STAT_LABELS[k]}</div>
+                <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: 18, lineHeight: 1, color: ink }}>{card.stats[k]}</div>
               </div>
             ))}
           </div>
         ))}
       </div>
       <div style={{ position: "absolute", left: 0, width: CW, top: "88%", display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 7, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.75) }}>GITONE · @{card.login}</div>
-    </div>
-  );
-}
-
-// The sector table carries the site's butterfly bars into the shared poster:
-// six rows, each value in its own side's livery, winner marked by a dot and a
-// brighter bar. Shared 0-99 scale, label fixed in the middle.
-function SectorTable({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
-  return (
-    <div style={{ position: "absolute", left: 90, top: 404, width: 1020, display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", width: "100%", height: 16, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 4, color: "#9aa39c" }}>
-        SECTOR WINNERS
+      <div style={{ position: "absolute", left: 0, top: CH + 4, width: CW, display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", padding: "5px 14px", borderRadius: 999, border: `1px solid ${winner ? "rgba(214,133,74,0.5)" : "rgba(240,232,216,0.14)"}`, background: winner ? "rgba(214,133,74,0.10)" : "rgba(240,232,216,0.04)", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, letterSpacing: 1, color: winner ? "#f0e8d8" : "#9aa39c" }}>
+          {won.length ? won.join(" · ") : "NO SECTORS"}
+        </div>
       </div>
-      {duel.rows.map((row) => {
-        const aWon = row.winner === "challenger";
-        const bWon = row.winner === "opponent";
-        const aInk = row.challenger >= 90 ? "#b46bff" : aColor;
-        const bInk = row.opponent >= 90 ? "#b46bff" : bColor;
-        return (
-          <div key={row.key} style={{ display: "flex", width: "100%", height: 20, alignItems: "center", borderBottom: "1px solid rgba(240,232,216,0.07)", background: aWon ? withAlpha(aColor, 0.05) : bWon ? withAlpha(bColor, 0.05) : "transparent" }}>
-            <div style={{ display: "flex", width: 44, alignItems: "center", justifyContent: "flex-end", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: aInk, opacity: bWon ? 0.72 : 1 }}>
-              {aWon && <div style={{ display: "flex", width: 4, height: 4, marginRight: 4, borderRadius: 999, background: aInk }} />}
-              {row.challenger}
-            </div>
-            <div style={{ display: "flex", flex: 1, height: 5, marginLeft: 8, justifyContent: "flex-end", background: "rgba(240,232,216,0.09)" }}>
-              <div style={{ display: "flex", width: `${row.challenger}%`, height: 5, background: aInk, opacity: aWon ? 1 : 0.85 }} />
-            </div>
-            <div style={{ display: "flex", width: 74, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#d6d0c2" }}>{row.label}</div>
-            <div style={{ display: "flex", flex: 1, height: 5, marginRight: 8, background: "rgba(240,232,216,0.09)" }}>
-              <div style={{ display: "flex", width: `${row.opponent}%`, height: 5, background: bInk, opacity: bWon ? 1 : 0.85 }} />
-            </div>
-            <div style={{ display: "flex", width: 44, alignItems: "center", fontFamily: "JBMono", fontSize: 12, fontWeight: 800, color: bInk, opacity: aWon ? 0.72 : 1 }}>
-              {row.opponent}
-              {bWon && <div style={{ display: "flex", width: 4, height: 4, marginLeft: 4, borderRadius: 999, background: bInk }} />}
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 }
@@ -191,16 +153,14 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
   const duel = computeDuel(a, b);
   const { score, winner, onCountback, testSession } = duel;
   const winnerCard = winner === "challenger" ? a : winner === "opponent" ? b : null;
-  const headline = testSession
-    ? "TEST SESSION"
-    : winnerCard
-      ? `${cardDisplayName(winnerCard.name).toUpperCase()} TAKES IT`
-      : "DEAD HEAT";
   const sub = testSession
     ? "SAME DRIVER, BOTH CARS"
     : winner
       ? `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : ""}`
       : `${score.challenger}-${score.opponent} ON SECTORS · LEVEL ON RTG`;
+
+  const wonA = duel.rows.filter((r) => r.winner === "challenger").map((r) => r.label);
+  const wonB = duel.rows.filter((r) => r.winner === "opponent").map((r) => r.label);
 
   const pa = pickPlate(a);
   const pb = pickPlate(b);
@@ -215,8 +175,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
     publicAssetDataUri(pb.bg.replace(/^\/cards\//, "cards/og280/").replace(/\.webp$/, ".png")),
   ]);
 
-  const sideW = 224;
-  const leftX = 48;
+  const sideW = 286;
+  const leftX = 34;
   const rightX = W - leftX - sideW;
 
   return new ImageResponse(
@@ -249,42 +209,28 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} won={wonA} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} won={wonB} />
 
-        {/* the scoreline between the two full cards */}
-        <div style={{ position: "absolute", left: W / 2 - 110, top: 112, width: 220, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 5, color: "#9aa39c" }}>SECTORS WON</div>
-          <div style={{ display: "flex", marginTop: 4, fontSize: 62, fontWeight: 900, lineHeight: 1, color: "#d6854a" }}>{score.challenger}-{score.opponent}</div>
-          <div style={{ display: "flex", position: "relative", marginTop: 30, height: 130, alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", left: 8, top: 10, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(179,32,44,0.28)" }}>VS</div>
-            <div style={{ position: "absolute", left: 4, top: 5, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.45)" }}>VS</div>
-            <div style={{ position: "absolute", left: 0, top: 0, display: "flex", fontSize: 96, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 10px 30px rgba(0,0,0,0.55)" }}>VS</div>
+        {/* the VS is the single focal object, like the reference broadcast graphic */}
+        <div style={{ position: "absolute", left: W / 2 - 150, top: 118, width: 300, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", position: "relative", width: 300, height: 220, alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", left: 16, top: 16, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
+            <div style={{ position: "absolute", left: 8, top: 8, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
+            <div style={{ position: "absolute", left: 0, top: 0, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
+          </div>
+          <div style={{ display: "flex", marginTop: -6, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTORS</span>
+            <span style={{ display: "flex", marginLeft: 12, fontFamily: "JBMono", fontSize: 18, fontWeight: 800, color: "#d6854a" }}>{score.challenger} - {score.opponent}</span>
           </div>
         </div>
 
-        <SectorTable duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} />
-
-        <div style={{ position: "absolute", left: 0, bottom: 18, width: W, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div
-            style={{
-              display: "flex",
-              fontFamily: "Titillium",
-              fontWeight: 800,
-              fontSize: 42,
-              lineHeight: 1,
-              letterSpacing: 1,
-              color: "#f0e8d8",
-              textShadow: "0 6px 24px rgba(0,0,0,0.6)",
-            }}
-          >
-            {headline}
-          </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 16, marginTop: 8 }}>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 3, color: "#9aa39c" }}>
+        <div style={{ position: "absolute", left: 0, bottom: 26, width: W, display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, letterSpacing: 3, color: "#9aa39c" }}>
               {sub}
             </span>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#d6854a" }}>
+            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, letterSpacing: 2, color: "#d6854a" }}>
               gitone.langersword.in
             </span>
           </div>
