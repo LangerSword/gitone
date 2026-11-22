@@ -45,7 +45,7 @@ function Checkers({ y }: { y: number }) {
 // number, chip, name and all six stats — in one Satori pass. The winner gets a
 // livery wash behind the crest so the result reads before the scoreline.
 function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
-  const CW = 286;
+  const CW = 270;
   const CH = Math.round(CW * (820 / 540));
   const name = cardDisplayName(card.name).toUpperCase();
   const accent = card.constructor.color;
@@ -62,7 +62,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 76, width: CW, height: CH, display: "flex" }}>
+    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex" }}>
       {winner && (
         <div
           style={{
@@ -144,35 +144,37 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   );
 }
 
-// A scaled-down butterfly comparison: six sectors in one shallow band, so the
-// cards and the VS stay dominant while every sector winner is still visible.
+// The sector comparison sits BETWEEN the two cards as a slim butterfly table:
+// left value/bar, fixed centre label, right bar/value. Every row shares one
+// 0-99 scale and marks its winner with a dot.
 function SectorBoard({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
   return (
-    <div style={{ position: "absolute", left: 48, top: 520, width: 1104, display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", width: "100%", height: 12, alignItems: "center", justifyContent: "center", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTOR COMPARISON</div>
-      <div style={{ display: "flex", width: "100%", marginTop: 3 }}>
-        {duel.rows.map((row, i) => {
-          const aWon = row.winner === "challenger";
-          const bWon = row.winner === "opponent";
-          return (
-            <div key={row.key} style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", borderLeft: i === 0 ? "none" : "1px solid rgba(240,232,216,0.1)" }}>
-              <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 1, color: "#9aa39c" }}>{row.label}</div>
-              <div style={{ display: "flex", marginTop: 4, alignItems: "center", gap: 4 }}>
-                {aWon && <div style={{ display: "flex", width: 3, height: 3, borderRadius: 999, background: aColor }} />}
-                <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 10, fontWeight: 800, color: aWon ? aColor : "#9aa39c" }}>{row.challenger}</span>
-                <div style={{ display: "flex", width: 30, height: 3, justifyContent: "flex-end", background: "rgba(240,232,216,0.1)" }}>
-                  <div style={{ display: "flex", width: `${row.challenger}%`, height: 3, background: aColor, opacity: aWon ? 1 : 0.55 }} />
-                </div>
-                <div style={{ display: "flex", width: 30, height: 3, background: "rgba(240,232,216,0.1)" }}>
-                  <div style={{ display: "flex", width: `${row.opponent}%`, height: 3, background: bColor, opacity: bWon ? 1 : 0.55 }} />
-                </div>
-                <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 10, fontWeight: 800, color: bWon ? bColor : "#9aa39c" }}>{row.opponent}</span>
-                {bWon && <div style={{ display: "flex", width: 3, height: 3, borderRadius: 999, background: bColor }} />}
-              </div>
+    <div style={{ position: "absolute", left: 330, top: 286, width: 540, display: "flex", flexDirection: "column" }}>
+      {duel.rows.map((row, i) => {
+        const aWon = row.winner === "challenger";
+        const bWon = row.winner === "opponent";
+        const aInk = row.challenger >= 90 ? "#b46bff" : aColor;
+        const bInk = row.opponent >= 90 ? "#b46bff" : bColor;
+        return (
+          <div key={row.key} style={{ display: "flex", width: "100%", height: 23, alignItems: "center", borderBottom: i === duel.rows.length - 1 ? "none" : "1px solid rgba(240,232,216,0.08)", background: aWon ? withAlpha(aColor, 0.05) : bWon ? withAlpha(bColor, 0.05) : "transparent" }}>
+            <div style={{ display: "flex", width: 42, alignItems: "center", justifyContent: "flex-end", fontFamily: "JBMono", fontSize: 11, fontWeight: 800, color: aInk, opacity: bWon ? 0.7 : 1 }}>
+              {aWon && <div style={{ display: "flex", width: 3, height: 3, marginRight: 4, borderRadius: 999, background: aInk }} />}
+              {row.challenger}
             </div>
-          );
-        })}
-      </div>
+            <div style={{ display: "flex", flex: 1, height: 4, marginLeft: 8, justifyContent: "flex-end", background: "rgba(240,232,216,0.09)" }}>
+              <div style={{ display: "flex", width: `${row.challenger}%`, height: 4, background: aInk, opacity: aWon ? 1 : 0.55 }} />
+            </div>
+            <div style={{ display: "flex", width: 52, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 1, color: "#9aa39c" }}>{row.label}</div>
+            <div style={{ display: "flex", flex: 1, height: 4, marginRight: 8, background: "rgba(240,232,216,0.09)" }}>
+              <div style={{ display: "flex", width: `${row.opponent}%`, height: 4, background: bInk, opacity: bWon ? 1 : 0.55 }} />
+            </div>
+            <div style={{ display: "flex", width: 42, alignItems: "center", fontFamily: "JBMono", fontSize: 11, fontWeight: 800, color: bInk, opacity: aWon ? 0.7 : 1 }}>
+              {row.opponent}
+              {bWon && <div style={{ display: "flex", width: 3, height: 3, marginLeft: 4, borderRadius: 999, background: bInk }} />}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -200,8 +202,8 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
     publicAssetDataUri(pb.bg.replace(/^\/cards\//, "cards/og280/").replace(/\.webp$/, ".png")),
   ]);
 
-  const sideW = 286;
-  const leftX = 34;
+  const sideW = 270;
+  const leftX = 36;
   const rightX = W - leftX - sideW;
 
   return new ImageResponse(
@@ -225,7 +227,7 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
         <Checkers y={0} />
         <Checkers y={H - 16} />
 
-        <div style={{ position: "absolute", left: 0, top: 14, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
+        <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#d6854a" }} />
           ))}
@@ -239,19 +241,19 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
         <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} />
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 150, top: 140, width: 300, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", position: "relative", width: 300, height: 220, alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", left: 16, top: 16, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
-            <div style={{ position: "absolute", left: 8, top: 8, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
-            <div style={{ position: "absolute", left: 0, top: 0, display: "flex", fontSize: 170, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
+        <div style={{ position: "absolute", left: W / 2 - 160, top: 132, width: 320, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", position: "relative", width: 320, height: 120, alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", left: 116, top: 12, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
+            <div style={{ position: "absolute", left: 108, top: 6, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
+            <div style={{ position: "absolute", left: 100, top: 0, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
           </div>
-          <div style={{ display: "flex", marginTop: -6, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>
+          <div style={{ display: "flex", marginTop: 4, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>
             <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTORS</span>
             <span style={{ display: "flex", marginLeft: 12, fontFamily: "JBMono", fontSize: 18, fontWeight: 800, color: "#d6854a" }}>{score.challenger} - {score.opponent}</span>
           </div>
         </div>
 
-        <div style={{ position: "absolute", left: 0, bottom: 26, width: W, display: "flex", justifyContent: "center" }}>
+        <div style={{ position: "absolute", left: 0, bottom: 24, width: W, display: "flex", justifyContent: "center" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
             <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, letterSpacing: 3, color: "#9aa39c" }}>
               {sub}
