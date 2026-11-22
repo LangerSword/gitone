@@ -20,5 +20,11 @@
   "kv_namespaces": [
     { "binding": "GITONE_KV", "id": "8d67e9c706f64ec397ea485d4fb30942" }
   ],
+  // Rendered card/OG PNGs live in R2, not KV: the PNG cache is read-heavy and
+  // KV's daily operation budget was the binding constraint. KV keeps only
+  // small rows (scouted cards, token health, scout counter).
+  "r2_buckets": [
+    { "binding": "GITONE_PNGS", "bucket_name": "gitone-pngs" }
+  ],
   "observability": { "enabled": true }
 }

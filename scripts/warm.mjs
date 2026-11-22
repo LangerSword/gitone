@@ -18,15 +18,17 @@
  *   node scripts/warm.mjs --only torvalds # specific handles
  *
  * Requires a local production server (scripts/warm.mjs starts one if the port
- * is closed) and wrangler auth (workers_kv write).
+ * is closed) and wrangler auth with R2 object write.
  */
 import { execFileSync, spawn } from "node:child_process";
-import { writeFileSync, readFileSync, existsSync, mkdtempSync } from "node:fs";
+import { writeFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const REPO = "/home/lakshaya/projects/gitone";
 const NS = "8d67e9c706f64ec397ea485d4fb30942";
+const BUCKET = "gitone-pngs";
+const STATE = join(REPO, "scripts", ".warm-state.json");
 const LOCAL_PORT = process.env.WARM_PORT || "3001";
 const LOCAL = `http://127.0.0.1:${LOCAL_PORT}`;
 const DEFAULT_BATCH = 25;
@@ -79,31 +81,42 @@ async function ensureLocalServer() {
   throw new Error("local server did not come up");
 }
 
+function warmed() {
+  try {
+    return new Set(JSON.parse(readFileSync(STATE, "utf8")));
+  } catch {
+    return new Set();
+  }
+}
+
 function scoutedLogins() {
+  // Known candidates come from the small card rows. The warmed set is local
+  // state — R2 has no cheap object listing from wrangler, and asking KV again
+  // would defeat the point of moving the PNGs off it.
   const keys = JSON.parse(
     wrangler(["kv", "key", "list", "--namespace-id", NS, "--remote"]),
   ).map((k) => k.name);
   const cards = new Set(
     keys.filter((n) => n.startsWith("gitone:card:")).map((n) => n.split(":").pop().toLowerCase()),
   );
-  // Only the plain embed counts as cached: `cardpng:v6:<login>::`. A pinned
-  // variant (`:in:`, `::mercedes`) is a different render and must not satisfy
-  // the plain key, or the warmer skips a handle that still serves a fallback.
-  const plain = /^cardpng:v6:([^:]+)::$/;
-  const pngs = new Set(
-    keys.filter((n) => plain.test(n)).map((n) => n.match(plain)[1].toLowerCase()),
-  );
-  return [...cards].filter((c) => !pngs.has(c)).sort();
+  const done = warmed();
+  return [...cards].filter((c) => !done.has(c)).sort();
 }
 
 function pushPng(login, png) {
   const dir = mkdtempSync(join(tmpdir(), "gitone-warm-"));
   const file = join(dir, "v");
-  // KV holds the PNG base64-encoded; the reader decodes with Buffer.from(, "base64").
-  writeFileSync(file, png.toString("base64"));
+  writeFileSync(file, png);
   const key = `cardpng:v6:${login.toLowerCase()}::`;
   try {
-    wrangler(["kv", "key", "put", "--namespace-id", NS, "--remote", "--path", file, key]);
+    wrangler([
+      "r2", "object", "put", `${BUCKET}/${key}`, "--remote", "--file", file,
+      "--content-type", "image/png",
+      "--cache-control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
+    ]);
+    const done = warmed();
+    done.add(login.toLowerCase());
+    writeFileSync(STATE, JSON.stringify([...done].sort()));
   } finally {
     execFileSync("rm", ["-rf", dir]);
   }

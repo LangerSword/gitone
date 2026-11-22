@@ -246,7 +246,6 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   const sharp = (await import("sharp")).default;
   const w = width;
   const H = cardH(w);
-  const founder = card.finish === "founder";
   const pbox = portraitForCard(card);
 
   // 1. the baked plate for THIS tier, resized to the card box (its alpha =

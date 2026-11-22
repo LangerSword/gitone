@@ -1,38 +1,38 @@
 import "server-only";
-import { redis } from "@/lib/redis";
 
-// Edge + KV cached PNG responses for the OG/embed render routes.
+// Edge + R2 cached PNG responses for the OG/embed render routes.
 //
-// Every Satori composite on Workers is CPU-heavy enough that a cold render can
-// exceed the CPU budget (Cloudflare 1102 -> a 503 the social crawlers dutifully
-// cache as "no preview"). So a rendered PNG is served twice over before it is
-// ever rendered again:
+// The PNG cache is the read-heavy half of the app: every README embed, every
+// social unfurl and every versus download reads one of these bytes. It used to
+// live in KV alongside the small rows (scouted cards, token health, counter),
+// and that is what pushed KV against its daily operation budget. Rendered
+// PNGs now live in R2; KV keeps only the small rows. R2 also has stronger
+// read-after-write consistency, so a freshly warmed card is visible at once.
 //
-//   1. the edge cache (caches.default) — a hit costs ~1ms of CPU and ZERO KV
-//      operations, because the request never reaches this function's KV read.
-//   2. the KV copy — survives an edge eviction, and is what a warm render
-//      writes back to.
-//
-// The edge cache has to be written explicitly. Worker responses on this custom
-// domain were not being cached from Cache-Control alone (repeat requests
-// carried no cf-cache-status and always re-invoked the Worker), so every view
-// spent a KV read. `cache.put` stores it regardless; a KV hit backfills the
-// edge so the next view is free.
-//
-// The KV write is AWAITED — Workers cuts un-awaited promises when the response
-// returns, so a fire-and-forget put never lands and every hit pays the render
-// again. The x-og-cache header reports the path each request actually took
-// (edge-hit | kv-hit | stored | off).
-
-const TTL = 60 * 60 * 24;
+// Serving order: edge Cache API (free, per-PoP, ~1ms) -> R2 object -> render.
+// The x-og-cache header reports which path served each request:
+// edge-hit | r2-hit | stored | miss-fallback | off.
 
 export const PNG_HEADERS = {
   "Content-Type": "image/png",
   "Cache-Control": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
 };
 
-// `caches` exists only inside the Workers runtime; Node (dev, `next start`)
-// has no default cache and streams straight through.
+const PNG_BUCKET = "GITONE_PNGS";
+
+interface StoredPng {
+  arrayBuffer(): Promise<ArrayBuffer>;
+}
+
+interface PngStore {
+  get(key: string): Promise<StoredPng | null>;
+  put(
+    key: string,
+    value: Uint8Array,
+    options?: { httpMetadata?: { contentType?: string; cacheControl?: string } },
+  ): Promise<unknown>;
+}
+
 function edgeCache(): Cache | null {
   return (globalThis as { caches?: { default?: Cache } }).caches?.default ?? null;
 }
@@ -40,6 +40,22 @@ function edgeCache(): Cache | null {
 function cacheUrl(key: string): string {
   const origin = (process.env.NEXT_PUBLIC_SITE_URL || "https://gitone.langersword.in").replace(/\/$/, "");
   return `${origin}/_edge/${key}`;
+}
+
+async function pngStore(): Promise<PngStore | null> {
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const { env } = await getCloudflareContext({ async: true });
+    return (env as unknown as Record<string, PngStore | undefined>)[PNG_BUCKET] ?? null;
+  } catch {
+    // No Cloudflare context (next build, plain Node, unbound preview): the
+    // callers render straight through.
+    return null;
+  }
+}
+
+function edgePut(cache: Cache, url: string, bytes: Uint8Array) {
+  cache.put(url, new Response(new Uint8Array(bytes), { headers: PNG_HEADERS })).catch(() => {});
 }
 
 export async function cachedPng(
@@ -58,15 +74,13 @@ export async function cachedPng(
     }
   }
 
-  if (redis) {
-    const hit = await redis.get(key).catch(() => null);
+  const store = await pngStore();
+  if (store) {
+    const hit = await store.get(key).catch(() => null);
     if (hit) {
-      const bytes = Buffer.from(hit, "base64");
-      // Backfill the edge from the KV copy so the next view is free.
-      if (cache) {
-        cache.put(url, new Response(new Uint8Array(bytes), { headers })).catch(() => {});
-      }
-      return new Response(bytes, { headers: { ...headers, "x-og-cache": "kv-hit" } });
+      const bytes = Buffer.from(await hit.arrayBuffer());
+      if (cache) edgePut(cache, url, bytes);
+      return new Response(bytes, { headers: { ...headers, "x-og-cache": "r2-hit" } });
     }
   } else if (!cache) {
     // No cache backend at all (local dev): stream straight through.
@@ -95,9 +109,9 @@ export async function cachedPng(
   }
 
   const png = Buffer.from(await res.arrayBuffer());
-  await redis?.set(key, png.toString("base64"), "EX", TTL).catch(() => {});
-  if (cache) {
-    cache.put(url, new Response(new Uint8Array(png), { headers })).catch(() => {});
-  }
+  await store
+    ?.put(key, new Uint8Array(png), { httpMetadata: { contentType: "image/png", cacheControl: PNG_HEADERS["Cache-Control"] } })
+    .catch(() => {});
+  if (cache) edgePut(cache, url, png);
   return new Response(png, { headers: { ...headers, "x-og-cache": "stored" } });
 }
