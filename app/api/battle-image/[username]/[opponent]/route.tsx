@@ -1,5 +1,6 @@
 import { scoutCard } from "@/lib/scout";
-import { renderBattleImage, renderBattleFallback } from "@/lib/og/renderBattle";
+import { renderBattleImage } from "@/lib/og/renderBattle";
+import { versusFallbackPng } from "@/lib/og/fallback";
 import { cachedPng } from "@/lib/og/pngCache";
 
 export const runtime = "nodejs";
@@ -16,11 +17,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
       return await renderBattleImage(a, b);
     } catch (e) {
       console.error('[poster] render failed:', e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
-      return await renderBattleFallback(username, opponent);
+      return versusFallbackPng();
     }
   };
   // Warmers and design verification always want the real render.
   if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) return render();
 
-  return cachedPng(`poster:v32:${username.toLowerCase()}/${opponent.toLowerCase()}`, render, undefined, () => renderBattleFallback(username, opponent));
+  return cachedPng(`poster:v33:${username.toLowerCase()}/${opponent.toLowerCase()}`, render, undefined, versusFallbackPng);
 }

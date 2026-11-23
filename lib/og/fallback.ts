@@ -47,3 +47,25 @@ export async function cardImageFallback(login: string): Promise<Response> {
   }
   return fallbackPng();
 }
+
+// Pair-specific Satori fallbacks cost ~1s CPU and trip the free 10ms cap, so
+// versus cold misses use this pre-rendered landing-field poster instead. It is
+// brand-correct, not "loading" text, and costs zero CPU to serve.
+export async function versusFallbackPng(): Promise<Response> {
+  let bytes: Buffer | null = null;
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const { env } = getCloudflareContext() as {
+      env?: { ASSETS?: { fetch(input: string): Promise<Response> } };
+    };
+    const res = await env?.ASSETS?.fetch("https://assets.local/fallback-versus.png");
+    if (res?.ok) bytes = Buffer.from(await res.arrayBuffer());
+  } catch {
+    // plain Node — read from disk below
+  }
+  if (!bytes) bytes = await readFile(join(process.cwd(), "public", "fallback-versus.png"));
+  return new Response(new Uint8Array(bytes), {
+    status: 200,
+    headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=60" },
+  });
+}
