@@ -9,7 +9,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SupportPills } from "@/components/SupportPills";
 import { GitStrip } from "@/components/GitStrip";
 import { DuelView } from "@/components/DuelView";
-import { WarmOnView } from "@/components/WarmOnView";
 
 export async function generateMetadata({
   params,
@@ -24,9 +23,9 @@ export async function generateMetadata({
     openGraph: {
       title: `${username} vs ${opponent} · gitone`,
       description,
-      images: [`/${username}/vs/${opponent}/opengraph-image?ogv=8`],
+      images: [`/${username}/vs/${opponent}/opengraph-image?ogv=9`],
     },
-    twitter: { card: "summary_large_image", title: `${username} vs ${opponent} · gitone`, description, images: [`/${username}/vs/${opponent}/opengraph-image?ogv=8`] },
+    twitter: { card: "summary_large_image", title: `${username} vs ${opponent} · gitone`, description, images: [`/${username}/vs/${opponent}/opengraph-image?ogv=9`] },
   };
 }
 
@@ -80,7 +79,6 @@ export default async function VsPage({
     >
       <SiteHeader back backHref={`/${duel.challenger.login}`} backLabel="← BACK TO THE REPORT" />
       <DuelView duel={duel} />
-      <WarmOnView kind="teaser" a={duel.challenger.login} b={duel.opponent.login} selector="[data-duel-container]" delay={4000} />
       <GitStrip />
       <SiteFooter />
       <SupportPills />
