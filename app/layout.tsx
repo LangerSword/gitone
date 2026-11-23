@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     // which X renders as a plain white panel.
     images: [
       {
-        url: "/og-root.png",
+        url: "/og-root.png?ogv=2",
         width: 1200,
         height: 630,
         alt: "gitone · your github, rated like f1",
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
     title: "gitone · your github, rated like f1",
     description:
       "GitHub profiles as F1 26 driver cards: EXP, RAC, AWA, PAC scored live from real commits, PRs and reviews.",
-    images: ["/og-root.png"],
+    images: ["/og-root.png?ogv=2"],
   },
   robots: { index: true, follow: true },
 };
