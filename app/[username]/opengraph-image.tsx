@@ -44,7 +44,7 @@ export default async function OgImage({ params }: { params: Promise<{ username: 
   return cachedPng(`og:v18:${username.toLowerCase()}`, () => buildOg(username), undefined, () => cardImageFallback(username));
 }
 
-async function buildOg(username: string): Promise<Response> {
+export async function buildOg(username: string): Promise<Response> {
   const res = await loadCard(username);
   const fonts = await loadCardFonts();
   if ("error" in res) {

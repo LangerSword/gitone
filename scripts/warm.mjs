@@ -130,7 +130,7 @@ async function warm(login) {
 
       // Render the 1200x630 share card in the same off-path pass so a user's
       // first share never depends on a cold cache key.
-      const og = await fetch(`${LOCAL}/${login}/opengraph-image`, { signal: AbortSignal.timeout(120_000) });
+      const og = await fetch(`${LOCAL}/api/og/${login}?force=1`, { signal: AbortSignal.timeout(120_000) });
       if (og.ok) {
         const ogBuf = Buffer.from(await og.arrayBuffer());
         if (ogBuf.length > 100_000) pushPng(`og:v18:${login.toLowerCase()}`, ogBuf);
