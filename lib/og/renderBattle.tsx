@@ -64,7 +64,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner, angle = 0 }: { card:
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex", ...(angle ? { transform: `rotate(${angle}deg)` } : {}) }}>
+    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex", ...(angle ? { transform: `rotate(${angle}deg)`, transformOrigin: "center center" } : {}) }}>
       {winner && (
         <div
           style={{
@@ -258,12 +258,12 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 380 : leftX} winner={winnerCard === a} angle={0} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 380 - sideW : rightX} winner={winnerCard === b} angle={0} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 290 : leftX} winner={winnerCard === a} angle={teaser ? 10 : 0} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 290 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -10 : 0} />
         {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 300 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 280 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
           {teaser && (
             <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
               {[0, 1, 2, 3, 4].map((i) => (
