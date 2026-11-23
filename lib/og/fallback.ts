@@ -22,3 +22,28 @@ export async function fallbackPng(): Promise<Response> {
     headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=60" },
   });
 }
+
+// On a cold OG cache miss, serve the driver's already-rendered card PNG from
+// R2 instead of a generic plate. Every scouted profile has one, so a first
+// share shows a real card rather than an unrelated fallback.
+export async function cardImageFallback(login: string): Promise<Response> {
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const { env } = getCloudflareContext() as {
+      env?: { GITONE_PNGS?: { get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer> } | null> } };
+    };
+    const obj = await env?.GITONE_PNGS?.get(`cardpng:v9:${login.toLowerCase()}`);
+    if (obj) {
+      const bytes = Buffer.from(await obj.arrayBuffer());
+      if (bytes.length > 20_000) {
+        return new Response(new Uint8Array(bytes), {
+          status: 200,
+          headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=60" },
+        });
+      }
+    }
+  } catch {
+    // local dev — no R2 binding, use the brand fallback
+  }
+  return fallbackPng();
+}

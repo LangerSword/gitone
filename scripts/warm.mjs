@@ -101,19 +101,16 @@ function scoutedLogins() {
   return [...cards].filter((c) => !warmedSet.has(c)).sort();
 }
 
-function pushPng(login, png) {
+function pushPng(key, png) {
   const dir = mkdtempSync(join(tmpdir(), "gitone-warm-"));
   const file = join(dir, "v");
   writeFileSync(file, png);
-  const key = `cardpng:v9:${login.toLowerCase()}::`;
   try {
     wrangler([
       "r2", "object", "put", `${BUCKET}/${key}`, "--remote", "--file", file,
       "--content-type", "image/png",
       "--cache-control", "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800",
     ]);
-    warmedSet.add(login.toLowerCase());
-    writeFileSync(STATE, JSON.stringify([...warmedSet].sort()));
   } finally {
     execFileSync("rm", ["-rf", dir]);
   }
@@ -129,7 +126,18 @@ async function warm(login) {
       if (!res.ok) return { login, ok: false, status: res.status };
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
-      pushPng(login, buf);
+      pushPng(`cardpng:v9:${login.toLowerCase()}::`, buf);
+
+      // Render the 1200x630 share card in the same off-path pass so a user's
+      // first share never depends on a cold cache key.
+      const og = await fetch(`${LOCAL}/${login}/opengraph-image`, { signal: AbortSignal.timeout(120_000) });
+      if (og.ok) {
+        const ogBuf = Buffer.from(await og.arrayBuffer());
+        if (ogBuf.length > 100_000) pushPng(`og:v18:${login.toLowerCase()}`, ogBuf);
+      }
+
+      warmedSet.add(login.toLowerCase());
+      writeFileSync(STATE, JSON.stringify([...warmedSet].sort()));
       return { login, ok: true, bytes: buf.length };
     } catch (e) {
       if (attempt === 1) return { login, ok: false, status: e.message };
