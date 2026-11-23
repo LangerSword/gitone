@@ -1,4 +1,3 @@
-import sharp from "sharp";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -71,36 +70,3 @@ export async function versusFallbackPng(): Promise<Response> {
   });
 }
 
-// Cheapest real-card versus preview: composite two tiny pre-rendered card
-// thumbnails onto a static landing-field JPEG. No Satori, no font parsing, no
-// text layout — measured ~21ms locally and small enough for burst tolerance.
-export async function versusLiteFallback(a: string, b: string): Promise<Response> {
-  try {
-    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
-    const { env } = getCloudflareContext() as {
-      env?: {
-        GITONE_PNGS?: { get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer> } | null> };
-        ASSETS?: { fetch(input: string): Promise<Response> };
-      };
-    };
-    const [ta, tb, bgRes] = await Promise.all([
-      env?.GITONE_PNGS?.get(`cardthumb:v1:${a.toLowerCase()}`),
-      env?.GITONE_PNGS?.get(`cardthumb:v1:${b.toLowerCase()}`),
-      env?.ASSETS?.fetch("https://assets.local/versus-lite-bg.jpg"),
-    ]);
-    if (ta && tb && bgRes?.ok) {
-      const [ba, bb, bg] = await Promise.all([ta.arrayBuffer(), tb.arrayBuffer(), bgRes.arrayBuffer()]);
-      const out = await sharp(Buffer.from(bg)).composite([
-        { input: Buffer.from(ba), left: 120, top: 150 },
-        { input: Buffer.from(bb), left: 850, top: 150 },
-      ]).jpeg({ quality: 80 }).toBuffer();
-      return new Response(new Uint8Array(out), {
-        status: 200,
-        headers: { "Content-Type": "image/jpeg", "Cache-Control": "public, max-age=60" },
-      });
-    }
-  } catch {
-    // fall through to the static poster
-  }
-  return versusFallbackPng();
-}

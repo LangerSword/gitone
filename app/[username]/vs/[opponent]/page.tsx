@@ -23,9 +23,9 @@ export async function generateMetadata({
     openGraph: {
       title: `${username} vs ${opponent} · gitone`,
       description,
-      images: [`/${username}/vs/${opponent}/opengraph-image?ogv=7`],
+      images: [`/${username}/vs/${opponent}/opengraph-image?ogv=8`],
     },
-    twitter: { card: "summary_large_image", title: `${username} vs ${opponent} · gitone`, description, images: [`/${username}/vs/${opponent}/opengraph-image?ogv=7`] },
+    twitter: { card: "summary_large_image", title: `${username} vs ${opponent} · gitone`, description, images: [`/${username}/vs/${opponent}/opengraph-image?ogv=8`] },
   };
 }
 
