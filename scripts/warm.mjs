@@ -128,7 +128,7 @@ async function warm(login) {
       if (!res.ok) return { login, ok: false, status: res.status };
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
-      pushPng(`cardpng:v9:${login.toLowerCase()}::`, buf);
+      pushPng(`cardpng:v10:${login.toLowerCase()}::`, buf);
 
       // Render the 1200x630 share card in the same off-path pass so a user's
       // first share never depends on a cold cache key.

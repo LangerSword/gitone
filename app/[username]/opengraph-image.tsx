@@ -41,7 +41,7 @@ function tint(hex: string, a: number) {
 // copy of the stats. Petrol field, parchment ink, one copper signal.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v18:${username.toLowerCase()}`, () => buildOg(username), undefined, () => cardImageFallback(username));
+  return cachedPng(`og:v20:${username.toLowerCase()}`, () => buildOg(username), undefined, () => cardImageFallback(username));
 }
 
 export async function buildOg(username: string): Promise<Response> {
@@ -83,7 +83,7 @@ export async function buildOg(username: string): Promise<Response> {
         <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
         <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
         <div style={{ position: "absolute", left: 0, top: 440, width: 1200, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
-        <div style={{ position: "absolute", left: 0, top: 0, width: 620, height: 630, display: "flex", backgroundImage: `radial-gradient(ellipse 58% 64% at 34% 48%, ${tint(livery, 0.16)}, transparent 72%)` }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: `radial-gradient(ellipse 34% 64% at 22% 48%, ${tint(livery, 0.16)}, transparent 72%)` }} />
 
         <div style={{ position: "absolute", left: 74, top, display: "flex" }}>
           <img src={cardSrc} width={frame.W} height={frame.H} alt="" style={{ display: "flex" }} />

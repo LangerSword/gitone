@@ -333,7 +333,7 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   // a lit card on a dark surface, not a flat cutout. Alpha reaches zero before
   // the frame edge, so the PNG keeps its clean transparent surround.
   const glow = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><defs><radialGradient id="l" cx="50%" cy="46%" r="96%"><stop offset="18%" stop-color="${glowHue(livery)}" stop-opacity="0.55"/><stop offset="100%" stop-color="${livery}" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#l)"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><defs><radialGradient id="l" cx="50%" cy="46%" r="52%"><stop offset="18%" stop-color="${glowHue(livery)}" stop-opacity="0.55"/><stop offset="100%" stop-color="${livery}" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#l)"/></svg>`,
   );
   const out = await sharp({ create: { width: W, height: Hc, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([

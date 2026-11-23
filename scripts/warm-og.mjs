@@ -34,7 +34,7 @@ for (const login of logins) {
     const dir = mkdtempSync(join(tmpdir(), "ogwarm-"));
     const file = join(dir, "v");
     writeFileSync(file, buf);
-    execFileSync(WRANGLER, ["r2", "object", "put", `${BUCKET}/og:v18:${login.toLowerCase()}`, "--remote", "--file", file, "--content-type", "image/png"], { cwd: REPO, stdio: "ignore" });
+    execFileSync(WRANGLER, ["r2", "object", "put", `${BUCKET}/og:v20:${login.toLowerCase()}`, "--remote", "--file", file, "--content-type", "image/png"], { cwd: REPO, stdio: "ignore" });
     execFileSync("rm", ["-rf", dir]);
     done.add(login);
     writeFileSync(STATE, JSON.stringify([...done].sort()));
