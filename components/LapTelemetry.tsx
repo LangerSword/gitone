@@ -51,16 +51,13 @@ function TraceLine({ t, color, dash }: { t: Trace; color: string; dash?: string 
   );
 }
 
-function darken(hex: string) {
-  const h = hex.replace("#", "");
-  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
-  const f = (v: number) => Math.round(v * 0.55).toString(16).padStart(2, "0");
-  return `#${f((n >> 16) & 255)}${f((n >> 8) & 255)}${f(n & 255)}`;
-}
+// When two drivers resolve to the same accent, give the second trace a
+// contrasting cool colour instead of a deeper shade of the same hue.
+const CONTRAST = "#4fd1c5";
 
 export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; accentA: string; accentB?: string }) {
   const compare = !!b && !!accentB;
-  const secondColor = accentB && accentB.toLowerCase() === accentA.toLowerCase() ? darken(accentB) : accentB;
+  const secondColor = accentB && accentB.toLowerCase() === accentA.toLowerCase() ? CONTRAST : accentB;
   return (
     <div className="w-full rounded-[14px] border px-4 py-3.5" style={{ borderColor: "var(--line)", background: "rgba(255,255,255,0.02)" }}>
       <div className="mono mb-3 flex items-center justify-between text-[10px] font-bold tracking-[0.18em]" style={{ color: "var(--dim)" }}>
@@ -76,15 +73,15 @@ export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; ac
               {a.login.toUpperCase()}
             </span>
             <span className="flex items-center gap-1.5" style={{ color: secondColor }}>
-              <span aria-hidden className="inline-block h-[2px] w-4" style={secondColor && secondColor !== accentB ? { backgroundImage: `repeating-linear-gradient(90deg, ${secondColor} 0 6px, transparent 6px 9px)` } : { background: secondColor }} />
+              <span aria-hidden className="inline-block h-[2px] w-4" style={{ background: secondColor }} />
               {b.login.toUpperCase()}
             </span>
-            <span style={{ color: "var(--faint)" }}>{secondColor && secondColor !== accentB ? "DASHED = SECOND DRIVER · FAINT DROP = BRAKE" : "FAINT DROP = BRAKE"}</span>
+            <span style={{ color: "var(--faint)" }}>FAINT DROP = BRAKE</span>
           </div>
           <svg viewBox="0 0 600 110" preserveAspectRatio="none" className="h-[110px] w-full" role="img" aria-label={`${a.name} versus ${b.name} stat-derived performance overlay`}>
             <Grid />
             <TraceLine t={trace(a)} color={accentA} />
-            <TraceLine t={trace(b)} color={secondColor!} dash={secondColor !== accentB ? "7 4" : undefined} />
+            <TraceLine t={trace(b)} color={secondColor!} />
           </svg>
         </>
       ) : (
