@@ -29,6 +29,32 @@ const INK = "#33290f";
 const ASPECT = 820 / 540;
 export const cardH = (w: number) => Math.round(w * ASPECT);
 
+
+// Livery colours like C's pale blue-grey read as white when used as a low-alpha
+// glow. Boost saturation before painting so every livery halo has its own hue.
+function glowHue(hex: string): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16) / 255;
+  const g = parseInt(h.slice(2, 4), 16) / 255;
+  const b = parseInt(h.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  let hue = 0;
+  if (d) {
+    if (max === r) hue = ((g - b) / d) % 6;
+    else if (max === g) hue = (b - r) / d + 2;
+    else hue = (r - g) / d + 4;
+    hue *= 60;
+    if (hue < 0) hue += 360;
+  }
+  const sat = Math.min(1, Math.max(0.55, (max ? d / max : 0) * 1.9));
+  const light = 0.55;
+  const c = (1 - Math.abs(2 * light - 1)) * sat;
+  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+  const m = light - c / 2;
+  const [rr, gg, bb] = hue < 60 ? [c, x, 0] : hue < 120 ? [x, c, 0] : hue < 180 ? [0, c, x] : hue < 240 ? [0, x, c] : hue < 300 ? [x, 0, c] : [c, 0, x];
+  return "#" + [rr, gg, bb].map((v) => Math.round((v + m) * 255).toString(16).padStart(2, "0")).join("");
+}
+
 function hexAlpha(hex: string, a: number): string {
   const h = hex.replace("#", "");
   const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
@@ -307,7 +333,7 @@ async function renderCardPngSharp(card: Card, width: number): Promise<Buffer> {
   // a lit card on a dark surface, not a flat cutout. Alpha reaches zero before
   // the frame edge, so the PNG keeps its clean transparent surround.
   const glow = Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><defs><radialGradient id="l" cx="50%" cy="46%" r="96%"><stop offset="18%" stop-color="${livery}" stop-opacity="0.5"/><stop offset="100%" stop-color="${livery}" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#l)"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${Hc}"><defs><radialGradient id="l" cx="50%" cy="46%" r="96%"><stop offset="18%" stop-color="${glowHue(livery)}" stop-opacity="0.55"/><stop offset="100%" stop-color="${livery}" stop-opacity="0"/></radialGradient></defs><rect width="100%" height="100%" fill="url(#l)"/></svg>`,
   );
   const out = await sharp({ create: { width: W, height: Hc, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
     .composite([

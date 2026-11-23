@@ -150,7 +150,22 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
 // The sector comparison sits BETWEEN the two cards as a slim butterfly table:
 // left value/bar, fixed centre label, right bar/value. Every row shares one
 // 0-99 scale and marks its winner with a dot.
-function SectorBoard({ duel, aColor, bColor }: { duel: Duel; aColor: string; bColor: string }) {
+function SectorBoard({ duel, aColor, bColor, teaser }: { duel: Duel; aColor: string; bColor: string; teaser: boolean }) {
+  if (teaser) {
+    return (
+      <div style={{ position: "absolute", left: 330, top: 286, width: 540, display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", width: "100%", height: 12, justifyContent: "center", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, letterSpacing: 4, color: "#9aa39c" }}>SIX SECTORS · ONE RESULT</div>
+        <div style={{ display: "flex", width: "100%", marginTop: 8 }}>
+          {duel.rows.map((row) => (
+            <div key={row.key} style={{ display: "flex", flex: 1, flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 9, fontWeight: 700, color: "#f0e8d8" }}>{row.label}</div>
+              <div style={{ display: "flex", width: "70%", height: 3, background: "rgba(240,232,216,0.14)" }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div style={{ position: "absolute", left: 330, top: 286, width: 540, display: "flex", flexDirection: "column" }}>
       {duel.rows.map((row, i) => {
@@ -182,7 +197,7 @@ function SectorBoard({ duel, aColor, bColor }: { duel: Duel; aColor: string; bCo
   );
 }
 
-export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
+export async function renderBattleImage(a: Card, b: Card, teaser = false): Promise<Response> {
   const duel = computeDuel(a, b);
   const { score, winner, onCountback, testSession } = duel;
   const winnerCard = winner === "challenger" ? a : winner === "opponent" ? b : null;
@@ -242,25 +257,27 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
 
         <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
         <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
-        <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} />
+        {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 160, top: 132, width: 320, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: W / 2 - 160, top: teaser ? 196 : 132, width: 320, display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div style={{ display: "flex", position: "relative", width: 320, height: 120, alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", left: 116, top: 12, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
             <div style={{ position: "absolute", left: 108, top: 6, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
             <div style={{ position: "absolute", left: 100, top: 0, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
           </div>
-          <div style={{ display: "flex", marginTop: 4, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>
-            <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTORS</span>
-            <span style={{ display: "flex", marginLeft: 12, fontFamily: "JBMono", fontSize: 18, fontWeight: 800, color: "#d6854a" }}>{score.challenger} - {score.opponent}</span>
-          </div>
+          {!teaser && (
+            <div style={{ display: "flex", marginTop: 4, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>
+              <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 11, fontWeight: 700, letterSpacing: 3, color: "#9aa39c" }}>SECTORS</span>
+              <span style={{ display: "flex", marginLeft: 12, fontFamily: "JBMono", fontSize: 18, fontWeight: 800, color: "#d6854a" }}>{score.challenger} - {score.opponent}</span>
+            </div>
+          )}
         </div>
 
         <div style={{ position: "absolute", left: 0, bottom: 24, width: W, display: "flex", justifyContent: "center" }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
             <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, letterSpacing: 3, color: "#9aa39c" }}>
-              {sub}
+              {teaser ? "RACE AT THE GRID" : sub}
             </span>
             <span style={{ display: "flex", fontFamily: "JBMono", fontSize: 15, letterSpacing: 2, color: "#d6854a" }}>
               gitone.langersword.in
