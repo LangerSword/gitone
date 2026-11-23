@@ -8,7 +8,7 @@ import type { Card } from "@/lib/racing/types";
 function trace(card: Card) {
   const stats = [card.stats.pac, card.stats.rac, card.stats.awa, card.stats.exp, card.stats.tyr, card.stats.wet];
   const points: string[] = [];
-  const brakes: number[] = [];
+  const brakes: { x: number; y: number }[] = [];
   for (let i = 0; i < stats.length; i += 1) {
     const v = Math.max(0, Math.min(99, stats[i])) / 99;
     const x = 20 + i * 112;
