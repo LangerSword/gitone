@@ -61,30 +61,30 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
   return (
     <div style={{ width: w, height: H, display: "flex", position: "relative", color: ink }}>
       {/* rating */}
-      <div style={{ position: "absolute", left: "13%", top: "9%", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "absolute", left: "14%", top: "9.5%", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3.1), fontWeight: 700, letterSpacing: cqw(0.8), color: label }}>RTG</div>
-        <div style={{ display: "flex", marginTop: cqw(0.5), fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(19), lineHeight: 0.95, color: ink }}>{card.rtg}</div>
+        <div style={{ display: "flex", marginTop: cqw(0.5), fontFamily: "DINPro", fontWeight: 500, fontSize: cqw(19), lineHeight: 0.95, color: ink }}>{card.rtg}</div>
       </div>
       {/* number */}
-      <div style={{ position: "absolute", left: "13%", top: "26.5%", display: "flex", flexDirection: "column" }}>
+      <div style={{ position: "absolute", left: "14%", top: "27%", display: "flex", flexDirection: "column" }}>
         <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.8), fontWeight: 700, letterSpacing: cqw(0.66), color: label }}>NO.</div>
-        <div style={{ display: "flex", marginTop: cqw(0.3), fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(8), lineHeight: 1, color: ink }}>{String(card.number).padStart(2, "0")}</div>
+        <div style={{ display: "flex", marginTop: cqw(0.3), fontFamily: "DINPro", fontWeight: 700, fontSize: cqw(8), lineHeight: 1, color: ink }}>{String(card.number).padStart(2, "0")}</div>
       </div>
       {/* flag */}
       {flag && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={flag} alt="" width={Math.round(cqw(4.4) * 1.5)} height={cqw(4.4)} style={{ position: "absolute", left: "13%", top: "37%", objectFit: "contain" }} />
+        <img src={flag} alt="" width={Math.round(cqw(4.4) * 1.5)} height={cqw(4.4)} style={{ position: "absolute", left: "14%", top: "37.5%", objectFit: "contain" }} />
       )}
       {/* finish chip */}
-      <div style={{ position: "absolute", left: "13%", top: "44%", display: "flex", padding: `${cqw(0.5)}px ${cqw(1.1)}px`, border: `1px solid ${hexAlpha(ink, 0.4)}` }}>
+      <div style={{ position: "absolute", left: "14%", top: "44.5%", display: "flex", padding: `${cqw(0.5)}px ${cqw(1.1)}px`, border: `1px solid ${hexAlpha(ink, 0.4)}` }}>
         <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.7), fontWeight: 800, letterSpacing: cqw(0.32), color: ink }}>{chip}</div>
       </div>
       {/* name */}
       <div style={{ position: "absolute", left: "10%", width: "80%", top: "58%", display: "flex", flexDirection: "column", alignItems: "center" }}>
         {first && (
-          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(Math.max(2.8, nameSize * 0.4)), lineHeight: 1, letterSpacing: cqw(0.16), color: label, marginBottom: cqw(0.6) }}>{first}</div>
+          <div style={{ display: "flex", fontFamily: "DINPro", fontWeight: 700, fontSize: cqw(Math.max(2.8, nameSize * 0.4)), lineHeight: 1, letterSpacing: cqw(0.16), color: label, marginBottom: cqw(0.6) }}>{first}</div>
         )}
-        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(nameSize), lineHeight: 1, color: ink }}>{last}</div>
+        <div style={{ display: "flex", fontFamily: "DINPro", fontWeight: 700, fontSize: cqw(nameSize), lineHeight: 1, color: ink }}>{last}</div>
         <div style={{ display: "flex", alignItems: "center", gap: cqw(1.2), marginTop: cqw(1) }}>
           <div style={{ display: "flex", width: cqw(3), height: cqw(0.5), background: hexAlpha(ink, 0.55) }} />
           <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(3), fontWeight: 700, letterSpacing: cqw(0.42), color: label }}>{card.constructor.name.toUpperCase()}</div>
@@ -98,7 +98,7 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
             {row.map((k, i) => (
               <div key={k} style={{ display: "flex", flex: 1, minWidth: 0, flexDirection: "column", alignItems: "center", justifyContent: "center", borderLeft: i === 0 ? "none" : `1px solid ${hexAlpha(ink, 0.28)}` }}>
                 <div style={{ display: "flex", fontFamily: "JBMono", fontSize: cqw(2.9), fontWeight: 700, letterSpacing: cqw(0.2), lineHeight: 0.95, color: label, whiteSpace: "nowrap" }}>{STAT_LABELS[k]}</div>
-                <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: cqw(6.6), lineHeight: 0.9, color: ink }}>{card.stats[k]}</div>
+                <div style={{ display: "flex", fontFamily: "DINPro", fontWeight: 700, fontSize: cqw(6.6), lineHeight: 0.9, color: ink }}>{card.stats[k]}</div>
               </div>
             ))}
           </div>

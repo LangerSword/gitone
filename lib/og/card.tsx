@@ -16,7 +16,7 @@ import { headers } from "next/headers";
 export interface OgFont {
   name: string;
   data: Buffer;
-  weight: 400 | 600 | 700 | 800 | 900;
+  weight: 400 | 500 | 600 | 700 | 800 | 900;
   style: "normal" | "italic";
 }
 
@@ -119,7 +119,7 @@ export function loadCardFonts(): Promise<OgFont[]> {
 }
 
 async function buildFonts(): Promise<OgFont[]> {
-  const [bc600, bc700, bc800, bc600i, mono400, mono700, mono800] = await Promise.all([
+  const [bc600, bc700, bc800, bc600i, mono400, mono700, mono800, dinBold, dinMedium] = await Promise.all([
     fontBytes("BarlowCondensed-SemiBold.ttf"),
     fontBytes("BarlowCondensed-Bold.ttf"),
     fontBytes("BarlowCondensed-ExtraBold.ttf"),
@@ -127,8 +127,12 @@ async function buildFonts(): Promise<OgFont[]> {
     fontBytes("JetBrainsMono-Regular.ttf"),
     fontBytes("JetBrainsMono-Bold.ttf"),
     fontBytes("JetBrainsMono-ExtraBold.ttf"),
+    fontBytes("DINPro-CondBold.otf"),
+    fontBytes("DINPro-CondMedium.otf"),
   ]);
   return [
+    { name: "DINPro", data: dinBold, weight: 700, style: "normal" },
+    { name: "DINPro", data: dinMedium, weight: 500, style: "normal" },
     { name: "Titillium", data: bc600, weight: 400, style: "normal" },
     { name: "Titillium", data: bc600, weight: 600, style: "normal" },
     { name: "Titillium", data: bc700, weight: 700, style: "normal" },

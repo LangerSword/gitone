@@ -105,7 +105,7 @@ function pushPng(login, png) {
   const dir = mkdtempSync(join(tmpdir(), "gitone-warm-"));
   const file = join(dir, "v");
   writeFileSync(file, png);
-  const key = `cardpng:v7:${login.toLowerCase()}::`;
+  const key = `cardpng:v8:${login.toLowerCase()}::`;
   try {
     wrangler([
       "r2", "object", "put", `${BUCKET}/${key}`, "--remote", "--file", file,

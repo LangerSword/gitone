@@ -40,7 +40,7 @@ function tint(hex: string, a: number) {
 // copy of the stats. Petrol field, parchment ink, one copper signal.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v17:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v18:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {
