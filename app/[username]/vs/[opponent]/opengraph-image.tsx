@@ -1,7 +1,6 @@
 import { scoutCard } from "@/lib/scout";
 import { renderBattleImage, renderBattleFallback } from "@/lib/og/renderBattle";
 import { cachedPng } from "@/lib/og/pngCache";
-import { fallbackPng } from "@/lib/og/fallback";
 
 // The battle unfurl — Next wires this into og:image / twitter:image for the
 // head-to-head route automatically. The Satori composite is CPU-heavy and a
@@ -14,12 +13,12 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
-  return cachedPng(`poster-teaser:v39:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
+  return cachedPng(`poster-teaser:v40:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
     try {
       const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
       return await renderBattleImage(a, b, true);
     } catch {
       return await renderBattleFallback(username, opponent);
     }
-  }, undefined, fallbackPng);
+  }, undefined, () => renderBattleFallback(username, opponent));
 }

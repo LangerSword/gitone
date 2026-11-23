@@ -244,7 +244,7 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
         <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse 70% 60% at 90% 100%, rgba(246,241,232,0.34), transparent 72%)" }} />
         <div style={{ position: "absolute", left: 0, top: 0, width: W, height: 630, display: "flex", backgroundImage: "linear-gradient(rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
         <div style={{ position: "absolute", left: 0, top: 0, width: W, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
-        <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
+        <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.24) 70%, rgba(0,0,0,0.42))" }} />
         <div style={{ position: "absolute", left: 0, top: H - 18, width: W, height: 1, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(246,241,232,0.16), transparent)" }} />
         {teaser && (
           <div style={{ position: "absolute", left: 120, top: 250, width: 960, height: 2, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(193,18,31,0.4), transparent)" }} />
@@ -304,10 +304,28 @@ export async function renderBattleFallback(a: string, b: string): Promise<Respon
   const fonts = await loadPosterFonts();
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#0e1417", color: "#f0e8d8", fontFamily: "Titillium" }}>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 26, letterSpacing: 8, color: "#9aa39c" }}>GITONE · RACE RESULT</div>
-        <div style={{ display: "flex", fontWeight: 800, fontSize: 72, marginTop: 24 }}>@{a} vs @{b}</div>
-        <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 28, color: "#d6854a", marginTop: 20 }}>scout this battle at the grid</div>
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "#101014", backgroundImage: LANDING, color: "#f0e8d8", fontFamily: "Titillium" }}>
+        <div style={{ position: "absolute", left: 0, top: 0, width: W, height: H, display: "flex", backgroundImage: "linear-gradient(rgba(240,232,216,0.16) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: W, height: H, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(240,232,216,0.16) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.24) 70%, rgba(0,0,0,0.42))" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: W, height: H, display: "flex", backgroundImage: "radial-gradient(ellipse 60% 58% at 50% 46%, rgba(214,133,74,0.18), transparent 70%)" }} />
+
+        <div style={{ position: "absolute", left: 86, top: 66, display: "flex", alignItems: "center" }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div key={i} style={{ display: "flex", width: 8, height: 8, marginRight: 8, borderRadius: 999, background: "#d6854a" }} />
+          ))}
+          <div style={{ display: "flex", marginLeft: 8, fontFamily: "JBMono", fontSize: 15, fontWeight: 700, letterSpacing: 6, color: "#9aa39c" }}>GITONE / HEAD TO HEAD</div>
+        </div>
+
+        <div style={{ position: "absolute", left: 0, top: 170, width: W, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 30, fontWeight: 700, letterSpacing: 3, color: "#f0e8d8" }}>@{a}</div>
+          <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 900, fontSize: 132, lineHeight: 1, color: "#d6854a", textShadow: "0 0 40px rgba(214,133,74,0.35)" }}>VS</div>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 30, fontWeight: 700, letterSpacing: 3, color: "#f0e8d8" }}>@{b}</div>
+        </div>
+
+        <div style={{ position: "absolute", left: 0, bottom: 52, width: W, display: "flex", justifyContent: "center", fontFamily: "JBMono", fontSize: 16, letterSpacing: 2, color: "#9aa39c" }}>
+          scout this battle · gitone.langersword.in
+        </div>
       </div>
     ),
     { width: W, height: H, fonts, headers: CACHE },
