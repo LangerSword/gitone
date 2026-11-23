@@ -44,8 +44,10 @@ if (onlyIdx >= 0) {
 const batchArg = rest.find((a) => /^\d+$/.test(a));
 const BATCH = batchArg ? Number(batchArg) : DEFAULT_BATCH;
 
+const WRANGLER = join(REPO, "node_modules", ".bin", "wrangler");
+
 function wrangler(args) {
-  return execFileSync("npx", ["wrangler", ...args], {
+  return execFileSync(WRANGLER, args, {
     cwd: REPO,
     maxBuffer: 256 * 1024 * 1024,
     stdio: ["ignore", "pipe", "pipe"],
