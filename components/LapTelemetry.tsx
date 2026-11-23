@@ -76,7 +76,7 @@ export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; ac
               {a.login.toUpperCase()}
             </span>
             <span className="flex items-center gap-1.5" style={{ color: secondColor }}>
-              <span aria-hidden className="inline-block h-[2px] w-4" style={{ secondColor && secondColor !== accentB ? { backgroundImage: `repeating-linear-gradient(90deg, ${secondColor} 0 6px, transparent 6px 9px)` } : { background: secondColor } }} />
+              <span aria-hidden className="inline-block h-[2px] w-4" style={secondColor && secondColor !== accentB ? { backgroundImage: `repeating-linear-gradient(90deg, ${secondColor} 0 6px, transparent 6px 9px)` } : { background: secondColor }} />
               {b.login.toUpperCase()}
             </span>
             <span style={{ color: "var(--faint)" }}>{secondColor && secondColor !== accentB ? "DASHED = SECOND DRIVER · FAINT DROP = BRAKE" : "FAINT DROP = BRAKE"}</span>
