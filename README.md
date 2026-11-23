@@ -5,7 +5,7 @@
 **your github, rated like f1** 🏁
 
 <a href="https://gitone.langersword.in/torvalds">
-  <img src="https://gitone.langersword.in/torvalds.png" alt="Torvalds' gitone card" width="240" />
+  <img src="https://gitone.langersword.in/torvalds" alt="Torvalds' gitone card" width="240" />
 </a>
 
 That card is **live**. It re-scouts a real GitHub profile every two hours and
