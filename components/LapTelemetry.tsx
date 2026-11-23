@@ -25,7 +25,7 @@ function Lap({ card, color, label }: { card: Card; color: string; label: string 
     <div className="w-full">
       <div className="mono mb-1.5 flex items-center justify-between text-[10px] font-bold tracking-[0.16em]" style={{ color }}>
         <span>{label}</span>
-        <span style={{ color: "var(--faint)" }}>THROTTLE · BRAKE</span>
+        <span style={{ color: "var(--faint)" }}>THROTTLE · RED = BRAKE</span>
       </div>
       <svg viewBox="0 0 600 110" preserveAspectRatio="none" className="h-[74px] w-full" role="img" aria-label={`${card.name} stat-derived throttle trace`}>
         <rect x="0" y="0" width="600" height="110" fill="transparent" />
@@ -37,6 +37,7 @@ function Lap({ card, color, label }: { card: Card; color: string; label: string 
         <line x1="0" y1="98" x2="600" y2="98" stroke="rgba(240,232,216,0.12)" strokeWidth="1" />
         <text x="4" y="18" fill="var(--faint)" fontSize="8" fontFamily="monospace">100%</text>
         <text x="4" y="55" fill="var(--faint)" fontSize="8" fontFamily="monospace">50%</text>
+        <text x="4" y="94" fill="var(--faint)" fontSize="8" fontFamily="monospace">0%</text>
         <polyline points={points} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
         {brakes.map((b) => (
           <line key={b.x} x1={b.x} y1={b.y} x2={b.x} y2="98" stroke="#c1121f" strokeWidth="3" />
