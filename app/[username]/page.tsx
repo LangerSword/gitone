@@ -17,6 +17,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SupportPills } from "@/components/SupportPills";
 import { GitStrip } from "@/components/GitStrip";
+import { WarmOnView } from "@/components/WarmOnView";
 import { PersistPrefs } from "@/components/PersistPrefs";
 import { loadCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
@@ -305,6 +306,7 @@ export default async function DriverPage({
           </aside>
         </div>
       </div>
+      <WarmOnView kind="card" login={card.login} selector='[data-card="f1-26"]' />
       <GitStrip />
       <SiteFooter />
       <SupportPills />
