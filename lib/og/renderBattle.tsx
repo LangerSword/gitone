@@ -257,10 +257,10 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
           </>
         )}
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: teaser ? "#c1121f" : "#d6854a" }} />
+          {!teaser && [0, 1, 2, 3, 4].map((i) => (
+            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#d6854a" }} />
           ))}
-          <div style={{ display: "flex", marginLeft: 14, fontFamily: "JBMono", fontSize: 17, fontWeight: 700, letterSpacing: 7, color: "#f0e8d8" }}>
+          <div style={{ display: "flex", fontFamily: "JBMono", fontSize: 17, fontWeight: 700, letterSpacing: 7, color: "#f0e8d8" }}>
             GITONE · HEAD TO HEAD
           </div>
         </div>
