@@ -25,7 +25,7 @@ import { writeFileSync, readFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const REPO = "/home/lakshaya/projects/gitone";
+const REPO = process.cwd();
 const NS = "8d67e9c706f64ec397ea485d4fb30942";
 const BUCKET = "gitone-pngs-v2";
 const STATE = join(REPO, "scripts", ".warm-state.json");
