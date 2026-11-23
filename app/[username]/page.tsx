@@ -43,8 +43,8 @@ export async function generateMetadata({
     title: `${card.name} · RTG ${card.rtg}`,
     description,
     alternates: { canonical: `/${card.login}` },
-    openGraph: { title: `${card.name} · RTG ${card.rtg} · gitone`, description, images: [`/${card.login}/opengraph-image?ogv=6`] },
-    twitter: { card: "summary_large_image", title: `${card.name} · RTG ${card.rtg} · gitone`, description, images: [`/${card.login}/opengraph-image?ogv=6`] },
+    openGraph: { title: `${card.name} · RTG ${card.rtg} · gitone`, description, images: [`/${card.login}/opengraph-image?ogv=7`] },
+    twitter: { card: "summary_large_image", title: `${card.name} · RTG ${card.rtg} · gitone`, description, images: [`/${card.login}/opengraph-image?ogv=7`] },
   };
 }
 

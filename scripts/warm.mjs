@@ -21,6 +21,7 @@
  * is closed) and wrangler auth with R2 object write.
  */
 import { execFileSync, spawn } from "node:child_process";
+import sharp from "sharp";
 import { writeFileSync, readFileSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -129,6 +130,11 @@ async function warm(login) {
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
       pushPng(`cardpng:v10:${login.toLowerCase()}::`, buf);
+
+      // Tiny card thumb for the low-cost versus fallback: two of these can be
+      // composited on the request path without a Satori render.
+      const thumb = await sharp(buf).resize(230, 335, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).jpeg({ quality: 82 }).toBuffer();
+      pushPng(`cardthumb:v1:${login.toLowerCase()}`, thumb);
 
       // Render the 1200x630 share card in the same off-path pass so a user's
       // first share never depends on a cold cache key.
