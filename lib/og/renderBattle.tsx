@@ -64,7 +64,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner, angle = 0 }: { card:
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex", transform: angle ? `rotate(${angle}deg)` : undefined }}>
+    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex", ...(angle ? { transform: `rotate(${angle}deg)` } : {}) }}>
       {winner && (
         <div
           style={{
@@ -247,7 +247,7 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
         <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
         <div style={{ position: "absolute", left: 0, top: H - 18, width: W, height: 1, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(246,241,232,0.16), transparent)" }} />
         {teaser && (
-          <div style={{ position: "absolute", left: 120, top: 250, width: 960, height: 2, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(193,18,31,0.4), transparent)", transform: "rotate(-14deg)" }} />
+          <div style={{ position: "absolute", left: 120, top: 250, width: 960, height: 2, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(193,18,31,0.4), transparent)" }} />
         )}
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
