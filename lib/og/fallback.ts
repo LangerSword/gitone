@@ -32,7 +32,7 @@ export async function cardImageFallback(login: string): Promise<Response> {
     const { env } = getCloudflareContext() as {
       env?: { GITONE_PNGS?: { get(key: string): Promise<{ arrayBuffer(): Promise<ArrayBuffer> } | null> } };
     };
-    const obj = await env?.GITONE_PNGS?.get(`cardpng:v9:${login.toLowerCase()}`);
+    const obj = await env?.GITONE_PNGS?.get(`cardpng:v9:${login.toLowerCase()}::`);
     if (obj) {
       const bytes = Buffer.from(await obj.arrayBuffer());
       if (bytes.length > 20_000) {
