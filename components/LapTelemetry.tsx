@@ -51,8 +51,16 @@ function TraceLine({ t, color }: { t: Trace; color: string }) {
   );
 }
 
+function darken(hex: string) {
+  const h = hex.replace("#", "");
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16);
+  const f = (v: number) => Math.round(v * 0.55).toString(16).padStart(2, "0");
+  return `#${f((n >> 16) & 255)}${f((n >> 8) & 255)}${f(n & 255)}`;
+}
+
 export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; accentA: string; accentB?: string }) {
   const compare = !!b && !!accentB;
+  const secondColor = accentB && accentB.toLowerCase() === accentA.toLowerCase() ? darken(accentB) : accentB;
   return (
     <div className="w-full rounded-[14px] border px-4 py-3.5" style={{ borderColor: "var(--line)", background: "rgba(255,255,255,0.02)" }}>
       <div className="mono mb-3 flex items-center justify-between text-[10px] font-bold tracking-[0.18em]" style={{ color: "var(--dim)" }}>
@@ -67,8 +75,8 @@ export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; ac
               <span aria-hidden className="inline-block h-[2px] w-4" style={{ background: accentA }} />
               {a.login.toUpperCase()}
             </span>
-            <span className="flex items-center gap-1.5" style={{ color: accentB! }}>
-              <span aria-hidden className="inline-block h-[2px] w-4" style={{ background: accentB }} />
+            <span className="flex items-center gap-1.5" style={{ color: secondColor }}>
+              <span aria-hidden className="inline-block h-[2px] w-4" style={{ background: secondColor }} />
               {b.login.toUpperCase()}
             </span>
             <span style={{ color: "var(--faint)" }}>FAINT DROP = BRAKE</span>
@@ -76,7 +84,7 @@ export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; ac
           <svg viewBox="0 0 600 110" preserveAspectRatio="none" className="h-[110px] w-full" role="img" aria-label={`${a.name} versus ${b.name} stat-derived performance overlay`}>
             <Grid />
             <TraceLine t={trace(a)} color={accentA} />
-            <TraceLine t={trace(b)} color={accentB!} />
+            <TraceLine t={trace(b)} color={secondColor!} />
           </svg>
         </>
       ) : (

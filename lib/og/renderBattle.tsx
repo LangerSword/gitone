@@ -249,6 +249,13 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
         {teaser && (
           <div style={{ position: "absolute", left: 120, top: 250, width: 960, height: 2, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(193,18,31,0.4), transparent)" }} />
         )}
+        {teaser && (
+          <>
+            <div style={{ position: "absolute", left: 120, top: 96, width: 3, height: 430, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.5), transparent)" }} />
+            <div style={{ position: "absolute", left: W - 123, top: 96, width: 3, height: 430, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.5), transparent)" }} />
+            <div style={{ position: "absolute", left: 60, top: 574, width: 1080, height: 8, display: "flex", backgroundImage: "repeating-linear-gradient(90deg, rgba(240,232,216,0.5) 0px, rgba(240,232,216,0.5) 18px, transparent 18px, transparent 36px)" }} />
+          </>
+        )}
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: teaser ? "#c1121f" : "#d6854a" }} />
@@ -258,19 +265,12 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 290 : leftX} winner={winnerCard === a} angle={teaser ? 10 : 0} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 290 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -10 : 0} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 290 : leftX} winner={winnerCard === a} angle={teaser ? 5 : 0} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 290 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -5 : 0} />
         {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
         <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 280 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          {teaser && (
-            <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
-              {[0, 1, 2, 3, 4].map((i) => (
-                <div key={i} style={{ display: "flex", width: 10, height: 10, borderRadius: 999, background: "#c1121f", boxShadow: "0 0 12px rgba(193,18,31,0.6)" }} />
-              ))}
-            </div>
-          )}
           <div style={{ display: "flex", position: "relative", width: 360, height: 150, alignItems: "center", justifyContent: "center" }}>
             <div style={{ position: "absolute", left: 140, top: 14, display: "flex", fontSize: 150, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
             <div style={{ position: "absolute", left: 132, top: 7, display: "flex", fontSize: 150, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
