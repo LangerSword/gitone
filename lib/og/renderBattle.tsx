@@ -263,7 +263,7 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
         {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 176 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 300 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
           {teaser && (
             <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
               {[0, 1, 2, 3, 4].map((i) => (
