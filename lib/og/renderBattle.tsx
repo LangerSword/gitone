@@ -44,7 +44,7 @@ function Checkers({ y }: { y: number }) {
 // One driver's side: plate, portrait and the FULL card grammar — rating,
 // number, chip, name and all six stats — in one Satori pass. The winner gets a
 // livery wash behind the crest so the result reads before the scoreline.
-function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
+function DriverSide({ card, plateSrc, avatar, left, winner, angle = 0 }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean; angle?: number }) {
   const CW = 270;
   const CH = Math.round(CW * (820 / 540));
   const parts = card.name.trim().toUpperCase().replace(/\.$/, "").split(/\s+/).filter(Boolean);
@@ -64,7 +64,7 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
   };
   const ink = pickPlate(card).ink;
   return (
-    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex" }}>
+    <div style={{ position: "absolute", left, top: 112, width: CW, height: CH, display: "flex", transform: angle ? `rotate(${angle}deg)` : undefined }}>
       {winner && (
         <div
           style={{
@@ -246,25 +246,35 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
         <div style={{ position: "absolute", left: 0, top: 0, width: W, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
         <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
         <div style={{ position: "absolute", left: 0, top: H - 18, width: W, height: 1, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(246,241,232,0.16), transparent)" }} />
+        {teaser && (
+          <div style={{ position: "absolute", left: 120, top: 250, width: 960, height: 2, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(193,18,31,0.4), transparent)", transform: "rotate(-14deg)" }} />
+        )}
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#d6854a" }} />
+            <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: teaser ? "#c1121f" : "#d6854a" }} />
           ))}
           <div style={{ display: "flex", marginLeft: 14, fontFamily: "JBMono", fontSize: 17, fontWeight: 700, letterSpacing: 7, color: "#f0e8d8" }}>
             GITONE · HEAD TO HEAD
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={leftX} winner={winnerCard === a} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={rightX} winner={winnerCard === b} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 18 : leftX} winner={winnerCard === a} angle={teaser ? 8 : 0} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 18 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -8 : 0} />
         {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
-        <div style={{ position: "absolute", left: W / 2 - 160, top: teaser ? 196 : 132, width: 320, display: "flex", flexDirection: "column", alignItems: "center" }}>
-          <div style={{ display: "flex", position: "relative", width: 320, height: 120, alignItems: "center", justifyContent: "center" }}>
-            <div style={{ position: "absolute", left: 116, top: 12, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
-            <div style={{ position: "absolute", left: 108, top: 6, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
-            <div style={{ position: "absolute", left: 100, top: 0, display: "flex", fontSize: 116, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
+        <div style={{ position: "absolute", left: W / 2 - 180, top: teaser ? 176 : 132, width: 360, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          {teaser && (
+            <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <div key={i} style={{ display: "flex", width: 10, height: 10, borderRadius: 999, background: "#c1121f", boxShadow: "0 0 12px rgba(193,18,31,0.6)" }} />
+              ))}
+            </div>
+          )}
+          <div style={{ display: "flex", position: "relative", width: 360, height: 150, alignItems: "center", justifyContent: "center" }}>
+            <div style={{ position: "absolute", left: 140, top: 14, display: "flex", fontSize: 150, fontWeight: 900, fontStyle: "italic", color: "rgba(214,133,74,0.24)" }}>VS</div>
+            <div style={{ position: "absolute", left: 132, top: 7, display: "flex", fontSize: 150, fontWeight: 900, fontStyle: "italic", color: "rgba(240,232,216,0.38)" }}>VS</div>
+            <div style={{ position: "absolute", left: 124, top: 0, display: "flex", fontSize: 150, fontWeight: 900, fontStyle: "italic", color: "#f0e8d8", textShadow: "0 18px 48px rgba(0,0,0,0.65)" }}>VS</div>
           </div>
           {!teaser && (
             <div style={{ display: "flex", marginTop: 4, padding: "5px 18px", borderRadius: 999, border: "1px solid rgba(240,232,216,0.16)", background: "rgba(240,232,216,0.05)", alignItems: "center" }}>

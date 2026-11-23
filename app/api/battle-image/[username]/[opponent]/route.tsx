@@ -22,5 +22,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   // Warmers and design verification always want the real render.
   if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) return render();
 
-  return cachedPng(`poster:v28:${username.toLowerCase()}/${opponent.toLowerCase()}`, render);
+  return cachedPng(`poster:v30:${username.toLowerCase()}/${opponent.toLowerCase()}`, render);
 }
