@@ -258,8 +258,8 @@ export async function renderBattleImage(a: Card, b: Card, teaser = false): Promi
           </div>
         </div>
 
-        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 170 : leftX} winner={winnerCard === a} angle={teaser ? 8 : 0} />
-        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 170 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -8 : 0} />
+        <DriverSide card={a} plateSrc={aPlate} avatar={aAvatar} left={teaser ? 250 : leftX} winner={winnerCard === a} angle={teaser ? 8 : 0} />
+        <DriverSide card={b} plateSrc={bPlate} avatar={bAvatar} left={teaser ? W - 250 - sideW : rightX} winner={winnerCard === b} angle={teaser ? -8 : 0} />
         {!teaser && <SectorBoard duel={duel} aColor={a.constructor.color} bColor={b.constructor.color} teaser={false} />}
 
         {/* the VS is the single focal object, like the reference broadcast graphic */}
