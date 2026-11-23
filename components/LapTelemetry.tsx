@@ -40,10 +40,10 @@ function Grid() {
   );
 }
 
-function TraceLine({ t, color }: { t: Trace; color: string }) {
+function TraceLine({ t, color, dash }: { t: Trace; color: string; dash?: string }) {
   return (
     <>
-      <polyline points={t.points} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+      <polyline points={t.points} fill="none" stroke={color} strokeWidth="2.5" strokeDasharray={dash} strokeLinejoin="round" strokeLinecap="round" />
       {t.brakes.map((b) => (
         <line key={b.x} x1={b.x} y1={b.y} x2={b.x} y2="98" stroke={color} strokeOpacity="0.35" strokeWidth="1.5" />
       ))}
@@ -76,15 +76,15 @@ export function LapTelemetry({ a, b, accentA, accentB }: { a: Card; b?: Card; ac
               {a.login.toUpperCase()}
             </span>
             <span className="flex items-center gap-1.5" style={{ color: secondColor }}>
-              <span aria-hidden className="inline-block h-[2px] w-4" style={{ background: secondColor }} />
+              <span aria-hidden className="inline-block h-[2px] w-4" style={{ secondColor && secondColor !== accentB ? { backgroundImage: `repeating-linear-gradient(90deg, ${secondColor} 0 6px, transparent 6px 9px)` } : { background: secondColor } }} />
               {b.login.toUpperCase()}
             </span>
-            <span style={{ color: "var(--faint)" }}>FAINT DROP = BRAKE</span>
+            <span style={{ color: "var(--faint)" }}>{secondColor && secondColor !== accentB ? "DASHED = SECOND DRIVER · FAINT DROP = BRAKE" : "FAINT DROP = BRAKE"}</span>
           </div>
           <svg viewBox="0 0 600 110" preserveAspectRatio="none" className="h-[110px] w-full" role="img" aria-label={`${a.name} versus ${b.name} stat-derived performance overlay`}>
             <Grid />
             <TraceLine t={trace(a)} color={accentA} />
-            <TraceLine t={trace(b)} color={secondColor!} />
+            <TraceLine t={trace(b)} color={secondColor!} dash={secondColor !== accentB ? "7 4" : undefined} />
           </svg>
         </>
       ) : (
