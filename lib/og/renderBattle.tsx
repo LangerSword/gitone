@@ -3,7 +3,6 @@ import { loadPosterFonts, publicAssetDataUri } from "./card";
 import { fetchDataUri } from "./renderCard";
 import { pickPlate } from "./renderCard26";
 import { computeDuel, type Duel } from "@/lib/duel";
-import { cardDisplayName } from "@/lib/text";
 import type { Card } from "@/lib/racing/types";
 import { GOAT_LOGIN, GOAT_LOGINS, STATS, STAT_LABELS } from "@/lib/racing/constants";
 import { cssBox, FEATHER, portraitForCard, type PortraitWindow } from "@/lib/racing/portrait";
@@ -22,6 +21,7 @@ function withAlpha(hex: string, a: number) {
 // pass is the cost class the scout-report unfurl already survives, and the
 // result KV-caches: each pair renders once, forever after ~0.2s.
 const W = 1200;
+const LANDING = "radial-gradient(120% 90% at 16% -12%, rgba(193,18,31,0.17), transparent 54%), radial-gradient(80% 60% at 90% 16%, rgba(246,241,232,0.06), transparent 62%), linear-gradient(180deg, #181820, #101014 72%)";
 const H = 630;
 const CACHE = {
   "Cache-Control":
@@ -47,7 +47,9 @@ function Checkers({ y }: { y: number }) {
 function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plateSrc: string | null; avatar: string | null; left: number; winner: boolean }) {
   const CW = 270;
   const CH = Math.round(CW * (820 / 540));
-  const name = cardDisplayName(card.name).toUpperCase();
+  const parts = card.name.trim().toUpperCase().replace(/\.$/, "").split(/\s+/).filter(Boolean);
+  const firstName = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+  const lastName = parts[parts.length - 1] ?? "";
   const accent = card.constructor.color;
   const login = card.login.toLowerCase();
   const founder = card.finish === "founder" || !!card.founder;
@@ -123,7 +125,8 @@ function DriverSide({ card, plateSrc, avatar, left, winner }: { card: Card; plat
       </div>
       {/* identity */}
       <div style={{ position: "absolute", left: "8%", width: "84%", top: "55%", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 800, fontSize: name.length > 12 ? 18 : 21, lineHeight: 1, color: ink, textAlign: "center", maxWidth: CW - 20 }}>{name}</div>
+        {firstName && <div style={{ display: "flex", fontFamily: "Titillium", fontWeight: 700, fontSize: 11, lineHeight: 1, letterSpacing: 2, color: withAlpha(ink, 0.7), textAlign: "center", maxWidth: CW - 20 }}>{firstName}</div>}
+        <div style={{ display: "flex", marginTop: firstName ? 3 : 0, fontFamily: "Titillium", fontWeight: 800, fontSize: lastName.length > 12 ? 18 : 23, lineHeight: 1, color: ink, textAlign: "center", maxWidth: CW - 20 }}>{lastName}</div>
         <div style={{ display: "flex", marginTop: 4, fontFamily: "JBMono", fontSize: 8, fontWeight: 700, letterSpacing: 2, color: withAlpha(ink, 0.72) }}>{card.constructor.name.toUpperCase()}</div>
       </div>
       {/* the full six-stat rail, 3x2 — the poster no longer drops four stats */}
@@ -214,24 +217,20 @@ export async function renderBattleImage(a: Card, b: Card): Promise<Response> {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          backgroundColor: "#0d0f12",
+          backgroundColor: "#101014",
           backgroundImage:
-            `radial-gradient(420px 340px at 14% 44%, ${withAlpha(a.constructor.color, 0.16)}, transparent 72%), ` +
-            `radial-gradient(420px 340px at 86% 44%, ${withAlpha(b.constructor.color, 0.16)}, transparent 72%), ` +
-            "linear-gradient(115deg, rgba(240,232,216,0.02) 1px, transparent 1px), radial-gradient(760px 360px at 50% -12%, rgba(214,133,74,0.14), transparent 62%)",
-          backgroundSize: "auto, auto, 28px 28px, auto",
+            "radial-gradient(120% 90% at 16% -12%, rgba(193,18,31,0.17), transparent 54%), radial-gradient(80% 60% at 90% 16%, rgba(246,241,232,0.06), transparent 62%), linear-gradient(180deg, #181820, #101014 72%)",
           position: "relative",
           fontFamily: "Titillium",
         }}
       >
-        <Checkers y={0} />
-        <Checkers y={H - 16} />
-        {/* faint track grammar: horizontal speed rules and one timing arc */}
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div key={i} style={{ position: "absolute", left: 0, top: 104 + i * 92, width: W, height: 1, display: "flex", background: "rgba(240,232,216,0.025)" }} />
-        ))}
-        <div style={{ position: "absolute", left: 170, top: 128, width: 860, height: 330, display: "flex", borderRadius: 999, border: "1px solid rgba(214,133,74,0.05)" }} />
-
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "linear-gradient(180deg, #181820, #101014)" }} />
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse 80% 70% at 16% 100%, rgba(193,18,31,0.42), transparent 72%)" }} />
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse 70% 60% at 90% 100%, rgba(246,241,232,0.34), transparent 72%)" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: W, height: 630, display: "flex", backgroundImage: "linear-gradient(rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: W, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 440, width: W, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
+        <div style={{ position: "absolute", left: 0, top: H - 18, width: W, height: 1, display: "flex", backgroundImage: "linear-gradient(90deg, transparent, rgba(246,241,232,0.16), transparent)" }} />
         <div style={{ position: "absolute", left: 0, top: 44, width: W, display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} style={{ display: "flex", width: 7, height: 7, borderRadius: 999, background: "#d6854a" }} />

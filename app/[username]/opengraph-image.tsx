@@ -8,7 +8,9 @@ export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const alt = "gitone driver card";
 
-const FIELD = "#0e1417";
+const FIELD = "#101014";
+const LANDING =
+  "radial-gradient(120% 90% at 16% -12%, rgba(193,18,31,0.17), transparent 54%), radial-gradient(80% 60% at 90% 16%, rgba(246,241,232,0.06), transparent 62%), linear-gradient(180deg, #181820, #101014 72%)";
 const INK = "#f0e8d8";
 const SIGNAL = "#d6854a";
 const MUTED = "#9aa39c";
@@ -38,7 +40,7 @@ function tint(hex: string, a: number) {
 // copy of the stats. Petrol field, parchment ink, one copper signal.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v11:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v17:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 async function buildOg(username: string): Promise<Response> {
@@ -73,8 +75,13 @@ async function buildOg(username: string): Promise<Response> {
 
   return new ImageResponse(
     (
-      <div style={{ width: 1200, height: 630, display: "flex", position: "relative", background: FIELD, fontFamily: "Titillium" }}>
-        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "linear-gradient(115deg, rgba(240,232,216,0.02) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+      <div style={{ width: 1200, height: 630, display: "flex", position: "relative", background: FIELD, backgroundImage: LANDING, fontFamily: "Titillium" }}>
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "linear-gradient(180deg, #181820, #101014)" }} />
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse 80% 70% at 16% 100%, rgba(193,18,31,0.42), transparent 72%)" }} />
+        <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse 70% 60% at 90% 100%, rgba(246,241,232,0.34), transparent 72%)" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(246,241,232,0.10) 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
+        <div style={{ position: "absolute", left: 0, top: 440, width: 1200, height: 190, display: "flex", backgroundImage: "linear-gradient(180deg, transparent, rgba(193,18,31,0.14) 70%, rgba(0,0,0,0.42))" }} />
         <div style={{ position: "absolute", left: 0, top: 0, width: 620, height: 630, display: "flex", backgroundImage: `radial-gradient(ellipse 58% 64% at 34% 48%, ${tint(livery, 0.16)}, transparent 72%)` }} />
 
         <div style={{ position: "absolute", left: 74, top, display: "flex" }}>
