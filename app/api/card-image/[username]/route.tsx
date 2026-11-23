@@ -3,6 +3,7 @@ import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
 import { renderCardImage, renderFallbackImage } from "@/lib/og/renderCard26";
 import { cachedPng, PNG_HEADERS } from "@/lib/og/pngCache";
+import { fallbackPng } from "@/lib/og/fallback";
 
 export const runtime = "nodejs";
 
@@ -63,6 +64,6 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
     // Cold miss: never render on the request path, pinned variants included —
     // they cost the same ~2s and fail the same way. The fallback is a real
     // card-shaped PNG carrying the handle, so an embed still looks intentional.
-    () => renderFallbackImage(username),
+    fallbackPng,
   );
 }

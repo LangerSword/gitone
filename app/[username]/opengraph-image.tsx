@@ -3,6 +3,7 @@ import { loadCard } from "@/lib/scout";
 import { renderCardPng, cardFrame } from "@/lib/og/renderCard26";
 import { loadCardFonts, publicAssetDataUri } from "@/lib/og/card";
 import { cachedPng } from "@/lib/og/pngCache";
+import { fallbackPng } from "@/lib/og/fallback";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -40,7 +41,7 @@ function tint(hex: string, a: number) {
 // copy of the stats. Petrol field, parchment ink, one copper signal.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v18:${username.toLowerCase()}`, () => buildOg(username));
+  return cachedPng(`og:v18:${username.toLowerCase()}`, () => buildOg(username), undefined, fallbackPng);
 }
 
 async function buildOg(username: string): Promise<Response> {

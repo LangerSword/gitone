@@ -1,6 +1,7 @@
 import { scoutCard } from "@/lib/scout";
 import { renderBattleImage, renderBattleFallback } from "@/lib/og/renderBattle";
 import { cachedPng } from "@/lib/og/pngCache";
+import { fallbackPng } from "@/lib/og/fallback";
 
 export const runtime = "nodejs";
 
@@ -22,5 +23,5 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   // Warmers and design verification always want the real render.
   if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) return render();
 
-  return cachedPng(`poster:v31:${username.toLowerCase()}/${opponent.toLowerCase()}`, render);
+  return cachedPng(`poster:v31:${username.toLowerCase()}/${opponent.toLowerCase()}`, render, undefined, fallbackPng);
 }

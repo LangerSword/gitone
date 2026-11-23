@@ -1,6 +1,7 @@
 import { scoutCard } from "@/lib/scout";
 import { renderBattleImage, renderBattleFallback } from "@/lib/og/renderBattle";
 import { cachedPng } from "@/lib/og/pngCache";
+import { fallbackPng } from "@/lib/og/fallback";
 
 // The battle unfurl — Next wires this into og:image / twitter:image for the
 // head-to-head route automatically. The Satori composite is CPU-heavy and a
@@ -20,5 +21,5 @@ export default async function Image({ params }: { params: Promise<{ username: st
     } catch {
       return await renderBattleFallback(username, opponent);
     }
-  });
+  }, undefined, fallbackPng);
 }
