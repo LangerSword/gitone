@@ -12,9 +12,9 @@ function trace(card: Card) {
   for (let i = 0; i < stats.length; i += 1) {
     const v = Math.max(0, Math.min(99, stats[i])) / 99;
     const x = 20 + i * 112;
-    const throttleY = 96 - (0.42 + v * 0.52) * 74;
+    const throttleY = 96 - v * 74;
     points.push(`${x},${throttleY.toFixed(1)}`);
-    if (stats[i] < 70) brakes.push(x);
+    if (stats[i] < 70) brakes.push({ x, y: throttleY });
   }
   return { points: points.join(" "), brakes };
 }
@@ -32,10 +32,14 @@ function Lap({ card, color, label }: { card: Card; color: string; label: string 
         {[208, 416].map((x) => (
           <line key={x} x1={x} y1="4" x2={x} y2="106" stroke="rgba(240,232,216,0.12)" strokeWidth="1" strokeDasharray="3 4" />
         ))}
+        <line x1="0" y1="22" x2="600" y2="22" stroke="rgba(240,232,216,0.06)" strokeWidth="1" />
+        <line x1="0" y1="59" x2="600" y2="59" stroke="rgba(240,232,216,0.06)" strokeWidth="1" />
         <line x1="0" y1="98" x2="600" y2="98" stroke="rgba(240,232,216,0.12)" strokeWidth="1" />
+        <text x="4" y="18" fill="var(--faint)" fontSize="8" fontFamily="monospace">100%</text>
+        <text x="4" y="55" fill="var(--faint)" fontSize="8" fontFamily="monospace">50%</text>
         <polyline points={points} fill="none" stroke={color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
-        {brakes.map((x) => (
-          <line key={x} x1={x} y1="72" x2={x} y2="98" stroke="#c1121f" strokeWidth="3" />
+        {brakes.map((b) => (
+          <line key={b.x} x1={b.x} y1={b.y} x2={b.x} y2="98" stroke="#c1121f" strokeWidth="3" />
         ))}
         {["S1", "S2", "S3"].map((s, i) => (
           <text key={s} x={100 + i * 208} y="108" fill="var(--faint)" fontSize="9" fontFamily="monospace" textAnchor="middle">{s}</text>
