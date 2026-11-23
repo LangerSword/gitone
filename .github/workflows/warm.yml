@@ -1,0 +1,33 @@
+name: warm
+
+on:
+  schedule:
+    # Daily recovery pass; the primary warm happens in the card render pass.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+      - name: Render missing card + share PNGs into R2
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GITONE_FORCE_RENDER: "1"
+          WARM_PORT: "3001"
+        run: |
+          npx next start -p 3001 > /tmp/gitone-warm-server.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:3001/ > /dev/null && break
+            sleep 2
+          done
+          node scripts/warm.mjs 250
