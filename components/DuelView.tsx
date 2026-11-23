@@ -8,6 +8,7 @@ import { cardDisplayName } from "@/lib/text";
 import { resolvedRows } from "@/lib/reveal";
 import { useDuelReveal } from "@/hooks/useDuelReveal";
 import { DriverCard26 } from "@/components/DriverCard26";
+import { LapTelemetry } from "@/components/LapTelemetry";
 import { BattleActions } from "@/components/BattleActions";
 import { resolveCardTheme, rgba } from "@/components/finishTheme";
 import { GOAT_LOGIN, GOAT_LOGINS } from "@/lib/racing/constants";
@@ -570,6 +571,10 @@ export function DuelView({ duel }: { duel: Duel }) {
           {rows.map((r, i) => (
             <SectorRow key={r.key} row={r} resolved={i < shown} aColor={aColor} bColor={bColor} />
           ))}
+        </div>
+
+        <div data-duel-telemetry className="mt-6 w-full">
+          <LapTelemetry a={challenger} b={opponent} accentA={aColor} accentB={bColor} />
         </div>
 
         {/* receipts + sharing — revealed once the duel settles. visibility

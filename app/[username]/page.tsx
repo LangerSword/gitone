@@ -3,6 +3,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { DriverCard26 as DriverCard } from "@/components/DriverCard26";
+import { LapTelemetry } from "@/components/LapTelemetry";
 import { TiltCard } from "@/components/TiltCard";
 import { Confetti } from "@/components/Confetti";
 import { ReportHeader, Section, AttributeRow, Tip, TraitChips } from "@/components/dossier";
@@ -296,6 +297,9 @@ export default async function DriverPage({
           <aside className="order-3">
             <Reveal delay={60}>
               <ReportTabs card={flagged} accent={accent} />
+            </Reveal>
+            <Reveal delay={120}>
+              <LapTelemetry a={flagged} accentA={accent} />
             </Reveal>
           </aside>
         </div>
