@@ -19,6 +19,7 @@ export function SplitDownload({
   posterUrl,
   captureBackgroundColor,
   captureExclude,
+  capturePixelRatio,
   filename,
   linkUrl,
   shareText,
@@ -36,6 +37,7 @@ export function SplitDownload({
   captureBackgroundColor?: string;
   /** Selector stripped from the capture clone (e.g. the action row itself). */
   captureExclude?: string;
+  capturePixelRatio?: number;
   filename: string;
   linkUrl: string;
   shareText?: string;

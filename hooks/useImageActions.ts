@@ -25,6 +25,7 @@ export function useImageActions({
   posterUrl,
   captureBackgroundColor,
   captureExclude,
+  capturePixelRatio = 3,
   filename,
   linkUrl,
   shareText,
@@ -42,6 +43,7 @@ export function useImageActions({
   captureBackgroundColor?: string;
   /** Selector stripped from the capture clone (e.g. the action row itself). */
   captureExclude?: string;
+  capturePixelRatio?: number;
   filename: string;
   /** Absolute page URL written by Copy link / handed to the share sheet. */
   linkUrl: string;
@@ -81,12 +83,13 @@ export function useImageActions({
     if (posterUrl) {
       const attempt = async (n: number): Promise<Blob> => {
         const r = await fetch(posterUrl).catch(() => null);
-        if (!r || !r.ok) {
+        const isFallback = r?.headers.get("x-og-cache") === "miss-fallback";
+        if (!r || !r.ok || isFallback) {
           if (n < 3) {
             await new Promise((res) => setTimeout(res, 2200));
             return attempt(n + 1);
           }
-          throw new Error(`poster request failed (${r ? r.status : "network"})`);
+          throw new Error(`poster not ready (${isFallback ? "fallback" : r ? r.status : "network"})`);
         }
         return r.blob();
       };
@@ -98,7 +101,7 @@ export function useImageActions({
       node,
       async (n) => {
         const blob = await toBlob(n, {
-          pixelRatio: 3,
+          pixelRatio: capturePixelRatio,
           cacheBust: true,
           backgroundColor: captureBackgroundColor,
         });

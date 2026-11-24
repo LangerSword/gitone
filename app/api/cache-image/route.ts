@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
   let key: string;
   if (kind === "card" && LOGIN.test(login)) key = `cardpng:v10:${login}::`;
-  else if (kind === "teaser" && LOGIN.test(a) && LOGIN.test(b)) key = `poster-teaser:v44:${a}/${b}`;
+  else if (kind === "teaser" && LOGIN.test(a) && LOGIN.test(b)) key = `poster-teaser:v45:${a}/${b}`;
   else return new Response("invalid", { status: 400 });
 
   const bytes = Buffer.from(await req.arrayBuffer());

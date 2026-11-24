@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { toBlob } from "html-to-image";
 import { captureNode } from "@/lib/capture";
+import { captureVersusPoster } from "@/lib/versusCapture";
 
 // Warm the share image from the live DOM after a quiet moment. The browser
 // does the rasterisation; the Worker only stores the bytes. This makes the
@@ -36,14 +37,12 @@ export function WarmOnView({
       }
       if (!node || !alive) return;
       try {
-        const blob = await captureNode(node, (clone) =>
-          toBlob(clone, {
-            pixelRatio: kind === "card" ? 2 : 1.5,
-            cacheBust: true,
-            backgroundColor: kind === "card" ? undefined : "#101014",
-          }),
-          { exclude },
-        );
+        const blob = kind === "teaser"
+          ? await captureVersusPoster(a ?? "", b ?? "")
+          : await captureNode(node, (clone) =>
+              toBlob(clone, { pixelRatio: 2, cacheBust: true, backgroundColor: undefined }),
+              { exclude },
+            );
         if (!blob || !alive) return;
         const qs =
           kind === "card"
