@@ -7,5 +7,5 @@ export function flagUrl(code: string | null | undefined, width = 80): string | n
   const c = code.toLowerCase();
   if (!/^[a-z]{2}(-[a-z]{3})?$/.test(c)) return null;
   if (!HOME_NATION.has(c) && c.includes("-")) return null;
-  return `https://flagcdn.com/w${width}/${c}.png`;
+  return `/api/flag/w${width}/${c}.png`;
 }
