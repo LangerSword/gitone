@@ -632,7 +632,20 @@ export function DuelView({ duel }: { duel: Duel }) {
           {/* data-export-exclude: the action row never appears in the captured
               result graphic (the download button can't share itself). */}
           <div data-export-exclude className="mx-auto mt-8 w-full max-w-[440px]">
-            <BattleActions username={challenger.login} opponent={opponent.login} text={shareText} />
+            <BattleActions
+              username={challenger.login}
+              opponent={opponent.login}
+              text={shareText}
+              duel={{
+                rows,
+                score,
+                aColor,
+                bColor,
+                subtitle: testSession
+                  ? "SAME DRIVER, BOTH CARS"
+                  : `${score.challenger}-${score.opponent} ON SECTORS${onCountback ? " · RTG COUNTBACK" : winner ? "" : " · LEVEL ON RTG"}`,
+              }}
+            />
           </div>
 
           <p data-export-exclude className="mono mt-6 text-center text-[11.5px] leading-relaxed tracking-[0.08em]" style={{ color: "var(--dim)" }}>
