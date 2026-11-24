@@ -58,7 +58,7 @@ export function SplitDownload({
     canNativeShare,
     nativeShare,
     mainLabel,
-  } = useImageActions({ getCaptureNode, posterUrl, captureBackgroundColor, captureExclude, filename, linkUrl, shareText, shareTitle, intentUrl, idleLabel: label });
+  } = useImageActions({ getCaptureNode, posterUrl, captureBackgroundColor, captureExclude, capturePixelRatio, filename, linkUrl, shareText, shareTitle, intentUrl, idleLabel: label });
 
   const menuRef = useRef<HTMLDivElement>(null);
   const caretRef = useRef<HTMLButtonElement>(null);
