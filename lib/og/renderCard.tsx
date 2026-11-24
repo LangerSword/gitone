@@ -3,6 +3,7 @@ import { STATS, STAT_LABELS } from "@/lib/racing/constants";
 import { artLayers, resolveCardTheme, statColor } from "@/components/finishTheme";
 import { cardDisplayName } from "@/lib/text";
 import { flagUrl } from "@/lib/flagUrl";
+import { absoluteAssetUrl } from "./absoluteUrl";
 import { languageLogoUrl } from "@/lib/github/languages";
 import type { Card } from "@/lib/racing/types";
 import { loadCardFonts } from "./card";
@@ -60,7 +61,7 @@ export interface CardAssets {
 export async function loadCardAssets(card: Card): Promise<CardAssets> {
   const [avatar, flag, logo] = await Promise.all([
     fetchDataUri(card.avatarUrl),
-    card.country ? fetchDataUri(flagUrl(card.country, 80)!) : Promise.resolve(null),
+    card.country ? fetchDataUri(absoluteAssetUrl(flagUrl(card.country, 80)!)) : Promise.resolve(null),
     card.languageLogo ? fetchDataUri(languageLogoUrl(card.languageLogo.slug)) : Promise.resolve(null),
   ]);
   return { avatar, flag, logo };

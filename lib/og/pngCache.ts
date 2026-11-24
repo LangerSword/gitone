@@ -78,6 +78,9 @@ export async function cachedPng(
   }
 
   const store = await pngStore();
+  // Local dev binds a stub R2 bucket; render straight through there. Unbound
+  // production previews have no store at all and take the same path.
+  if (!store || process.env.NODE_ENV !== "production") return render();
   if (store) {
     const hit = await store.get(key).catch(() => null);
     if (hit) {
@@ -85,10 +88,10 @@ export async function cachedPng(
       if (cache) edgePut(cache, url, bytes);
       return new Response(bytes, { headers: { ...headers, "x-og-cache": "r2-hit" } });
     }
-  } else if (!cache) {
-    // No cache backend at all (local dev): stream straight through.
-    return render();
   }
+  // No R2 binding (local dev / unbound preview) means there is nothing to
+  // read; render straight through even when an edge Cache polyfill exists.
+  if (!store) return render();
 
   // Cold miss. A full Satori composite costs ~2s of CPU, which the Workers
   // free plan's 10ms budget kills outright (Cloudflare 1102 -> 503). Never

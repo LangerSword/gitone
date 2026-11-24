@@ -11,6 +11,7 @@ import {
   portraitForCard,
 } from "@/lib/racing/portrait";
 import { flagUrl } from "@/lib/flagUrl";
+import { absoluteAssetUrl } from "./absoluteUrl";
 import type { Card, Finish } from "@/lib/racing/types";
 import { isWorkersRuntime, loadCardFonts, publicAssetDataUri } from "./card";
 import { loadCardAssets } from "./renderCard";
@@ -78,7 +79,7 @@ function textTree(card: Card, assets: Awaited<ReturnType<typeof loadCardAssets>>
   const { first, last } = nameParts(card.name);
   const nameSize = last.length > 11 ? 8.0 : last.length > 8 ? 9.8 : 11.0;
   const label = hexAlpha(ink, 0.68);
-  const flag = assets.flag ?? flagUrl(card.country, 80);
+  const flag = assets.flag ?? (card.country ? absoluteAssetUrl(flagUrl(card.country, 80)!) : null);
   const founder = card.finish === "founder" || !!card.founder;
   const login = card.login.toLowerCase();
   const goat = !founder && (GOAT_LOGINS.includes(login) || login === GOAT_LOGIN || (card.number === 1 && card.rtg >= 97));

@@ -7,10 +7,5 @@ export function flagUrl(code: string | null | undefined, width = 80): string | n
   const c = code.toLowerCase();
   if (!/^[a-z]{2}(-[a-z]{3})?$/.test(c)) return null;
   if (!HOME_NATION.has(c) && c.includes("-")) return null;
-  const path = `/api/flag/w${width}/${c}.png`;
-  // Browser captures need a same-origin relative path (no CORS). Satori/sharp
-  // running on the server needs an absolute URL.
-  if (typeof window !== "undefined") return path;
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gitone.langersword.in";
-  return new URL(path, base).toString();
+  return `/api/flag/w${width}/${c}.png`;
 }

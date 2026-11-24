@@ -53,8 +53,11 @@ export function WarmOnView({
           headers: { "Content-Type": "image/png" },
           body: blob,
         });
-      } catch {
-        // warming is best-effort — never touch the visible UI
+      } catch (e) {
+        // warming is best-effort — never touch the visible UI, but leave a
+        // reason in the console so a broken warm is not indistinguishable
+        // from "nobody visited yet".
+        console.error("[warm] client capture failed:", e);
       }
     };
 
