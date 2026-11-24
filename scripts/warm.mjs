@@ -128,7 +128,7 @@ async function warm(login) {
       const res = await fetch(`${LOCAL}/${login}.png?force=1`, { signal: AbortSignal.timeout(120_000) });
       if (!res.ok) return { login, ok: false, status: res.status };
       const buf = Buffer.from(await res.arrayBuffer());
-      if (buf.length < 20_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
+      if (buf.length < 200_000) return { login, ok: false, status: `suspicious-${buf.length}B` };
       pushPng(`cardpng:v10:${login.toLowerCase()}::`, buf);
 
       // Tiny card thumb for the low-cost versus fallback: two of these can be

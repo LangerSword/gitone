@@ -49,7 +49,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
             }
           : {}),
       });
-    } catch {
+    } catch (e) {
+      console.error('[card] render failed:', username, e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
       return await renderFallbackImage(username);
     }
   };
