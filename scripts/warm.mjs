@@ -136,14 +136,6 @@ async function warm(login) {
       const thumb = await sharp(buf).resize(230, 335, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } }).jpeg({ quality: 82 }).toBuffer();
       pushPng(`cardthumb:v1:${login.toLowerCase()}`, thumb);
 
-      // Render the 1200x630 share card in the same off-path pass so a user's
-      // first share never depends on a cold cache key.
-      const og = await fetch(`${LOCAL}/api/og/${login}?force=1`, { signal: AbortSignal.timeout(120_000) });
-      if (og.ok) {
-        const ogBuf = Buffer.from(await og.arrayBuffer());
-        if (ogBuf.length > 100_000) pushPng(`og:v18:${login.toLowerCase()}`, ogBuf);
-      }
-
       warmedSet.add(login.toLowerCase());
       writeFileSync(STATE, JSON.stringify([...warmedSet].sort()));
       return { login, ok: true, bytes: buf.length };
