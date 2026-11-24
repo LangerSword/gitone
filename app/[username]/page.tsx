@@ -36,7 +36,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { username } = await params;
   const res = await loadCard(username);
-  if ("error" in res) return { title: username };
+  if ("error" in res) {
+    const img = `/${username.toLowerCase()}/opengraph-image?ogv=11`;
+    return {
+      title: username,
+      openGraph: { title: `${username} · gitone`, images: [img] },
+      twitter: { card: "summary_large_image", title: `${username} · gitone`, images: [img] },
+    };
+  }
   const { card } = res;
   const s = card.stats;
   const description = `🏎️ ${card.name} is rated ${card.rtg}/99 on gitone — ${card.finishLabel.toLowerCase()} of the GitHub grid. PAC ${s.pac} · RAC ${s.rac} · AWA ${s.awa} · EXP ${s.exp}. Scout yours →`;
