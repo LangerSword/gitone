@@ -61,6 +61,7 @@ export function CardActions({ login, name, rtg, finishLabel }: { login: string; 
               <button
                 type="button"
                 role="menuitem"
+                aria-label="Copy embed Markdown"
                 className="menu-item"
                 onClick={() => {
                   copy(`[![My gitone card](${pngUrl})](${origin}/${login})`);
@@ -74,6 +75,7 @@ export function CardActions({ login, name, rtg, finishLabel }: { login: string; 
               <button
                 type="button"
                 role="menuitem"
+                aria-label="Copy JSON API URL"
                 className="menu-item"
                 onClick={() => {
                   copy(`${origin}/api/card/${login}`);
