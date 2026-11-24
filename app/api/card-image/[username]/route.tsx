@@ -1,9 +1,8 @@
 import { scoutCard } from "@/lib/scout";
 import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
-import { renderCardImage, renderFallbackImage } from "@/lib/og/renderCard26";
+import { renderCardImage } from "@/lib/og/renderCard26";
 import { cachedPng, PNG_HEADERS } from "@/lib/og/pngCache";
-import { fallbackPng } from "@/lib/og/fallback";
 
 export const runtime = "nodejs";
 
@@ -15,10 +14,10 @@ export const runtime = "nodejs";
 // the visitor sees, and a broken image in their README). Measured live: cold
 // renders failed 24/24 while cached ones served 20/20.
 //
-// So the cold path never renders. It serves the branded fallback immediately
-// (~0.2s, survivable) and the real card is filled in by the off-path warmer
-// (scripts/warm.mjs), which renders on a machine with no CPU cap and writes the
-// PNG to R2. The edge cache then serves it for a day.
+// So the cold path never renders and never pretends: a missing card simply
+// returns no image. The off-path warmer (scripts/warm.mjs) renders on a
+// machine with no CPU cap and writes the real PNG to R2; the edge then serves
+// it for a day.
 export async function GET(req: Request, { params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
   const query = new URL(req.url).searchParams;
@@ -31,40 +30,34 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   const cacheKey = `cardpng:v10:${lower}:${override ?? ""}:${teamCode ?? ""}`;
 
   const render = async () => {
-    try {
-      const card = await scoutCard(username);
-      const team = pickTeam(teamCode);
-      return await renderCardImage({
-        ...card,
-        country: pickFlag(override, card.country),
-        ...(team
-          ? {
-              constructor: {
-                language: null,
-                name: team.name,
-                code: team.code,
-                color: team.color,
-                ink: team.ink,
-              },
-            }
-          : {}),
-      });
-    } catch (e) {
-      console.error('[card] render failed:', username, e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
-      return await renderFallbackImage(username);
-    }
+    const card = await scoutCard(username);
+    const team = pickTeam(teamCode);
+    return renderCardImage({
+      ...card,
+      country: pickFlag(override, card.country),
+      ...(team
+        ? {
+            constructor: {
+              language: null,
+              name: team.name,
+              code: team.code,
+              color: team.color,
+              ink: team.ink,
+            },
+          }
+        : {}),
+    });
   };
 
-  // The warmer always wants the real render, never a cache/fallback short-circuit.
-  if (process.env.GITONE_FORCE_RENDER === "1" && query.has("force")) return render();
+  // The warmer always wants the real render, never a cache short-circuit.
+  if (process.env.GITONE_FORCE_RENDER === "1" && query.has("force")) {
+    try {
+      return await render();
+    } catch (e) {
+      console.error("[card] render failed:", username, e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
+      return new Response("render failed", { status: 500 });
+    }
+  }
 
-  return cachedPng(
-    cacheKey,
-    render,
-    PNG_HEADERS,
-    // Cold miss: never render on the request path, pinned variants included —
-    // they cost the same ~2s and fail the same way. The fallback is a real
-    // card-shaped PNG carrying the handle, so an embed still looks intentional.
-    fallbackPng,
-  );
+  return cachedPng(cacheKey, render, PNG_HEADERS);
 }

@@ -11,7 +11,7 @@ import "server-only";
 //
 // Serving order: edge Cache API (free, per-PoP, ~1ms) -> R2 object -> render.
 // The x-og-cache header reports which path served each request:
-// edge-hit | r2-hit | stored | miss-fallback | off.
+// edge-hit | r2-hit | stored | miss-empty | off.
 
 export const PNG_HEADERS = {
   "Content-Type": "image/png",
@@ -19,6 +19,9 @@ export const PNG_HEADERS = {
 };
 
 const PNG_BUCKET = "GITONE_PNGS";
+// Bump when stale fallback bytes must be bypassed at the edge without
+// invalidating the (good) objects already stored in R2.
+const EDGE_VERSION = "v2";
 
 interface StoredPng {
   arrayBuffer(): Promise<ArrayBuffer>;
@@ -39,7 +42,7 @@ function edgeCache(): Cache | null {
 
 function cacheUrl(key: string): string {
   const origin = (process.env.NEXT_PUBLIC_SITE_URL || "https://gitone.langersword.in").replace(/\/$/, "");
-  return `${origin}/_edge/${key}`;
+  return `${origin}/_edge/${EDGE_VERSION}/${key}`;
 }
 
 async function pngStore(): Promise<PngStore | null> {
@@ -87,14 +90,15 @@ export async function cachedPng(
     return render();
   }
 
-  // Cold miss. The caller decides whether a full render is safe to attempt
-  // here; a full Satori composite costs ~2s of CPU, which the Workers free
-  // plan's 10ms budget kills outright (Cloudflare 1102 -> 503). Passing
-  // onMiss keeps the request cheap and the visitor served.
-  if (onMiss) {
-    const res = await onMiss();
-    return new Response(res.body, { status: res.status, headers: { ...res.headers, "x-og-cache": "miss-fallback" } });
+  // Cold miss. A full Satori composite costs ~2s of CPU, which the Workers
+  // free plan's 10ms budget kills outright (Cloudflare 1102 -> 503). Never
+  // render on the request path: a missing PNG is simply absent. No fake
+  // fallback image is served, and no failure response is ever cached.
+  if (!onMiss) {
+    return new Response(null, { status: 404, headers: { "Cache-Control": "no-store", "x-og-cache": "miss-empty" } });
   }
+  const allowed = await onMiss();
+  if (!allowed.ok) return allowed;
 
   let res: Response;
   try {
@@ -103,8 +107,6 @@ export async function cachedPng(
     return new Response("render failed", { status: 500 });
   }
   if (!res.ok) {
-    // Never cache a failure — hand it back untouched so the caller's own
-    // fallback logic can take over.
     return new Response(res.body, { status: res.status, headers: res.headers });
   }
 

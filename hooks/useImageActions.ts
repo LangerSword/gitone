@@ -83,13 +83,15 @@ export function useImageActions({
     if (posterUrl) {
       const attempt = async (n: number): Promise<Blob> => {
         const r = await fetch(posterUrl).catch(() => null);
-        const isFallback = r?.headers.get("x-og-cache") === "miss-fallback";
-        if (!r || !r.ok || isFallback) {
-          if (n < 3) {
+        if (!r || !r.ok) {
+          // 404 means "not warmed yet" — there is no fallback to wait for.
+          // Only a transient 5xx/network error is worth retrying.
+          const retryable = !r || r.status >= 500;
+          if (retryable && n < 3) {
             await new Promise((res) => setTimeout(res, 2200));
             return attempt(n + 1);
           }
-          throw new Error(`poster not ready (${isFallback ? "fallback" : r ? r.status : "network"})`);
+          throw new Error(`poster not ready (${r ? r.status : "network"})`);
         }
         return r.blob();
       };

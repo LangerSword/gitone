@@ -366,47 +366,4 @@ export async function renderCardImage(card: Card, width = 960): Promise<Response
   });
 }
 
-// The branded "visit to generate" hint for failed scouts on the embed route.
-export async function renderFallbackImage(username: string): Promise<ImageResponse> {
-  const fonts = await loadCardFonts();
-  const W = 1280;
-  const H = cardH(W);
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          width: W,
-          height: H,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(160deg, #17171c 0%, #0c0c0f 55%, #101014 100%)",
-          color: "#edeef2",
-          fontFamily: "Titillium",
-        }}
-      >
-        <div style={{ display: "flex", gap: 18 }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 999,
-                background: "radial-gradient(circle at 35% 30%, #ff4a41, #b30400 68%)",
-                display: "flex",
-              }}
-            />
-          ))}
-        </div>
-        <div style={{ display: "flex", marginTop: 44, fontWeight: 900, fontSize: 72, letterSpacing: 4 }}>GITONE</div>
-        <div style={{ display: "flex", marginTop: 18, fontFamily: "JBMono", fontSize: 34, color: "#9a9ca6" }}>@{username}</div>
-        <div style={{ display: "flex", marginTop: 22, fontFamily: "JBMono", fontSize: 26, color: "#6a6c76" }}>
-          scout this driver at the grid
-        </div>
-      </div>
-    ),
-    { width: W, height: H, fonts, headers: { "Cache-Control": "public, max-age=300" } },
-  );
-}
+

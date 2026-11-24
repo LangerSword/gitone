@@ -354,25 +354,4 @@ export async function renderCardImage(card: Card, width = 720): Promise<Response
   });
 }
 
-export async function renderFallbackImage(username: string): Promise<Response> {
-  const fonts = await loadCardFonts();
-  const W = 720;
-  const H = cardH(W);
-  const image = new ImageResponse(
-    (
-      <div style={{ width: W, height: H, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "linear-gradient(160deg, #16191f 0%, #08090b 58%, #101318 100%)", color: "#f2f3f0", fontFamily: "Titillium" }}>
-        <div style={{ display: "flex", gap: 12 }}>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <div key={i} style={{ width: 26, height: 26, borderRadius: 999, background: "radial-gradient(circle at 35% 30%, #ff5a4d, #8c0a00 70%)", display: "flex" }} />
-          ))}
-        </div>
-        <div style={{ display: "flex", marginTop: 40, fontWeight: 900, fontSize: 76, letterSpacing: 6 }}>GITONE</div>
-        <div style={{ display: "flex", marginTop: 14, fontFamily: "JBMono", fontSize: 30, color: "#a2a7ae" }}>@{username}</div>
-        <div style={{ display: "flex", marginTop: 18, fontFamily: "JBMono", fontSize: 22, color: "#6a7079" }}>scout this driver at the grid</div>
-      </div>
-    ),
-    { width: W, height: H, fonts },
-  );
-  const png = await image.arrayBuffer();
-  return new Response(png, { headers: { "Content-Type": "image/png", "Cache-Control": "public, max-age=300" } });
-}
+

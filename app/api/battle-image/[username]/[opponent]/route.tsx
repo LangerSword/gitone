@@ -1,6 +1,5 @@
 import { scoutCard } from "@/lib/scout";
 import { renderBattleImage } from "@/lib/og/renderBattle";
-import { versusFallbackPng } from "@/lib/og/fallback";
 import { cachedPng } from "@/lib/og/pngCache";
 
 export const runtime = "nodejs";
@@ -12,16 +11,18 @@ export const runtime = "nodejs";
 export async function GET(req: Request, { params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
   const render = async () => {
-    try {
-      const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
-      return await renderBattleImage(a, b);
-    } catch (e) {
-      console.error('[poster] render failed:', e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
-      return versusFallbackPng();
-    }
+    const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
+    return renderBattleImage(a, b);
   };
   // Warmers and design verification always want the real render.
-  if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) return render();
+  if (process.env.GITONE_FORCE_RENDER === "1" && new URL(req.url).searchParams.has("force")) {
+    try {
+      return await render();
+    } catch (e) {
+      console.error("[poster] render failed:", e instanceof Error ? e.message : JSON.stringify(e).slice(0, 300));
+      return new Response("render failed", { status: 500 });
+    }
+  }
 
-  return cachedPng(`poster:v35:${username.toLowerCase()}/${opponent.toLowerCase()}`, render, undefined, versusFallbackPng);
+  return cachedPng(`poster:v36:${username.toLowerCase()}/${opponent.toLowerCase()}`, render);
 }

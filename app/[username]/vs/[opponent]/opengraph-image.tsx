@@ -1,6 +1,5 @@
 import { scoutCard } from "@/lib/scout";
 import { renderBattleImage } from "@/lib/og/renderBattle";
-import { versusFallbackPng } from "@/lib/og/fallback";
 import { cachedPng } from "@/lib/og/pngCache";
 
 // The battle unfurl — Next wires this into og:image / twitter:image for the
@@ -14,12 +13,8 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ username: string; opponent: string }> }) {
   const { username, opponent } = await params;
-  return cachedPng(`poster-teaser:v45:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
-    try {
-      const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
-      return await renderBattleImage(a, b, true);
-    } catch {
-      return versusFallbackPng();
-    }
-  }, undefined, versusFallbackPng);
+  return cachedPng(`poster-teaser:v46:${username.toLowerCase()}/${opponent.toLowerCase()}`, async () => {
+    const [a, b] = await Promise.all([scoutCard(username), scoutCard(opponent)]);
+    return renderBattleImage(a, b, true);
+  });
 }

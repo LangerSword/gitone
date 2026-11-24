@@ -16,11 +16,11 @@ export async function POST(req: Request) {
 
   let key: string;
   if (kind === "card" && LOGIN.test(login)) key = `cardpng:v10:${login}::`;
-  else if (kind === "teaser" && LOGIN.test(a) && LOGIN.test(b)) key = `poster-teaser:v45:${a}/${b}`;
+  else if (kind === "teaser" && LOGIN.test(a) && LOGIN.test(b)) key = `poster-teaser:v46:${a}/${b}`;
   else return new Response("invalid", { status: 400 });
 
   const bytes = Buffer.from(await req.arrayBuffer());
-  if (bytes.length < 20_000 || bytes.length > 4_000_000) {
+  if (bytes.length < 200_000 || bytes.length > 4_000_000) {
     return new Response("bad size", { status: 400 });
   }
 

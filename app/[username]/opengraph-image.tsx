@@ -3,7 +3,6 @@ import { loadCard } from "@/lib/scout";
 import { renderCardPng, cardFrame } from "@/lib/og/renderCard26";
 import { loadCardFonts, publicAssetDataUri } from "@/lib/og/card";
 import { cachedPng } from "@/lib/og/pngCache";
-import { cardImageFallback } from "@/lib/og/fallback";
 
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
@@ -41,22 +40,13 @@ function tint(hex: string, a: number) {
 // copy of the stats. Petrol field, parchment ink, one copper signal.
 export default async function OgImage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params;
-  return cachedPng(`og:v20:${username.toLowerCase()}`, () => buildOg(username), undefined, () => cardImageFallback(username));
+  return cachedPng(`og:v20:${username.toLowerCase()}`, () => buildOg(username));
 }
 
 export async function buildOg(username: string): Promise<Response> {
   const res = await loadCard(username);
   const fonts = await loadCardFonts();
-  if ("error" in res) {
-    return new ImageResponse(
-      (
-        <div style={{ width: 1200, height: 630, display: "flex", alignItems: "center", justifyContent: "center", background: FIELD, color: INK, fontFamily: "Titillium" }}>
-          <div style={{ display: "flex", fontWeight: 900, fontSize: 88, letterSpacing: 6 }}>GITONE</div>
-        </div>
-      ),
-      { ...size, fonts },
-    );
-  }
+  if ("error" in res) return new Response(null, { status: 404 });
 
   const card = res.card;
   const cardW = 380;
