@@ -1,10 +1,11 @@
-import { toBlob } from "html-to-image";
+// Direct Canvas 2D composition of the versus poster. No html-to-image, no
+// SVG foreignObject, no hidden DOM stage: two already-warmed card PNGs are
+// drawn into one 1200×630 frame with the broadcast furniture and sector table.
+// The warm and the download therefore share one code path and finish in
+// ~1s instead of ~50s.
+
 import type { DuelRow, DuelSide } from "@/lib/duel";
 
-// A 1200×630 versus stage assembled from the already-warmed solo card PNGs.
-// No Satori, no server render, no page dump: the two card images are plugged
-// into one fixed broadcast template in the browser, so every pair looks the
-// same and the export is cheap enough to run on any device.
 export interface VersusStageDuel {
   rows: DuelRow[];
   score: Record<DuelSide, number>;
@@ -13,164 +14,163 @@ export interface VersusStageDuel {
   subtitle: string;
 }
 
+const W = 1200;
+const H = 630;
 const CARD_W = 270;
 const CARD_H = 410;
-const LEFT_X = 36;
-const RIGHT_X = 1200 - LEFT_X - CARD_W;
 
-function node<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  css: string,
-  text?: string,
-): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag);
-  el.style.cssText = css;
-  if (text !== undefined) el.textContent = text;
-  return el;
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`could not load ${src}`));
+    img.src = src;
+  });
 }
 
-// Compact butterfly table: value / bar / label / bar / value, the same
-// encoding as the server result poster and the live sector rows.
-function sectorBoard(duel: VersusStageDuel): HTMLElement {
-  const board = node(
-    "div",
-    "position:absolute;left:330px;top:284px;width:540px;display:flex;flex-direction:column",
-  );
+function text(
+  ctx: CanvasRenderingContext2D,
+  value: string,
+  x: number,
+  y: number,
+  font: string,
+  color: string,
+  align: CanvasTextAlign = "left",
+) {
+  ctx.font = font;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText(value, x, y);
+}
+
+function drawBackground(ctx: CanvasRenderingContext2D) {
+  const base = ctx.createLinearGradient(0, 0, 0, H);
+  base.addColorStop(0, "#181820");
+  base.addColorStop(0.72, "#101014");
+  base.addColorStop(1, "#0b0b0e");
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, W, H);
+
+  const red = ctx.createRadialGradient(190, -80, 10, 190, -80, 620);
+  red.addColorStop(0, "rgba(193,18,31,.30)");
+  red.addColorStop(1, "rgba(193,18,31,0)");
+  ctx.fillStyle = red;
+  ctx.fillRect(0, 0, W, H);
+
+  const copper = ctx.createRadialGradient(1100, 700, 10, 1100, 700, 560);
+  copper.addColorStop(0, "rgba(214,133,74,.20)");
+  copper.addColorStop(1, "rgba(214,133,74,0)");
+  ctx.fillStyle = copper;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = "rgba(240,232,216,.055)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 0; x <= W; x += 30) {
+    ctx.moveTo(x + 0.5, 0);
+    ctx.lineTo(x + 0.5, H);
+  }
+  for (let y = 0; y <= H; y += 30) {
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(W, y + 0.5);
+  }
+  ctx.stroke();
+}
+
+function drawSectors(ctx: CanvasRenderingContext2D, duel: VersusStageDuel) {
+  const left = 330;
+  const width = 540;
+  const trackW = 175;
   duel.rows.forEach((row, i) => {
+    const y = 284 + i * 23;
     const aWon = row.winner === "challenger";
     const bWon = row.winner === "opponent";
     const aInk = row.challenger >= 90 ? "#b46bff" : duel.aColor;
     const bInk = row.opponent >= 90 ? "#b46bff" : duel.bColor;
-    const line = node(
-      "div",
-      `display:flex;width:100%;height:23px;align-items:center;border-bottom:${i === duel.rows.length - 1 ? "none" : "1px solid rgba(240,232,216,.08)"};background:${aWon ? `${duel.aColor}0d` : bWon ? `${duel.bColor}0d` : "transparent"}`,
-    );
-    const aVal = node(
-      "span",
-      `display:flex;width:44px;justify-content:flex-end;font:800 11px JBMono,monospace;color:${aInk};opacity:${bWon ? 0.72 : 1}`,
-      `${aWon ? "● " : ""}${row.challenger}`,
-    );
-    const aTrack = node("div", "display:flex;flex:1;height:4px;margin:0 8px;background:rgba(240,232,216,.09)");
-    const aFill = node("div", "height:4px;margin-left:auto", "");
-    aFill.style.width = `${row.challenger}%`;
-    aFill.style.background = aInk;
-    aFill.style.opacity = aWon ? "1" : "0.6";
-    aTrack.appendChild(aFill);
-    const label = node(
-      "span",
-      "display:flex;width:58px;justify-content:center;font:700 9px JBMono,monospace;letter-spacing:1px;color:#9aa39c",
-      row.label.toUpperCase(),
-    );
-    const bTrack = node("div", "display:flex;flex:1;height:4px;margin:0 8px;background:rgba(240,232,216,.09)");
-    const bFill = node("div", "height:4px", "");
-    bFill.style.width = `${row.opponent}%`;
-    bFill.style.background = bInk;
-    bFill.style.opacity = bWon ? "1" : "0.6";
-    bTrack.appendChild(bFill);
-    const bVal = node(
-      "span",
-      `display:flex;width:44px;justify-content:flex-start;font:800 11px JBMono,monospace;color:${bInk};opacity:${aWon ? 0.72 : 1}`,
-      `${row.opponent}${bWon ? " ●" : ""}`,
-    );
-    line.append(aVal, aTrack, label, bTrack, bVal);
-    board.appendChild(line);
+
+    if (aWon || bWon) {
+      ctx.fillStyle = aWon ? `${duel.aColor}0d` : `${duel.bColor}0d`;
+      ctx.fillRect(left, y - 15, width, 23);
+    }
+    ctx.fillStyle = "rgba(240,232,216,.08)";
+    ctx.fillRect(left, y + 7, width, 1);
+
+    text(ctx, `${aWon ? "● " : ""}${row.challenger}`, left + 42, y + 5, "700 11px JBMono, monospace", aInk, "right");
+    text(ctx, row.label.toUpperCase(), left + width / 2, y + 5, "700 9px JBMono, monospace", "#9aa39c", "center");
+    text(ctx, `${row.opponent}${bWon ? " ●" : ""}`, left + width - 42, y + 5, "700 11px JBMono, monospace", bInk, "left");
+
+    const aTrackX = left + 50;
+    const bTrackX = left + width - 50 - trackW;
+    ctx.fillStyle = "rgba(240,232,216,.09)";
+    ctx.fillRect(aTrackX, y, trackW, 4);
+    ctx.fillRect(bTrackX, y, trackW, 4);
+    ctx.fillStyle = aInk;
+    ctx.globalAlpha = aWon ? 1 : 0.6;
+    ctx.fillRect(aTrackX + trackW - (row.challenger / 100) * trackW, y, (row.challenger / 100) * trackW, 4);
+    ctx.globalAlpha = bWon ? 1 : 0.6;
+    ctx.fillRect(bTrackX, y, (row.opponent / 100) * trackW, 4);
+    ctx.globalAlpha = 1;
   });
-  return board;
 }
 
-export function buildVersusStage(a: string, b: string, duel?: VersusStageDuel): HTMLElement | null {
-  const stage = node(
-    "div",
-    [
-      "position:fixed",
-      "left:0",
-      "top:0",
-      "width:1200px",
-      "height:630px",
-      "z-index:-1",
-      "pointer-events:none",
-      "overflow:hidden",
-      "background:radial-gradient(120% 90% at 16% -12%, rgba(193,18,31,.28), transparent 55%), radial-gradient(90% 70% at 92% 112%, rgba(214,133,74,.20), transparent 62%), linear-gradient(180deg,#181820 0%,#101014 72%)",
-    ].join(";"),
-  );
-
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;inset:0;background-image:linear-gradient(rgba(240,232,216,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(240,232,216,.10) 1px,transparent 1px);background-size:30px 30px;opacity:.6",
-    ),
-  );
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;left:0;top:0;width:1200px;height:1px;background:linear-gradient(90deg,transparent,rgba(240,232,216,.18),transparent)",
-    ),
-  );
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;left:80px;top:38px;font:800 15px JBMono,monospace;letter-spacing:5px;color:#9aa39c",
-      "GITONE / HEAD TO HEAD",
-    ),
-  );
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;left:0;top:44px;width:1200px;text-align:center;font:800 13px JBMono,monospace;letter-spacing:3px;color:#d6854a",
-      duel?.subtitle ?? "RACE AT THE GRID",
-    ),
-  );
-
-  // The warmed solo PNGs ARE the cards — same artwork the profile pages and
-  // embeds use, so the preview never drifts from the card it represents.
-  [a, b].forEach((login, i) => {
-    const img = node("img", "");
-    img.src = `/${encodeURIComponent(login)}.png`;
-    img.width = CARD_W;
-    img.height = CARD_H;
-    img.alt = "";
-    img.style.cssText = `position:absolute;left:${i === 0 ? LEFT_X : RIGHT_X}px;top:108px;width:${CARD_W}px;height:${CARD_H}px;object-fit:fill`;
-    stage.appendChild(img);
-    stage.appendChild(
-      node(
-        "div",
-        `position:absolute;left:${i === 0 ? LEFT_X : RIGHT_X}px;top:520px;width:${CARD_W}px;text-align:center;font:800 13px JBMono,monospace;letter-spacing:2px;color:${i === 0 ? (duel?.aColor ?? "#f0e8d8") : (duel?.bColor ?? "#f0e8d8")}`,
-        `@${login}`,
-      ),
-    );
-  });
-
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;left:0;top:150px;width:1200px;text-align:center;font:900 italic 118px DIN,sans-serif;color:#f0e8d8;text-shadow:0 18px 44px rgba(0,0,0,.65)",
-      "VS",
-    ),
-  );
-
-  if (duel) stage.appendChild(sectorBoard(duel));
-
-  stage.appendChild(
-    node(
-      "div",
-      "position:absolute;left:0;bottom:22px;width:1200px;text-align:center;font:500 12px JBMono,monospace;letter-spacing:3px;color:#9aa39c",
-      "gitone.langersword.in · season 26",
-    ),
-  );
-
-  document.body.appendChild(stage);
-  setTimeout(() => stage.remove(), 15000);
-  return stage;
-}
-
-export async function captureVersusPoster(a: string, b: string, duel?: VersusStageDuel): Promise<Blob | null> {
+export async function composeVersusPng(
+  a: string,
+  b: string,
+  duel?: VersusStageDuel,
+): Promise<Blob | null> {
+  if (typeof document === "undefined") return null;
   await document.fonts.ready;
-  const stage = buildVersusStage(a, b, duel);
-  if (!stage) return null;
-  await Promise.all(
-    Array.from(stage.querySelectorAll("img")).map((img) =>
-      img.decode ? img.decode().catch(() => {}) : Promise.resolve(),
-    ),
-  );
-  return toBlob(stage, { pixelRatio: 1, cacheBust: true, backgroundColor: "#101014" });
+  let aImg: HTMLImageElement;
+  let bImg: HTMLImageElement;
+  try {
+    [aImg, bImg] = await Promise.all([
+      loadImage(`/${encodeURIComponent(a)}.png`),
+      loadImage(`/${encodeURIComponent(b)}.png`),
+    ]);
+  } catch (e) {
+    console.error("[versus] card image failed:", e);
+    return null;
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  drawBackground(ctx);
+  text(ctx, "GITONE / HEAD TO HEAD", 80, 56, "800 15px JBMono, monospace", "#9aa39c");
+  text(ctx, duel?.subtitle ?? "RACE AT THE GRID", W / 2, 58, "800 13px JBMono, monospace", "#d6854a", "center");
+
+  ctx.drawImage(aImg, 36, 108, CARD_W, CARD_H);
+  ctx.drawImage(bImg, W - 36 - CARD_W, 108, CARD_W, CARD_H);
+  text(ctx, `@${a}`, 36 + CARD_W / 2, 540, "800 13px JBMono, monospace", duel?.aColor ?? "#f0e8d8", "center");
+  text(ctx, `@${b}`, W - 36 - CARD_W / 2, 540, "800 13px JBMono, monospace", duel?.bColor ?? "#f0e8d8", "center");
+
+  ctx.save();
+  ctx.shadowColor = "rgba(0,0,0,.65)";
+  ctx.shadowBlur = 44;
+  ctx.shadowOffsetY = 18;
+  text(ctx, "VS", W / 2, 285, "italic 900 118px DIN, Arial, sans-serif", "#f0e8d8", "center");
+  ctx.restore();
+
+  if (duel) drawSectors(ctx, duel);
+
+  text(ctx, "gitone.langersword.in · season 26", W / 2, 608, "500 12px JBMono, monospace", "#9aa39c", "center");
+
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/png");
+  });
+}
+
+// Both the client warmer and the download call this, so the unfurl and the
+// exported file are literally the same frame.
+export async function captureVersusPoster(
+  a: string,
+  b: string,
+  duel?: VersusStageDuel,
+): Promise<Blob | null> {
+  return composeVersusPng(a, b, duel);
 }

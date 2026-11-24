@@ -21,6 +21,7 @@ export const EXPORT_COPY: Record<ExportAction, { name: string; busy: string; don
 };
 
 export function useImageActions({
+  getCaptureBlob,
   getCaptureNode,
   posterUrl,
   captureBackgroundColor,
@@ -33,6 +34,8 @@ export function useImageActions({
   intentUrl,
   idleLabel,
 }: {
+  /** Directly composed PNG blob (canvas), preferred over DOM capture. */
+  getCaptureBlob?: () => Promise<Blob | null>;
   /** Finds the live DOM node to capture (the card / the duel result graphic). */
   getCaptureNode?: () => HTMLElement | null;
   /** Composed share graphic served by the app (e.g. /api/battle-image/…).
@@ -79,7 +82,7 @@ export function useImageActions({
   // Poster fetches retry on 503: a cold composite on the Workers free plan
   // can bust the ~10ms CPU cap, and the retry often lands once the isolate is
   // warm — the successful attempt KV-caches the result forever.
-  const captureImage = (): Promise<Blob> => {
+  const captureImage = async (): Promise<Blob> => {
     if (posterUrl) {
       const attempt = async (n: number): Promise<Blob> => {
         const r = await fetch(posterUrl).catch(() => null);
@@ -96,6 +99,11 @@ export function useImageActions({
         return r.blob();
       };
       return attempt(0);
+    }
+    if (getCaptureBlob) {
+      const blob = await getCaptureBlob();
+      if (!blob) throw new Error("compose returned no image");
+      return blob;
     }
     const node = getCaptureNode?.();
     if (!node) return Promise.reject(new Error("no card found on the page"));
