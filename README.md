@@ -5,7 +5,7 @@
 **your github, rated like f1** 🏁
 
 <a href="https://gitone.langersword.in/torvalds">
-  <img src="https://gitone.langersword.in/torvalds" alt="Torvalds' gitone card" width="240" />
+  <img src="https://gitone.langersword.in/torvalds?v=10" alt="Torvalds' gitone card" width="240" />
 </a>
 
 That card is **live**. It re-scouts a real GitHub profile every two hours and
@@ -87,18 +87,10 @@ npm run build
 
 ## ⚠️ &nbsp;Notes
 
+- **Review role:** Rook is the automated reviewer. It posts a non-blocking
+  review and requests the owner review on PRs authored by someone else. See
+  [docs/ROOK_REVIEW.md](docs/ROOK_REVIEW.md).
 - **License:** MIT — see [LICENSE](LICENSE). Free to embed, self-host and extend.
 - Not affiliated with EA SPORTS, Formula 1, or GitHub.
 - Inspired by [gitfut](https://github.com/mawsis/gitfut) — the football card
   original. gitone is the paddock next door.
-
-## 🏆 &nbsp;Why star it
-
-The card in your README is a live thing: it re-scouts your GitHub every two
-hours and re-renders itself. Every star on
-[the repo](https://github.com/LangerSword/gitone) is a vote that the grid
-stays scouted — and it is the one ask that costs you nothing.
-
-If you want your own card, drop your handle into
-[gitone.langersword.in](https://gitone.langersword.in) and paste the one-liner
-above into your README.

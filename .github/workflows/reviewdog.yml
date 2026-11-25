@@ -1,0 +1,35 @@
+name: reviewdog
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  eslint:
+    name: reviewdog / eslint
+    # Fork PRs get a read-only token on pull_request. Keep the workflow safe and
+    # comment only on branches inside this repository.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: reviewdog/action-eslint@2fee6dd72a5419ff4113f694e2068d2a03bb35dd # v1.33.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          tool_name: eslint-reviewdog
+          level: warning
+          fail_level: none
+          filter_mode: added
+          only_changed: true
+          eslint_flags: "."
