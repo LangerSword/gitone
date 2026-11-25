@@ -37,12 +37,29 @@ export function WarmOnView({
       }
       if (!node || !alive) return;
       try {
-        const blob = kind === "teaser"
-          ? await captureVersusPoster(a ?? "", b ?? "")
-          : await captureNode(node, (clone) =>
-              toBlob(clone, { pixelRatio: 2, cacheBust: true, backgroundColor: undefined }),
-              { exclude },
-            );
+        // Repeat visits reuse a locally cached composed PNG: no image decode,
+        // no canvas work. This only speeds the client warm — chat crawlers
+        // still get their bytes from R2, which is the authoritative store.
+        const cacheKey = kind === "teaser" ? `/__preview/teaser/${a}/${b}` : null;
+        const store = cacheKey && typeof caches !== "undefined"
+          ? await caches.open("gitone-previews-v1").catch(() => null)
+          : null;
+        let blob: Blob | null = null;
+        if (store && cacheKey) {
+          const hit = await store.match(cacheKey).catch(() => null);
+          if (hit) blob = await hit.blob();
+        }
+        if (!blob) {
+          blob = kind === "teaser"
+            ? await captureVersusPoster(a ?? "", b ?? "")
+            : await captureNode(node, (clone) =>
+                toBlob(clone, { pixelRatio: 2, cacheBust: true, backgroundColor: undefined }),
+                { exclude },
+              );
+          if (blob && store && cacheKey) {
+            await store.put(cacheKey, new Response(blob, { headers: { "Content-Type": "image/png" } })).catch(() => {});
+          }
+        }
         if (!blob || !alive) return;
         const qs =
           kind === "card"

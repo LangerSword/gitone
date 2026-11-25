@@ -2,7 +2,7 @@
 
 import { SplitDownload } from "./SplitDownload";
 import { ShareRow } from "./ShareRow";
-import { buildVersusStage, type VersusStageDuel } from "@/lib/versusCapture";
+import { captureVersusPoster, type VersusStageDuel } from "@/lib/versusCapture";
 
 // Share the battle: X carries the message, plus the split button that
 // downloads the same 1200×630 broadcast stage the live preview uses — two
@@ -27,7 +27,7 @@ export function BattleActions({
       <ShareRow url={url} text={text} />
       <SplitDownload
         label="Download result"
-        getCaptureNode={() => buildVersusStage(username, opponent, duel)}
+        getCaptureBlob={() => captureVersusPoster(username, opponent, duel)}
         capturePixelRatio={1}
         filename={`${username}-vs-${opponent}-gitone.png`}
         linkUrl={url}

@@ -80,7 +80,7 @@ export default async function VsPage({
     >
       <SiteHeader back backHref={`/${duel.challenger.login}`} backLabel="← BACK TO THE REPORT" />
       <DuelView duel={duel} />
-      <WarmOnView kind="teaser" a={duel.challenger.login} b={duel.opponent.login} selector="[data-duel-container]" delay={4000} />
+      <WarmOnView kind="teaser" a={duel.challenger.login} b={duel.opponent.login} selector="[data-duel-container]" delay={800} />
       <GitStrip />
       <SiteFooter />
       <SupportPills />
