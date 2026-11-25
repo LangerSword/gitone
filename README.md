@@ -87,6 +87,9 @@ npm run build
 
 ## ⚠️ &nbsp;Notes
 
+- **Review role:** Rook is the automated reviewer. It posts a non-blocking
+  review and requests the owner review on PRs authored by someone else. See
+  [docs/ROOK_REVIEW.md](docs/ROOK_REVIEW.md).
 - **License:** MIT — see [LICENSE](LICENSE). Free to embed, self-host and extend.
 - Not affiliated with EA SPORTS, Formula 1, or GitHub.
 - Inspired by [gitfut](https://github.com/mawsis/gitfut) — the football card
