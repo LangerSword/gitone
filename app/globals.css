@@ -265,6 +265,8 @@ body {
   .reveal { opacity: 1; transform: none; transition: none; }
   .rise { opacity: 1; animation: none; }
   .bar-fill, .duel-row, .radio-line { animation: none; opacity: 1; }
+  .tilt-wrap { transform: perspective(1000px) !important; transition: none !important; will-change: auto; }
+  .tilt-glare { display: none !important; }
   *, *::before, *::after { animation-duration: 0.001s !important; animation-delay: 0s !important; }
 }
 
