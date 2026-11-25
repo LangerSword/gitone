@@ -23,6 +23,17 @@ export function applyTiltStyle(
   el.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
 }
 
+// Exported so the motion-preference listener can be tested without a browser.
+export function watchReducedMotion(
+  media: Pick<MediaQueryList, "matches" | "addEventListener" | "removeEventListener">,
+  onChange: (matches: boolean) => void,
+): () => void {
+  const update = () => onChange(media.matches);
+  update();
+  media.addEventListener("change", update);
+  return () => media.removeEventListener("change", update);
+}
+
 // FUT-style hover physics for a card: it leans toward the cursor while a
 // glassy specular streak sweeps with the pointer — the foil catching light.
 // The transform is driven imperatively on the element (no re-render per
@@ -35,11 +46,10 @@ export function TiltCard({ children, max = 8 }: { children: React.ReactNode; max
 
   useEffect(() => {
     if (typeof window === "undefined" || !window.matchMedia) return;
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReducedMotion(query.matches);
-    update();
-    query.addEventListener?.("change", update);
-    return () => query.removeEventListener?.("change", update);
+    return watchReducedMotion(
+      window.matchMedia("(prefers-reduced-motion: reduce)"),
+      setReducedMotion,
+    );
   }, []);
 
   useEffect(() => {

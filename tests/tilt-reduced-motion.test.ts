@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyTiltStyle } from "@/components/TiltCard";
+import { applyTiltStyle, watchReducedMotion } from "@/components/TiltCard";
 
 function fakeCard() {
   const vars = new Map<string, string>();
@@ -30,5 +30,24 @@ describe("TiltCard reduced motion", () => {
     expect(el.style.transform).toContain("rotateY");
     expect(vars.get("--mx")).toBe("95.0%");
     expect(vars.get("--my")).toBe("90.0%");
+  });
+
+  it("reads the preference once and follows later media-query changes", () => {
+    const listeners = new Set<() => void>();
+    const media = {
+      matches: true,
+      addEventListener: (_type: string, fn: () => void) => { listeners.add(fn); },
+      removeEventListener: (_type: string, fn: () => void) => { listeners.delete(fn); },
+    };
+    const seen: boolean[] = [];
+    const stop = watchReducedMotion(media as unknown as MediaQueryList, (v) => seen.push(v));
+    expect(seen).toEqual([true]);
+
+    media.matches = false;
+    listeners.forEach((fn) => fn());
+    expect(seen).toEqual([true, false]);
+
+    stop();
+    expect(listeners.size).toBe(0);
   });
 });
