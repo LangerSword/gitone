@@ -19,9 +19,12 @@ Rook requests review from `ROOK_REVIEWER`, a repository variable. If the
 variable is unset, the repository owner is used.
 
 - A PR authored by someone else gets a review request to `ROOK_REVIEWER`.
-- A PR authored by `ROOK_REVIEWER` skips the request. GitHub rejects a
-  self-review request.
-- If `ROOK_SECOND_REVIEWER` is set, owner-authored PRs route there instead.
+- When `ROOK_REVIEWER` is the owner, an owner-authored PR uses
+  `ROOK_SECOND_REVIEWER`; without a fallback it skips.
+- When `ROOK_REVIEWER` is another collaborator, an owner-authored PR routes to
+  that collaborator.
+- If `ROOK_SECOND_REVIEWER` is set, it covers the self-review case where the
+  primary reviewer is the PR author.
 - Draft PRs, fork PRs and PRs from outside this repository are skipped.
 - The request runs on `opened`, `synchronize`, `reopened` and
   `ready_for_review`.
