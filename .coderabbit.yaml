@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
-tone_instructions: "Direct, concise, evidence-first. Flag concrete defects before style. No generic praise."
+tone_instructions: "Follow docs/REVIEW_RULES.md. Use human, direct ASD-STE100 prose. Findings first, with path, line, evidence, and exact fix. No praise, emoji, or speculation."
 early_access: false
 reviews:
   profile: chill

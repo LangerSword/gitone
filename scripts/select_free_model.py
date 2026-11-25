@@ -34,7 +34,7 @@ def fetch_catalog(timeout: int = 60) -> list[str]:
     request = urllib.request.Request(
         CATALOG_URL,
         headers={
-            "User-Agent": "gitone-hermes-review/1.0",
+            "User-Agent": "gitone-rook-review/1.0",
             "Accept-Encoding": "identity",
         },
     )
@@ -93,7 +93,7 @@ def probe(model: str, token: str, timeout: int = 20) -> tuple[bool, str]:
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
-            "User-Agent": "gitone-hermes-review/1.0",
+            "User-Agent": "gitone-rook-review/1.0",
         },
     )
     try:
