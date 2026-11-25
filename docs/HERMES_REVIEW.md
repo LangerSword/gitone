@@ -13,6 +13,9 @@ GitOne runs a non-blocking Hermes review on same-repository pull requests.
 - The reviewer has no tools (`--toolsets ''`), no project rules
   (`--ignore-rules`), and runs with `--safe-mode`. PR text is written to files
   and treated as untrusted data.
+- `scripts/build_review_prompt.py` injects `docs/REVIEW_RULES.md` into every
+  review prompt. Edit that file to change review voice, severity labels, or
+  evidence rules.
 - Fork PRs are skipped; `pull_request` does not expose write-capable secrets to
   them.
 
