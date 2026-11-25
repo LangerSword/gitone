@@ -18,7 +18,7 @@ jobs:
     env:
       # PR metadata is untrusted; keep it in env vars and pass it to files,
       # never interpolate it into shell commands.
-      HERMES_HOME: ${{ runner.temp }}/hermes-home
+      HERMES_HOME: /tmp/hermes-home
       NOUS_API_KEY: ${{ secrets.NOUS_API_KEY }}
       GH_TOKEN: ${{ github.token }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
