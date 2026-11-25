@@ -1,6 +1,16 @@
 # Review bots
 
-GitOne uses two free review layers.
+GitOne uses three review layers.
+
+## Rook / automated review
+
+`.github/workflows/rook-review.yml` posts one non-blocking review comment on
+same-repository pull requests from `github-actions[bot]`. It also requests the
+owner review when another author opens a PR. See
+[`docs/ROOK_REVIEW.md`](../docs/ROOK_REVIEW.md) for the routing rules and the
+`ROOK_REVIEWER` / `ROOK_SECOND_REVIEWER` variables.
+
+The required `test` check remains the merge gate.
 
 ## reviewdog / ESLint
 

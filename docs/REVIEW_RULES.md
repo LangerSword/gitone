@@ -1,6 +1,6 @@
 # Owner-enforced review rules
 
-Hermes uses this file as the review contract. Follow it for every PR.
+Rook uses this file as the review contract. Follow it for every PR.
 
 ## Review method
 
