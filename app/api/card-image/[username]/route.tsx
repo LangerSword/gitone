@@ -3,6 +3,7 @@ import { pickFlag } from "@/lib/flagPriority";
 import { pickTeam } from "@/lib/teams";
 import { renderCardImage } from "@/lib/og/renderCard26";
 import { cachedPng, PNG_HEADERS } from "@/lib/og/pngCache";
+import { cardCacheKey } from "@/lib/og/cardCacheKey";
 
 export const runtime = "nodejs";
 
@@ -25,9 +26,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ username
   const override = query.get("country");
   const teamCode = query.get("team");
   // Pinned variants (README flags / team liveries) cache under their own key
-  // so they never evict the plain embed.
-  const lower = username.toLowerCase();
-  const cacheKey = `cardpng:v10:${lower}:${override ?? ""}:${teamCode ?? ""}`;
+  // so they never evict the plain embed. The writer uses the same helper.
+  const cacheKey = cardCacheKey(username, override, teamCode);
 
   const render = async () => {
     const card = await scoutCard(username);
