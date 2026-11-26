@@ -1,4 +1,5 @@
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { cardCacheKey } from "@/lib/og/cardCacheKey";
 
 export const runtime = "nodejs";
 
@@ -13,9 +14,11 @@ export async function POST(req: Request) {
   const a = (url.searchParams.get("a") ?? "").toLowerCase();
   const b = (url.searchParams.get("b") ?? "").toLowerCase();
   const login = (url.searchParams.get("login") ?? "").toLowerCase();
+  const country = url.searchParams.get("country");
+  const team = url.searchParams.get("team");
 
   let key: string;
-  if (kind === "card" && LOGIN.test(login)) key = `cardpng:v10:${login}::`;
+  if (kind === "card" && LOGIN.test(login)) key = cardCacheKey(login, country, team);
   else if (kind === "teaser" && LOGIN.test(a) && LOGIN.test(b)) key = `poster-teaser:v46:${a}/${b}`;
   else return new Response("invalid", { status: 400 });
 

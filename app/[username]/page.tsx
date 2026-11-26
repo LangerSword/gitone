@@ -313,7 +313,13 @@ export default async function DriverPage({
           </aside>
         </div>
       </div>
-      <WarmOnView kind="card" login={card.login} selector='[data-card="f1-26"]' />
+      <WarmOnView
+        kind="card"
+        login={card.login}
+        country={typeof sp.country === "string" ? sp.country : null}
+        team={typeof sp.team === "string" ? (team?.code ?? null) : null}
+        selector='[data-card="f1-26"]'
+      />
       <GitStrip />
       <SiteFooter />
       <SupportPills />

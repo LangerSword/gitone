@@ -13,6 +13,8 @@ export function WarmOnView({
   login,
   a,
   b,
+  country,
+  team,
   selector,
   exclude = "[data-export-exclude]",
   delay = 1800,
@@ -21,13 +23,14 @@ export function WarmOnView({
   login?: string;
   a?: string;
   b?: string;
+  country?: string | null;
+  team?: string | null;
   selector: string;
   exclude?: string;
   delay?: number;
 }) {
   useEffect(() => {
     let alive = true;
-    let timer: ReturnType<typeof setTimeout>;
 
     const run = async () => {
       let node: HTMLElement | null = null;
@@ -61,9 +64,12 @@ export function WarmOnView({
           }
         }
         if (!blob || !alive) return;
+        const variant = country || team
+          ? `&country=${encodeURIComponent(country ?? "")}&team=${encodeURIComponent(team ?? "")}`
+          : "";
         const qs =
           kind === "card"
-            ? `kind=card&login=${encodeURIComponent(login ?? "")}`
+            ? `kind=card&login=${encodeURIComponent(login ?? "")}${variant}`
             : `kind=teaser&a=${encodeURIComponent(a ?? "")}&b=${encodeURIComponent(b ?? "")}`;
         await fetch(`/api/cache-image?${qs}`, {
           method: "POST",
@@ -78,7 +84,7 @@ export function WarmOnView({
       }
     };
 
-    timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
       if (idle) idle(run, { timeout: 4000 });
       else run();
@@ -88,7 +94,7 @@ export function WarmOnView({
       alive = false;
       clearTimeout(timer);
     };
-  }, [kind, login, a, b, selector, exclude, delay]);
+  }, [kind, login, a, b, country, team, selector, exclude, delay]);
 
   return null;
 }
