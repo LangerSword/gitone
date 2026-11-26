@@ -26,7 +26,7 @@ import { confettiPalette, resolveCardTheme } from "@/components/finishTheme";
 import { TrophyCabinet } from "@/components/TrophyCabinet";
 import { formatCount } from "@/lib/format";
 import { mergeAwards, overrideAwards } from "@/lib/awards";
-import { prefCookie } from "@/lib/prefs";
+import { prefCookie, canWarmQueryVariant } from "@/lib/prefs";
 import type { Card } from "@/lib/racing/types";
 
 export async function generateMetadata({
@@ -109,6 +109,12 @@ export default async function DriverPage({
   const displayFlag = pickFlag(override, card.country);
   const teamOverride = typeof sp.team === "string" ? sp.team : prefTeam;
   const team = pickTeam(teamOverride);
+  const canWarm = canWarmQueryVariant({
+    countryQuery: typeof sp.country === "string",
+    teamQuery: typeof sp.team === "string",
+    cookieCountry: prefCountry,
+    cookieTeam: prefTeam,
+  });
   const accent = team ? team.color : card.constructor.color;
   const flagged: Card = {
     ...card,
@@ -313,13 +319,15 @@ export default async function DriverPage({
           </aside>
         </div>
       </div>
-      <WarmOnView
-        kind="card"
-        login={card.login}
-        country={typeof sp.country === "string" ? sp.country : null}
-        team={typeof sp.team === "string" ? (team?.code ?? null) : null}
-        selector='[data-card="f1-26"]'
-      />
+      {canWarm && (
+        <WarmOnView
+          kind="card"
+          login={card.login}
+          country={typeof sp.country === "string" ? sp.country : null}
+          team={typeof sp.team === "string" ? (team?.code ?? null) : null}
+          selector='[data-card="f1-26"]'
+        />
+      )}
       <GitStrip />
       <SiteFooter />
       <SupportPills />

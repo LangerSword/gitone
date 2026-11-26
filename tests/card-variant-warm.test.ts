@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { canWarmQueryVariant } from "../lib/prefs";
 
 const m = vi.hoisted(() => {
   const store = {
@@ -77,5 +78,43 @@ describe("pinned card variant warm writes", () => {
     const embedded = await readKey("");
     const warmed = await writeKey("kind=card&login=torvalds");
     expect(warmed).toBe(embedded);
+  });
+});
+
+describe("cookie-selected variant warm eligibility", () => {
+  it("skips the warm when a stored team is absent from the query", () => {
+    expect(
+      canWarmQueryVariant({
+        countryQuery: true,
+        teamQuery: false,
+        cookieCountry: null,
+        cookieTeam: "FER",
+      }),
+    ).toBe(false);
+  });
+
+  it("skips the warm when a stored country is absent from the query", () => {
+    expect(
+      canWarmQueryVariant({
+        countryQuery: false,
+        teamQuery: true,
+        cookieCountry: "nl",
+        cookieTeam: null,
+      }),
+    ).toBe(false);
+  });
+
+  it("warms when the query describes both variants or no variant is stored", () => {
+    expect(
+      canWarmQueryVariant({
+        countryQuery: true,
+        teamQuery: true,
+        cookieCountry: "nl",
+        cookieTeam: "FER",
+      }),
+    ).toBe(true);
+    expect(
+      canWarmQueryVariant({ countryQuery: false, teamQuery: false }),
+    ).toBe(true);
   });
 });

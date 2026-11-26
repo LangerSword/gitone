@@ -17,3 +17,19 @@ export function clearPref(kind: "team" | "country", login: string) {
 export function localPrefKey(kind: "team" | "country", login: string) {
   return `gitone:${kind}:${login.toLowerCase()}`;
 }
+
+// A client warm writes bytes for the query-described variant, but the DOM it
+// captures can include a cookie-selected variant. If a cookie is supplying a
+// variant the query does not also express, the stored bytes would differ from
+// what the OG route renders for that key. Skip that warm.
+export function canWarmQueryVariant(args: {
+  countryQuery: boolean;
+  teamQuery: boolean;
+  cookieCountry?: string | null;
+  cookieTeam?: string | null;
+}): boolean {
+  return !(
+    (!args.countryQuery && Boolean(args.cookieCountry)) ||
+    (!args.teamQuery && Boolean(args.cookieTeam))
+  );
+}
