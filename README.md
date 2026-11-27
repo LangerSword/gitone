@@ -1,96 +1,89 @@
-<div align="center">
+# gitone
 
-# GitOne
+your github, rated like f1.
 
-**your github, rated like f1** 🏁
+gitone turns a public github profile into a driver card. exp, rac, awa and pac
+come from real commits, prs and reviews. no survey, no self-reporting. the card
+is a live png, re-scouted every two hours, and it can sit in any readme in one
+line.
+
+https://gitone.langersword.in
+
+## media
 
 <a href="https://gitone.langersword.in/torvalds">
-  <img src="https://gitone.langersword.in/torvalds?v=10" alt="Torvalds' gitone card" width="240" />
+  <img src="https://gitone.langersword.in/torvalds.png" alt="live gitone card for torvalds" width="280" />
 </a>
 
-That card is **live**. It re-scouts a real GitHub profile every two hours and
-re-renders itself — your README can carry yours too, in one line:
+![gitone report page](public/demo/gitone-report.png)
+
+![gitone demo](public/demo/gitone-demo.gif)
+
+[full 50s capture](public/demo/gitone-demo.mp4) ·
+[product hunt launch](https://www.producthunt.com/posts/gitone)
+
+## embed your card
 
 ```md
-[![My gitone card](https://gitone.langersword.in/<login>.png)](https://gitone.langersword.in/<login>)
+[![my gitone card](https://gitone.langersword.in/<login>.png)](https://gitone.langersword.in/<login>)
 ```
 
-Turn any GitHub profile into an F1 driver card. Scored the way the official
-F1 games score their grid — EXP, RAC, AWA, PAC — read live from real commits,
-PRs and reviews. Race rivals head-to-head and share the result poster.
-
-**→ [gitone.langersword.in](https://gitone.langersword.in)** ·
-[demo (50s, real capture)](public/demo/gitone-demo.mp4) ·
-[launched on Product Hunt](https://www.producthunt.com/posts/gitone)
-
-If your card rendered in this README, a ⭐ costs nothing and keeps the scouts at the track.
-
-**⭐ Star the repo** — it is the cheapest way to keep the scouts running and
-the grid growing: [github.com/LangerSword/gitone](https://github.com/LangerSword/gitone).
-Free and open source under the MIT license.
-
-</div>
-
-<br/>
-
-## 🏁 &nbsp;Embed your card
-
-| | |
+| route | what it gives |
 |---|---|
-| **`<host>/<login>.png`** | your card, as a live image that re-scouts every 2h |
-| **`<host>/<login>`** | the full scout report |
-| **`<host>/<login>/vs/<other>`** | head-to-head, lights out |
-| **`/api/card/<login>`** | the raw JSON |
+| `<host>/<login>.png` | live card, re-scouted every 2h |
+| `<host>/<login>` | full scout report |
+| `<host>/<login>/vs/<other>` | head-to-head duel |
+| `/api/card/<login>` | raw json |
 
-## ⚙️ &nbsp;How the scouting works
+## how it works
 
-The EA F1 games rate every driver on four numbers, with an overall where
-**pace carries the greater weight**. Same system here, read straight from
-GitHub's GraphQL API — no surveys, no self-reporting.
+```text
+github graphql -> scout -> exp/rac/awa/pac -> rtg + finish + livery -> satori render -> kv/r2 cache -> live png
+```
 
-| | Stat | Scouted from |
-|:--:|:--|:--|
-| **PAC** | Pace | commit velocity — laps turned this season |
-| **RAC** | Racecraft | PRs worked through other fields, battles judged in review |
-| **AWA** | Awareness | hazards flagged, race-by-race presence |
-| **EXP** | Experience | seasons on the grid, career mileage |
+five decisions carry the product:
 
-Your **RTG** is the pace-weighted headline. Raw stats cap at **88** — the 90s
-are a legacy gate bought with years and influence. Your **constructor** is
-your headline language with its own livery and a car spec
-(COR / TOP / AERO / REL) built from your repos, and your **driver number** is
-permanent — #1 is earned at 97+, and #17 is retired, as in the real sport.
+1. **scoring follows the f1 games.** rtg is pace-weighted. raw stats cap at 88,
+   so the 90s stay a legacy gate. see `lib/racing/engine.ts`.
+2. **the numbers come from github.** commits, prs and reviews are read from
+   graphql. the card never asks the profile owner for a rating.
+3. **one tree, two renderers.** the in-app card and the og png use the same
+   layout through satori, so the embed cannot drift from the page.
+4. **the 10ms cap never touches a cold render.** workers serve cached assets and
+   branded fallbacks. off-path warmers write real pngs to r2.
+5. **the driver number is permanent.** constructors carry their own livery and
+   car spec from the headline language.
 
-Every card walks out in a finish: **ROOKIE** → **POINTS** → **PODIUM** →
-**WINNER** → **CHAMPION** (legacy-gated), with **IN FORM** on a hot streak
-and the founder in their own accent.
-
-## 🧱 &nbsp;Stack
-
-- Next.js 16 App Router + React 19 + Tailwind v4, all TypeScript
-- GitHub GraphQL with a hash-sharded token pool, failover, and a windowed
-  fallback for hyperactive profiles
-- Cloudflare Workers via OpenNext; every card, duel poster and social unfurl
-  is a Satori composite served from a KV cache
-- The embed is Satori (`next/og`) rendering the same layout as the in-app
-  card — one tree, two renderers
-
-## 🔧 &nbsp;Run it
+## run it
 
 ```bash
-npm install
-echo "GITHUB_TOKEN=ghp_…" > .env.local   # a classic PAT; GraphQL needs auth
-npm run dev                              # :3001
-npm test                                 # engine + duel suites
+npm install --include=dev       # keep dev deps when NODE_ENV=production is set
+printf 'GITHUB_TOKEN=ghp_xxx\n' > .env.local
+npm run dev                     # http://localhost:3001
+npm test                        # engine and duel suites
 npm run build
 ```
 
-## ⚠️ &nbsp;Notes
+for cloudflare workers, set `NEXT_PUBLIC_SITE_URL` to the live host. github
+graphql needs a classic pat or `GITHUB_TOKENS` from distinct accounts.
 
-- **Review role:** Rook is the automated reviewer. It posts a non-blocking
-  review and requests the owner review on PRs authored by someone else. See
-  [docs/ROOK_REVIEW.md](docs/ROOK_REVIEW.md).
-- **License:** MIT — see [LICENSE](LICENSE). Free to embed, self-host and extend.
-- Not affiliated with EA SPORTS, Formula 1, or GitHub.
-- Inspired by [gitfut](https://github.com/mawsis/gitfut) — the football card
-  original. gitone is the paddock next door.
+## stack
+
+| dependency | version | job |
+|---|---:|---|
+| next | 16.4.6 | app router and server routes |
+| react | 19.2.4 | ui tree |
+| typescript | 5.x | one typed model for page and og card |
+| tailwind css | 4 | styling |
+| gsap | 3.15.1 | motion |
+| vitest | 4.1.9 | tests |
+| opennext cloudflare | 1.20.17 | worker deployment |
+
+## credits
+
+inspired by [gitfut](https://github.com/mawsis/gitfut), the football card
+original. not affiliated with ea sports, formula 1 or github. mit licensed.
+rook is the non-blocking automated reviewer, documented in
+[docs/ROOK_REVIEW.md](docs/ROOK_REVIEW.md).
+
+if this was worth your five minutes, a star is the whole ask.
