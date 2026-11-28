@@ -185,10 +185,10 @@ export function SplitDownload({
             onKeyDown={onMenuKeyDown}
             className={`menu-pop absolute right-0 z-30 w-[236px] p-1.5 ${dropUp ? "bottom-full mb-2" : "top-full mt-2"}`}
           >
-            <button type="button" role="menuitem" onClick={copyImage} className="menu-item">
+            <button type="button" role="menuitem" aria-label="Copy image" onClick={copyImage} className="menu-item">
               <Copy size={15} aria-hidden /> Copy image
             </button>
-            <button type="button" role="menuitem" onClick={copyLink} className="menu-item">
+            <button type="button" role="menuitem" aria-label="Copy link" onClick={copyLink} className="menu-item">
               <Link2 size={15} aria-hidden /> Copy link
             </button>
             {extraItems?.(() => setMenuOpen(false))}
