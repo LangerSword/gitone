@@ -15,7 +15,6 @@ https://gitone.langersword.in
   <img src="https://gitone.langersword.in/torvalds.png" alt="live gitone card for torvalds" width="280" />
 </a>
 
-![gitone report page](public/demo/gitone-report.png)
 
 ![gitone demo](public/demo/gitone-demo.gif)
 
